@@ -13,7 +13,7 @@ end
 
 %% Save times vector:
 cfg.times = EEG.times;
-
+cfg.datalength = length(cfg.times);
 
 fprintf(['       - Done!\n\n']);
 

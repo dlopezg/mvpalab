@@ -87,6 +87,6 @@ if isfield(cfg.fe,'matchc')
     end
 end
 
-    fprintf(['       - Done!\n\n']);
+fprintf(['       - Done!\n\n']);
 
 end

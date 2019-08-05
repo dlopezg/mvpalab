@@ -1,4 +1,4 @@
-function [ classes ] = generate_conditions( conditions , subject )
+function [classes, cfg] = generate_conditions(conditions, subject, cfg)
 %GENERATE_CONDITIONS This function reads the subject's data and generate 
 %the required structure for the feature extraction.
 
@@ -10,6 +10,10 @@ for i = 1 : length(conditions.names)
     classes.(conditions.names{i}) = EEG.data;
     fprintf(['       - Generating condition: ' conditions.names{i} '\n']);
 end
+
+%% Save times vector:
+cfg.times = EEG.times;
+
 
 fprintf(['       - Done!\n\n']);
 

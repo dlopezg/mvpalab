@@ -25,14 +25,14 @@ for tp = 1 : cfg.mvpa.ntp
         correct_rate(tp) = cp{tp}.CorrectRate;
     end
     
-    % Print state:
-    if tp>1
-          for j=0:log10(tp-1)+n
-              fprintf('\b'); % delete previous counter display
-          end
+    %% Print state:
+    if tp > 1
+        for j = 0 : log10(tp-1) + n
+            fprintf('\b'); % delete previous counter display
+        end
     end
-      
-     fprintf([int2str(cfg.mvpa.ntp) '/' int2str(tp)]);
+    
+    fprintf([int2str(cfg.mvpa.ntp) '/' int2str(tp)]);
 end
 
 end

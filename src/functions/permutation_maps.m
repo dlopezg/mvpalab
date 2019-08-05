@@ -26,7 +26,7 @@ end
 
 %% Train and test de classifier with permuted labels:
 for i = 1 : cfg.permaps.nper
-    permuted_maps(i,:) = svm_classifier(X,per_Y(:,i),cfg);
+    permuted_maps(:,:,i) = svm_classifier(X,per_Y(:,i),cfg);
     fprintf([' - Permutation: ' int2str(i) '\n']);
 end
 

@@ -55,10 +55,10 @@ for class = 1 : length(class_names)
     
     %% Adjust class size (factor of k):
     
-    if isfield(cfg.cv,'matchc')
-        if cfg.cv.matchc
+    if isfield(cfg.fe,'matchc')
+        if cfg.fe.matchc.flag
             data = data(:,:,1:floor(size(data,3)/...
-                cfg.cv.nfolds)*cfg.cv.nfolds);
+                cfg.fe.matchc.nfolds)*cfg.fe.matchc.nfolds);
         end
     end
     

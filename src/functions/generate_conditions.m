@@ -12,8 +12,8 @@ for i = 1 : length(conditions.names)
 end
 
 %% Save times vector:
-cfg.times = EEG.times;
-cfg.datalength = length(cfg.times);
+cfg.mvpa.times = EEG.times;
+cfg.datalength = length(EEG.times);
 
 fprintf(['       - Done!\n\n']);
 

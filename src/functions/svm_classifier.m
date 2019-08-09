@@ -2,7 +2,7 @@ function [ correct_rate, cfg] = svm_classifier( X, Y, cfg )
 %SVM_CLASSIFIER This function returns the accuracy of the classifier in a
 %time-resolved way.
 
-strpar = cvpartition(Y,'KFold',cfg.cv.nfolds);
+strpar = cvpartition(Y,'KFold',cfg.nfolds);
 
 %% Timepoints loop:
 fprintf('       - Timepoints: ');

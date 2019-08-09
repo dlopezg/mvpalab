@@ -14,9 +14,6 @@ size_b = size(class_b,1);
 X = [class_a;class_b];
 Y = logical([zeros(size_a,1);ones(size_b,1)]);
 
-%% Configure MVPA timming:
-cfg = mvpa_timming(cfg);
-
 %% Generate permuted labels
 per_Y = repmat(Y,1,cfg.permaps.nper);
 
@@ -26,7 +23,7 @@ end
 
 %% Train and test de classifier with permuted labels:
 for i = 1 : cfg.permaps.nper
-    permuted_maps(:,:,i) = svm_classifier(X,per_Y(:,i),cfg);
+    permuted_maps(:,:,i) = svm_classifier(X,per_Y(:,i),cfg.mvpa);
     fprintf([' - Permutation: ' int2str(i) '\n']);
 end
 

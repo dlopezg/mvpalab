@@ -6,23 +6,48 @@ strpar = cvpartition(Y,'KFold',cfg.cv.nfolds);
 
 %% Timepoints loop:
 fprintf('       - Timepoints: ');
-n = numel(num2str(cfg.mvpa.ntp)) + 1;
-for tp = 1 : cfg.mvpa.ntp
+n = numel(num2str(cfg.ntp)) + 1;
+
+%% Classperf initialization:
+if isfield(cfg,'tempgen')
+    tempgen = cfg.tempgen;
+    if cfg.tempgen
+        for i = 1 : cfg.ntp
+            for j = 1 : cfg.ntp
+                cpmtx{i,j} = classperf(Y);
+            end
+        end
+    end
+end
+
+
+%% Timepoints loop
+for tp = 1 : cfg.ntp
     cp{tp} = classperf(Y);
     %% Cross-validation loop:
     for k = 1 : strpar.NumTestSets
         %% Train and test datasets:
-        test_X = X(strpar.test(k),:,cfg.mvpa.tpoints(tp));
-        train_X = X(strpar.training(k),:,cfg.mvpa.tpoints(tp));
+        test_X = X(strpar.test(k),:,cfg.tpoints(tp));
+        train_X = X(strpar.training(k),:,cfg.tpoints(tp));
         train_Y = Y(strpar.training(k));
         
         %% Train SVM model
         mdlSVM = fitcsvm(train_X,train_Y);
         
-        %% Test
-        predictedlabels = predict(mdlSVM,test_X);
-        classperf(cp{tp},predictedlabels,strpar.test(k));
-        correct_rate(tp) = cp{tp}.CorrectRate;
+        %% Test - Temporal generalization matrix:
+        if tempgen
+            for tp2 = 1 : cfg.ntp
+                test_X = X(strpar.test(k),:,cfg.tpoints(tp2));
+                predictedlabels = predict(mdlSVM,test_X);
+                cpmtx{tp,tp2} = classperf(cpmtx{tp,tp2},predictedlabels,...
+                    strpar.test(k));
+                correct_rate(tp,tp2) = cpmtx{tp,tp2}.CorrectRate;
+            end
+        else
+            predictedlabels = predict(mdlSVM,test_X);
+            classperf(cp{tp},predictedlabels,strpar.test(k));
+            correct_rate(tp) = cp{tp}.CorrectRate;
+        end
     end
     
     %% Print state:
@@ -32,7 +57,7 @@ for tp = 1 : cfg.mvpa.ntp
         end
     end
     
-    fprintf([int2str(cfg.mvpa.ntp) '/' int2str(tp)]);
+    fprintf([int2str(cfg.ntp) '/' int2str(tp)]);
 end
 
 end

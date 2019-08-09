@@ -1,8 +1,11 @@
 function [] = plot_results_2d( cfg, data, clusters )
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
-%% Plot the results:
 
+%% Path for external libraries:
+path(path,'../extlibs/hline_vline/');
+
+%% Plot the results:
 figure;
 axes = [cfg.mvpa.tpstart cfg.mvpa.tpend];
 imagesc(axes, axes, mean(data,3));

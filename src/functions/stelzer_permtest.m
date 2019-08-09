@@ -2,6 +2,9 @@ function [ clusters_data ] = stelzer_permtest( cfg, acc, permuted_maps )
 %STELTZER_PERMTEST Summary of this function goes here
 %   Detailed explanation goes here
 
+%% Path for external libraries:
+path(path,'../extlibs/');
+
 %% Initilization - Generate permutation idx matrix:
 % Here we determine the map of each subject that has to be selected in each
 % permutation.

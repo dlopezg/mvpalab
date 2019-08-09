@@ -1,6 +1,11 @@
 function [] = plot_results( cfg, data, clusters )
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
+
+%% Path for external libraries:
+path(path,'../extlibs/hline_vline/');
+path(path,'../extlibs/stdshade/');
+
 %% Plot the results:
 figure;
 xlabel('Time (s)');

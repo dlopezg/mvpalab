@@ -1,13 +1,13 @@
 function [ permuted_maps ] = permutation_maps( cfg, inputvec )
 %PERMUTATION_MAPS This function generates permutation maps at a subject
 %level for future statistical analyses.
-fprintf('      <strong>> Generating permutation maps...</strong>\n');
+fprintf('      <strong>> Initiating permutations...</strong>\n');
 
 %% Data and true labels:
-class_a = inputvec{1};      
+class_a = inputvec{1};
 class_b = inputvec{2};
 
-size_a = size(class_a,1);   
+size_a = size(class_a,1);
 size_b = size(class_b,1);
 
 X = [class_a;class_b];
@@ -23,8 +23,30 @@ end
 %% Train and test de classifier with permuted labels:
 for i = 1 : cfg.stats.nper
     tic
-    permuted_maps(:,:,i) = svm_classifier(X,per_Y(:,i),cfg.mvpa);
-    fprintf([' - Permutation: ' int2str(i) ' > ']);
+    strpar = cvpartition(Y,'KFold',cfg.mvpa.nfolds);
+    
+    if cfg.mvpa.parcomp
+        %% Timepoints loop
+        Y = per_Y(:,i);
+        c = cfg.mvpa;
+        parfor tp = 1 : cfg.mvpa.ntp
+            correct_rate(tp,:) = svm_classifier_2(X,Y,c,strpar,tp);
+        end
+        
+        fprintf(['        - Permutation: ' int2str(i) ' > ']);
+    else
+        for tp = 1 : cfg.mvpa.ntp
+            correct_rate(tp,:) = svm_classifier_2(X,Y,cfg.mvpa,strpar,tp);
+        end
+        fprintf([' - Permutation: ' int2str(i) ' > ']);
+    end
+    
+    if isrow(correct_rate)
+        permuted_maps(:,:,i) = correct_rate;
+    else
+        permuted_maps(:,:,i) = correct_rate';
+    end
+    
     toc
 end
 

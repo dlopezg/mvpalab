@@ -8,10 +8,7 @@ fprintf('       - Timepoints: ');
 n = numel(num2str(cfg.ntp)) + 1;
 
 %% Timepoints loop
-
 for tp = 1 : cfg.ntp
-    cp{tp} = classperf(Y);
-    
     %% Cross-validation loop:
     for k = 1 : strpar.NumTestSets
         %% Train and test datasets:
@@ -27,20 +24,15 @@ for tp = 1 : cfg.ntp
         mdlSVM = compact(fitcsvm(train_X,train_Y));
         
         %% Test - Temporal generalization matrix:
+        
         if cfg.tempgen
             for tp2 = 1 : cfg.ntp
                 test_X = X(test_fold,:,cfg.tpoints(tp2));
-                predictedlabels = predict(mdlSVM,test_X);
-                acc(k,tp2) = sum(test_Y == predictedlabels);
-%                 cpmtx{tp,tp2} = classperf(cpmtx{tp,tp2},predictedlabels,test_fold);
-%                 correct_rate(tp,tp2) = cpmtx{tp,tp2}.CorrectRate;
+                acc(k,tp2) = sum(test_Y == predict(mdlSVM,test_X));
             end
             
         else
-            predictedlabels = predict(mdlSVM,test_X);
-            acc(k) = sum(test_Y == predictedlabels);
-%             classperf(cp{tp},predictedlabels,strpar.test(k));
-%             correct_rate(tp) = cp{tp}.CorrectRate;
+            acc(k) = sum(test_Y == predict(mdlSVM,test_X));
         end
     end
     

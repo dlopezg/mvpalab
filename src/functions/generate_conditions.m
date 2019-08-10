@@ -1,21 +1,35 @@
-function [classes, cfg] = generate_conditions(conditions, subject, cfg)
-%GENERATE_CONDITIONS This function reads the subject's data and generate 
+function [data, cfg] = generate_conditions(cfg)
+%GENERATE_CONDITIONS This function reads the subject's data and generate
 %the required structure for the feature extraction.
 
-fprintf([subject '<strong> > Loading subject data... </strong>  \n']);
+fprintf('<strong> > Loading subject data: </strong>');
 
-for i = 1 : length(conditions.names)
+%% Variables initialization:
+data = cell(length(cfg.subjects),1);
+
+%% Subjects loop:
+for sub = 1 : length(cfg.subjects)
+    subject = cfg.subjects{sub};
+    cond = cfg.conditions;
+
+    for i = 1 : length(cond.names)
+        load([cond.dir cond.names{i} filesep subject])
+        classes.(cond.names{i}) = EEG.data;
+    end
     
-    load([conditions.dir conditions.names{i} filesep subject])
-    classes.(conditions.names{i}) = EEG.data;
-    fprintf(['       - Generating condition: ' conditions.names{i} '\n']);
+    data{sub,1} = classes;
+    
+    %% Save times vector and datalength:
+    cfg.mvpa.times = EEG.times;
+    cfg.datalength = length(EEG.times);
+    cfg.times = EEG.times;
+    
+    %% Print subject counter:
+    print_counter(sub,length(cfg.subjects));
+    
 end
 
-%% Save times vector:
-cfg.mvpa.times = EEG.times;
-cfg.datalength = length(EEG.times);
-
-fprintf(['       - Done!\n\n']);
+fprintf(' - Done!\n');
 
 end
 

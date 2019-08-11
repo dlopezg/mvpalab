@@ -46,9 +46,9 @@ for sub = 1 : nsub
         end
         
         if isrow(correct_rate)
-            permuted_maps(:,:,:,sub) = correct_rate;
+            permuted_maps(:,:,i,sub) = correct_rate;
         else
-            permuted_maps(:,:,:,sub) = correct_rate';
+            permuted_maps(:,:,i,sub) = correct_rate';
         end
         
         toc

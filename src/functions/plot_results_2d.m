@@ -12,24 +12,17 @@ imagesc(axes, axes, mean(data,3));
 set(gca, 'YDir','normal')
 xlabel('Training time (s)');
 ylabel('Test time (s)')
+colorbar
 
-if cfg.plots.stats
-    for cluster = 1 : clusters.NumObjects
-        if ~isnan(clusters.PixelIdxList{cluster})
-            for i = 1 : length(correct_rate)
-                if ismember(i,clusters.PixelIdxList{cluster})
-                    significance(i) = correct_rate(i);
-                else
-                    significance(i) = 0;
-                end
-            end
-        end
-    end
-    
-    a = area(cfg.times(1:cfg.mvpa.tpsteps:end),significance,'LineStyle','-', 'EdgeAlpha',0);
-    a.FaceColor = [.95 .95 .95];
-    a.FaceAlpha = 1;
-    
+if ~isempty(clusters)
+    x = linspace(cfg.mvpa.tpstart,cfg.mvpa.tpend,129);
+    y = x;
+    acc_sig = mean(data,3);
+    acc_sig(clusters) = 1;
+    acc_sig(acc_sig~=1) = 0;
+    hold on
+    contour(x,y,acc_sig);
+    title('Significance map')
 end
 
 end

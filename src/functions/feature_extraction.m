@@ -1,4 +1,4 @@
-function [ inputvec , cfg, summary ] = feature_extraction ( cfg, sub_data )
+function [ inpvec , cfg, summary ] = feature_extraction ( cfg, sub_data )
 % FEATURE_EXTRACTION This function generates the feature vectors for the
 % mvpa classification.
 %
@@ -22,72 +22,39 @@ function [ inputvec , cfg, summary ] = feature_extraction ( cfg, sub_data )
 % David López-García (dlopez@ugr.es)
 % Brain, Mind and Behavioral Research Center - University of Granada.
 
-fprintf('<strong> > Generating feature vectors: </strong>');
+fprintf('<strong> > Generating feature vectors </strong>');
+fprintf('- Subject: ');
 
 %% Subjects loop:
 for sub = 1 : length(cfg.subjects)
-    %% Extract classes:
-    classes = sub_data{sub};
-    class_names = fieldnames(classes);
     
-    %% Classes loop:
-    for class = 1 : length(class_names)
-        data = classes.(class_names{class});
+    %% Context loop:
+    for ctxt = 1 : size(sub_data,2)
+        %% Extract classes:
+        classes = sub_data{sub,ctxt};
+        class_names = fieldnames(classes);
         
-        %% Smooth data:
-        
-        if isfield(cfg.fe,'smooth')
-            if cfg.fe.smooth.flag
-                data = smoothdata(data,2,cfg.fe.smooth.method,...
-                    cfg.fe.smooth.window);
-            end
+        %% Classes loop:
+        for class = 1 : length(class_names)
+            data = classes.(class_names{class});
+            fv{ctxt,class} = preproc_data(cfg,data);
+            class_size(ctxt,class) = size(fv{ctxt,class},1);
         end
-        
-        %% Average trials if needed:
-        
-        if isfield(cfg.fe,'strial')
-            if cfg.fe.strial.flag
-                for i = 1 : floor(size(data,3)/cfg.fe.strial.ntrials)
-                    idxs = randperm(size(data,3),cfg.fe.strial.ntrials);
-                    super_trials(:,:,i) = mean(data(:,:,idxs),3);
-                    data(:,:,idxs) = [];
-                end
-                data = super_trials; clear super_trials;
-            end
-        end
-        
-        %% Adjust class size (factor of k):
-        
-        if isfield(cfg.fe,'matchc')
-            if cfg.fe.matchc.flag
-                data = data(:,:,1:floor(size(data,3)/...
-                    cfg.fe.matchc.nfolds)*cfg.fe.matchc.nfolds);
-            end
-        end
-        
-        %% Z-SCORE normalization:
-        
-        if isfield(cfg.fe,'zscore')
-            if cfg.fe.zscore.flag
-                data = zscore(data,[],2);
-            end
-        end
-        
-        %% Extract features vector for each timepoint and each trial:
-        
-        inputvec{sub,class} = permute(data,[3 1 2]);
-        class_size(sub,class) = size(inputvec{sub,class},1);
         
     end
     
     %% Match coditions size by downsampling:
-    if isfield(cfg.fe,'matchc')
-        if cfg.fe.matchc.flag
-            [minsize,~] = min(class_size(:));
-            for class = 1 : length(class_names)
-                inputvec{sub,class} = inputvec{sub,class}(1:minsize,:,:);
+    if cfg.fe.matchc.flag
+        minsize = min(min(class_size));
+        c = 1;
+        for ctxt = 1 : size(fv,2)
+            for class = 1 : size(fv,2)
+                inpvec{sub,c} = fv{ctxt,class}(1:minsize,:,:);
+                c = c + 1;
             end
         end
+    else
+        inpvec{sub,c} = fv{ctxt,class};
     end
     
     %% Print subject counter:

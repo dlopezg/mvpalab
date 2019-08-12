@@ -15,7 +15,7 @@ ylabel('Test time (s)')
 colorbar
 
 if ~isempty(clusters)
-    x = linspace(cfg.mvpa.tpstart,cfg.mvpa.tpend,129);
+    x = linspace(cfg.mvpa.tpstart,cfg.mvpa.tpend,size(data,1));
     y = x;
     acc_sig = mean(data,3);
     acc_sig(clusters) = 1;

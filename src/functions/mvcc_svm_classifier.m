@@ -8,15 +8,20 @@ if permute
 end
 
 %% Train SVM model
-mdlSVM = compact(fitcsvm(Xa(:,:,cfg.tpoints(tp)),Ya));
+Xatp = Xa(:,:,cfg.tpoints(tp));
+Xbtp = Xb(:,:,cfg.tpoints(tp));
+mdlSVM = compact(fitcsvm(Xatp,Ya));
 
 %% Calculate acc:
 if cfg.tempgen
     for tp2 = 1 : cfg.ntp
-        correct_rate(tp2) = sum(Yb == predict(mdlSVM,Xb(:,:,cfg.tpoints(tp))));
+        Xbtp2 = Xb(:,:,cfg.tpoints(tp2));
+        predicted_labels = predict(mdlSVM,Xbtp2);
+        correct_rate(tp2) = sum(Yb == predicted_labels);
     end
 else
-    correct_rate = sum(Yb == predict(mdlSVM,Xb(:,:,cfg.tpoints(tp))));
+    predicted_labels = predict(mdlSVM,Xbtp);
+    correct_rate = sum(Yb == predicted_labels);
 end
 
 correct_rate = correct_rate/length(Yb);

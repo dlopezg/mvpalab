@@ -8,7 +8,7 @@ Xb = [];
 Yb = [];
 
 if length(fv) > 2 % MVCC
-    Xb = [fv{2};fv{3}];
+    Xb = [fv{3};fv{4}];
     Yb = logical([zeros(size(fv{3},1),1);ones(size(fv{4},1),1)]);
 end
 end

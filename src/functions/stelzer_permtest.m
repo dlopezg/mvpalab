@@ -20,7 +20,7 @@ perm_idxs = randi(c.nper,c.sub,c.nperg,'single');
 % indexes for each subject and permutation.
 fprintf('   - Generating permuted maps at group level: \n');
 fprintf('      # Permuted maps >> ');
-c.nperg = 1e5;
+c.nperg = 1e4;
 for i = 1 : c.nperg
     for j = 1 : c.sub
         per_maps(:,:,j) = permuted_maps(:,:,perm_idxs(j,i),j);
@@ -38,7 +38,8 @@ fprintf(' - Done!\n');
 fprintf('   - Generating the null distribution and p-value thresholds:');
 for row = 1 : size(group_maps,1)
     for col = 1 : size(group_maps,2)
-        pctval_mask(row,col) = prctile(group_maps(row,col,:),c.pgroup);
+        pctval_mask_r(row,col) = prctile(group_maps(row,col,:),c.pgroup);
+        pctval_mask_l(row,col) = prctile(group_maps(row,col,:),100-c.pgroup);
     end
 end
 fprintf(' - Done!\n');
@@ -50,7 +51,7 @@ h = histogram(group_maps(row,col,:),'Normalization','probability');
 h.FaceColor = [.5 .5 .5];
 h.EdgeColor = [.5 .5 .5];
 hold on
-vl = vline(double(pctval_mask(row,col)),'r-','Accuracy threshold (p<.001)');
+vl = vline(double(pctval_mask_r(row,col)),'r-','Accuracy threshold (p<.001)');
 xlabel('acc');
 grid minor
 title('Accuracy null distribution (group level)')
@@ -60,28 +61,36 @@ ylabel('Normalized histogram')
 %% Search clusters in permuted maps:
 fprintf('   - Searching clusters in permuted maps:');
 for map = 1 : size(group_maps,3)
-    thresholded_maps(:,:,map) = group_maps(:,:,map) > pctval_mask;
-    clustered_maps{map} = bwconncomp(thresholded_maps(:,:,map));
+    thresholded_maps_r(:,:,map) = group_maps(:,:,map) > pctval_mask_r;
+    thresholded_maps_l(:,:,map) = group_maps(:,:,map) < pctval_mask_l;
+    clustered_maps_r{map} = bwconncomp(thresholded_maps_r(:,:,map));
+    clustered_maps_l{map} = bwconncomp(thresholded_maps_l(:,:,map));
 end
 fprintf(' - Done!\n');
 
 %% Generate cluster size distribution:
 fprintf('   - Generating cluster size distribution:');
-size_dist = [];
+size_dist_r = [];
+size_dist_l = [];
 for map = 1 : size(group_maps,3)
-    for cluster = 1 : clustered_maps{map}.NumObjects
-        size_dist(end+1) = numel(clustered_maps{map}.PixelIdxList{cluster});
+    for cluster = 1 : clustered_maps_r{map}.NumObjects
+        size_dist_r(end+1) = numel(clustered_maps_r{map}.PixelIdxList{cluster});
+    end
+    for cluster = 1 : clustered_maps_l{map}.NumObjects
+        size_dist_l(end+1) = numel(clustered_maps_l{map}.PixelIdxList{cluster});
     end
 end
 fprintf(' - Done!\n');
 
 %% Plot the null distribution of cluster sizes:
 subplot(1,3,3);
-h = histogram(size_dist,'Normalization','probability','BinMethod','integers');
-h_norm = h.BinCounts/sum(h.BinCounts)';
+hl = histogram(size_dist_r,'Normalization','probability','BinMethod','integers');
+hl_norm = hl.BinCounts/sum(hl.BinCounts)';
+hr = histogram(size_dist_r,'Normalization','probability','BinMethod','integers');
+hr_norm = hr.BinCounts/sum(hr.BinCounts)';
 set(gca, 'YScale', 'log')
-h.FaceColor = [.5 .5 .5];
-h.EdgeColor = [.5 .5 .5];
+hr.FaceColor = [.5 .5 .5];
+hr.EdgeColor = [.5 .5 .5];
 grid minor
 xlabel('Cluster size');
 ylabel('Normalized histogram (log scale)')
@@ -89,37 +98,62 @@ title('Cluster size null distribution')
 
 %% Uncorrected cluster size threshold:
 pval = (100 - c.pclust) / 100;
-cluster_threshold_uncorr = find((h_norm < pval) & (h_norm ~= 0),1);
+cluster_threshold_uncorr_r = find((hr_norm < pval) & (hr_norm ~= 0),1);
+cluster_threshold_uncorr_l = find((hl_norm < pval) & (hl_norm ~= 0),1);
 
 %% False Discovery Rate (FDR) correction at cluster level:
-fdr = mafdr(h_norm,'bhfdr','true');
-cluster_threshold_corr = find((fdr < pval) & (fdr ~= 0),1);
-if isempty(cluster_threshold_corr)
-    cluster_threshold_corr = length(fdr);
+fdr_r = mafdr(hr_norm,'bhfdr','true');
+fdr_l = mafdr(hl_norm,'bhfdr','true');
+
+cluster_threshold_corr_r = find((fdr_r < pval) & (fdr_r ~= 0),1);
+cluster_threshold_corr_l = find((fdr_l < pval) & (fdr_l ~= 0),1);
+
+if isempty(cluster_threshold_corr_r)
+    cluster_threshold_corr_r = length(fdr_r);
+end
+
+if isempty(cluster_threshold_corr_l)
+    cluster_threshold_corr_l = length(fdr_l);
 end
 
 hold on
-vl = vline(cluster_threshold_corr,'r-','Cluster size threshold (p<.001)');
+vl = vline(cluster_threshold_corr_r,'r-','Cluster size threshold (p<.001)');
 
 %% Search clusters in real data:
 fprintf('   - Searching clusters in real data:');
 % Thresholded map:
-thresholded_data = mean(acc,3) > pctval_mask;
-clusters_data = bwconncomp(thresholded_data);
-clusters_data.sig = [];
+thresholded_data_r = mean(acc,3) > pctval_mask_r;
+clusters_data_r = bwconncomp(thresholded_data_r);
+clusters_data_r.sig = [];
 
-for cluster = 1 : clusters_data.NumObjects
-    if numel(clusters_data.PixelIdxList{cluster}) > cluster_threshold_corr
-        clusters_data.sig = [clusters_data.sig;...
-            clusters_data.PixelIdxList{cluster}];
+thresholded_data_l = mean(acc,3) < pctval_mask_l;
+clusters_data_l = bwconncomp(thresholded_data_l);
+clusters_data_l.sig = [];
+
+for cluster = 1 : clusters_data_r.NumObjects
+    if numel(clusters_data_r.PixelIdxList{cluster}) > cluster_threshold_corr_r
+        clusters_data_r.sig = [clusters_data_r.sig;...
+            clusters_data_r.PixelIdxList{cluster}];
+    end
+end
+
+for cluster = 1 : clusters_data_l.NumObjects
+    if numel(clusters_data_l.PixelIdxList{cluster}) > cluster_threshold_corr_l
+        clusters_data_l.sig = [clusters_data_l.sig;...
+            clusters_data_l.PixelIdxList{cluster}];
     end
 end
 
 %% Generate output:
-stats.cluster_threshold_corr = cluster_threshold_corr;
-stats.cluster_threshold_uncorr = cluster_threshold_uncorr;
-stats.clusters = clusters_data;
-stats.thresholded_data = thresholded_data;
+stats.cluster_threshold_corr_r = cluster_threshold_corr_r;
+stats.cluster_threshold_uncorr_r = cluster_threshold_uncorr_r;
+stats.clusters_r = clusters_data_r;
+stats.thresholded_data_r = thresholded_data_r;
+
+stats.cluster_threshold_corr_l = cluster_threshold_corr_l;
+stats.cluster_threshold_uncorr_l = cluster_threshold_uncorr_l;
+stats.clusters_l = clusters_data_l;
+stats.thresholded_data_l = thresholded_data_l;
 
 fprintf(' - Done!\n');
 fprintf('<strong> > Stelzer permutation test finished!</strong>\n');

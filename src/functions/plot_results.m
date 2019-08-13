@@ -17,7 +17,7 @@ hold on
 correct_rate = mean(data,3);
 chance_level = zeros(1,length(correct_rate))+.5;
 
-if cfg.plots.stats
+if exist('clusters')
     for cluster = 1 : clusters.NumObjects
         if ~isnan(clusters.PixelIdxList{cluster})
             for i = 1 : length(correct_rate)

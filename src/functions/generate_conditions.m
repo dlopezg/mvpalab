@@ -13,8 +13,8 @@ for sub = 1 : length(cfg.subjects)
     subject = cfg.subjects{sub};
     cond = cfg.conditions;
     
-    for ctxt = 1 : size(cond.names,2)
-        for class = 1 : size(cond.names,1)
+    for ctxt = 1 : size(cond.names,1)
+        for class = 1 : size(cond.names,2)
             load([cond.dir cond.names{ctxt,class} filesep subject])
             classes.(cond.names{ctxt,class}) = EEG.data;
         end

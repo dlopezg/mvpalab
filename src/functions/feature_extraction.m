@@ -47,7 +47,7 @@ for sub = 1 : length(cfg.subjects)
     if cfg.fe.matchc.flag
         minsize = min(min(class_size));
         c = 1;
-        for ctxt = 1 : size(fv,2)
+        for ctxt = 1 : size(fv,1)
             for class = 1 : size(fv,2)
                 inpvec{sub,c} = fv{ctxt,class}(1:minsize,:,:);
                 c = c + 1;

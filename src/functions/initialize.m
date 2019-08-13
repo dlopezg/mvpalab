@@ -12,14 +12,28 @@ cfg.fe.matchc.nfolds   = 5;
 
 %% Configure mvpa analysis:
 % .......................... Timming:
-cfg.mvpa.tpstart = -500;
-cfg.mvpa.tpend	 = 1000;
+cfg.mvpa.tpstart = -200;
+cfg.mvpa.tpend	 = 2000;
 cfg.mvpa.tpsteps = 3;
 % .......................... Kfold:
 cfg.mvpa.nfolds  = 5;
 % .......................... Analysis:
 cfg.mvpa.tempgen = false;
 cfg.mvpa.parcomp = false;
+cfg.mvpa.permaps = true;
+
+%% Configure mvcc analysis:
+% .......................... Timming:
+cfg.mvcc.tpstart = -200;
+cfg.mvcc.tpend	 = 2000;
+cfg.mvcc.tpsteps = 3;
+% .......................... Kfold:
+cfg.mvcc.nfolds  = 5;
+% .......................... Analysis:
+cfg.mvcc.tempgen = false;
+cfg.mvcc.parcomp = false;
+cfg.mvcc.permaps = true;
+
 
 %% Statistic for Stelzer method:
 cfg.stats.nper   = 100;

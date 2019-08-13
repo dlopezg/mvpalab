@@ -1,4 +1,4 @@
-function [ correct_rate, cfg] = svm_classifier_2(  X, Y, cfg, strpar, tp )
+function [ correct_rate, cfg] = mvpa_svm_classifier(X,Y,tp,cfg,strpar,permute)
 %SVM_CLASSIFIER This function returns the accuracy of the classifier in a
 %time-resolved way.
 
@@ -11,7 +11,10 @@ for k = 1 : strpar.NumTestSets
     train_X = X(training_fold,:,cfg.tpoints(tp));
     train_Y = Y(training_fold);
     test_Y = Y(test_fold);
-    l = length(test_Y);
+    
+    if permute
+        train_Y = train_Y(randperm(length(train_Y)));
+    end
     
     %% Train SVM model
     mdlSVM = compact(fitcsvm(train_X,train_Y));
@@ -29,6 +32,8 @@ for k = 1 : strpar.NumTestSets
     end
 end
 
-correct_rate = mean(acc/l);
-end
+%% Return correct rate:
 
+correct_rate = mean(acc/length(test_Y));
+
+end

@@ -19,10 +19,12 @@ for sub = 1 : length(cfg.subjects)
             classes.(cond.names{ctxt,class}) = EEG.data;
         end
         data{sub,ctxt} = classes;
+        clear classes;
     end
     
     %% Save times vector and datalength:
     cfg.mvpa.times = EEG.times;
+    cfg.mvcc.times = EEG.times;
     cfg.datalength = length(EEG.times);
     cfg.times = EEG.times;
     

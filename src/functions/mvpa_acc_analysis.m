@@ -1,4 +1,4 @@
-function [ acc ,cfg ] = mvpa_acc_analysis( cfg, fv )
+function [ acc ,cfg ] = mvpa_acc_analysis( cfg, fv, permute )
 %CORRECT_RATE Summary of this function goes here
 %   Detailed explanation goes here
 fprintf('<strong> > Computing correct rate: </strong>\n');
@@ -17,11 +17,11 @@ for sub = 1 : nsub
         %% Timepoints loop
         c = cfg.mvpa;
         parfor tp = 1 : c.ntp
-            correct_rate(tp,:) = mvpa_svm_classifier(X,Y,tp,c,strpar,false);
+            correct_rate(tp,:) = mvpa_svm_classifier(X,Y,tp,c,strpar,permute);
         end
     else
         for tp = 1 : cfg.mvpa.ntp
-            correct_rate(tp,:) = mvpa_svm_classifier(X,Y,tp,cfg.mvpa,strpar,false);
+            correct_rate(tp,:) = mvpa_svm_classifier(X,Y,tp,cfg.mvpa,strpar,permute);
         end
     end
     

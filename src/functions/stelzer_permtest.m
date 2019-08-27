@@ -20,7 +20,6 @@ perm_idxs = randi(c.nper,c.sub,c.nperg,'single');
 % indexes for each subject and permutation.
 fprintf('   - Generating permuted maps at group level: \n');
 fprintf('      # Permuted maps >> ');
-c.nperg = 1e4;
 for i = 1 : c.nperg
     for j = 1 : c.sub
         per_maps(:,:,j) = permuted_maps(:,:,perm_idxs(j,i),j);

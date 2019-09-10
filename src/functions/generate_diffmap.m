@@ -12,7 +12,7 @@ for freq = 1 : n_freq
     % Generate permuted diffMaps for statistics:
     if exist('permaps','var') && exist('peracc','var')
         for map = 1 : n_maps
-            perdiffMap(freq,:,map,:) = peracc - squeeze(permaps(freq,:,map,:));
+            perdiffMap(freq,:,map,:) = squeeze(peracc) - squeeze(permaps(freq,:,map,:));
         end
     end
 end

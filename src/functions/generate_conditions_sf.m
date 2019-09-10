@@ -7,18 +7,6 @@ fprintf('<strong> > Loading subject data </strong>\n');
 %% Variables initialization:
 data = cell(length(cfg.subjects),1);
 
-%% Generate frequencies vector:
-
-lfreq = cfg.sf.lfreq;
-hfreq = cfg.sf.hfreq;
-
-if cfg.sf.logsp
-    cfg.sf.vecfreq = logspace(log10(lfreq+cfg.sf.hbw),log10(hfreq+cfg.sf.hbw),cfg.sf.nfreq);
-else
-    cfg.sf.vecfreq = (lfreq+cfg.sf.hbw:cfg.sf.fstep:hfreq-cfg.sf.hbw);
-    cfg.sf.nfreq = length(cfg.sf.vecfreq);
-end
-
 %% Subjects loop:
 for sub = 1 : length(cfg.subjects)
     tic
@@ -27,14 +15,11 @@ for sub = 1 : length(cfg.subjects)
     cond = cfg.conditions;
     for freq = 1 : cfg.sf.nfreq
         fprintf(['   - Freq: ' int2str(freq) '/' int2str(cfg.sf.nfreq) '\n']);
-        if cfg.sf.vecfreq(freq)-cfg.sf.hbw == 0
-            cfg.sf.vecfreq(freq) = cfg.sf.vecfreq(freq) + .001;
-        end
         for ctxt = 1 : size(cond.names,1)
             for class = 1 : size(cond.names,2)
                 load([cond.dir cond.names{ctxt,class} filesep subject])
                 EEG_filtered = pop_firws(EEG,...
-                    'fcutoff', [cfg.sf.vecfreq(freq)-cfg.sf.hbw cfg.sf.vecfreq(freq)+cfg.sf.hbw],...
+                    'fcutoff', cfg.sf.fcutoff(freq),...
                     'ftype', cfg.sf.ftype,...
                     'wtype', cfg.sf.wtype,...
                     'forder', cfg.sf.order,...
@@ -51,10 +36,12 @@ for sub = 1 : length(cfg.subjects)
         cfg.datalength = length(EEG.times);
         cfg.times = EEG.times;
         
+        [cfg,fv] = feature_extraction_sf(cfg,data);
+        
         dirname = [cfg.conditions.savedir filesep 's_' sprintf('%03d',sub)];
         create_folder(dirname);
-        filename = ['filtered_' sprintf('%03d',freq)];
-        save([dirname filesep filename],'data','cfg');
+        filename = ['fv_filtered_' sprintf('%03d',freq)];
+        save([dirname filesep filename],'fv','cfg');
     end
 end
 

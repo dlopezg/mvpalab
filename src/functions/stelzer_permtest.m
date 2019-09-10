@@ -1,10 +1,6 @@
 function [ stats ] = stelzer_permtest( cfg, acc, permuted_maps )
 %STELTZER_PERMTEST Summary of this function goes here
 %   Detailed explanation goes here
-
-%% Path for external libraries:
-path(path,'../extlibs/hline_vline');
-path(path,'../extlibs/');
 fprintf('<strong> > Stelzer permutation test: </strong>\n');
 %% Initilization - Generate permutation idx matrix:
 % Here we determine the map of each subject that has to be selected in each

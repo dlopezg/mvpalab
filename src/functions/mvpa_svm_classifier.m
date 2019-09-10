@@ -19,8 +19,7 @@ for k = 1 : strpar.NumTestSets
     %% Train SVM model
     mdlSVM = compact(fitcsvm(train_X,train_Y));
     
-    %% Test - Temporal generalization matrix:
-    
+    %% Test - Temporal generalization matrix:   
     if cfg.tempgen
         for tp2 = 1 : cfg.ntp
             test_X = X(test_fold,:,cfg.tpoints(tp2));

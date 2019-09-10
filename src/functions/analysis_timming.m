@@ -7,7 +7,6 @@ fprintf('<strong> > Adjusting MVPA timming: </strong>');
 [~,cfg.endidx] = min(abs(cfg.times-cfg.tpend));
 
 %% Adjust sizes and timepoints:
-
 cfg.tpoints = (cfg.startidx:cfg.tpsteps:cfg.endidx);
 cfg.ntp = length(cfg.tpoints);
 cfg.times = cfg.times(cfg.startidx:cfg.tpsteps:cfg.endidx);

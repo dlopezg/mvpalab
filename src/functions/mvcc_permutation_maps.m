@@ -16,8 +16,8 @@ for sub = 1 : nsub
         tic
         if cfg.analysis.parcomp
             %% Timepoints loop
-            c = cfg.mvcc;
-            parfor tp = 1 : cfg.mvcc.ntp
+            c = cfg.analysis;
+            parfor tp = 1 : cfg.analysis.ntp
                 % Direction A - B:
                 correct_rate_ab(tp,:) = mvcc_svm_classifier(...
                     Xa,Ya,Xb,Yb,tp,c,true);

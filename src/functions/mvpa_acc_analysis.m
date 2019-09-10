@@ -13,6 +13,36 @@ for sub = 1 : nsub
     %% Train and test de classifier with original labels:
     strpar = cvpartition(Y,'KFold',cfg.mvpa.nfolds);
     
+    %% Compute PCA if needed:
+    
+    if cfg.pca.flag
+        for tp = 1 : size(X,3)
+            [coeff(:,:,tp),...
+                scores(:,:,tp),...
+                latent(:,:,tp)] = pca(X(:,:,tp));
+        end
+        X = scores(:,1:cfg.pca.ncom,:);
+        clear coeff scores latent
+    elseif cfg.pls.flag
+        for tp = 1 : size(X,3)
+            [xl(:,:,tp),...
+                yl{tp},...
+                xs(:,:,tp),...
+                ys(:,:,tp),...
+                beta(:,:,tp),...
+                pctvar{tp},...
+                mse{tp},...
+                stats{tp}] = plsregress(X(:,:,tp),Y,cfg.pls.ncom);
+            
+            w = stats{tp}.W;
+            for i = 1:length(Y)
+                XS(i,:,tp)= X(i,:,tp)*w;
+            end
+        end
+        X = XS;
+        clear xl yl XS xs ys beta pctvar mse stats
+    end
+    
     if cfg.mvpa.parcomp
         %% Timepoints loop
         c = cfg.mvpa;

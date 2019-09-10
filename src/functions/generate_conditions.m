@@ -23,8 +23,7 @@ for sub = 1 : length(cfg.subjects)
     end
     
     %% Save times vector and datalength:
-    cfg.mvpa.times = EEG.times;
-    cfg.mvcc.times = EEG.times;
+    cfg.analysis.times = EEG.times;
     cfg.datalength = length(EEG.times);
     cfg.times = EEG.times;
     

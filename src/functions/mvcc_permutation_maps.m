@@ -14,7 +14,7 @@ for sub = 1 : nsub
     %% Generate permuted labels
     for i = 1 : cfg.stats.nper
         tic
-        if cfg.mvcc.parcomp
+        if cfg.analysis.parcomp
             %% Timepoints loop
             c = cfg.mvcc;
             parfor tp = 1 : cfg.mvcc.ntp

@@ -14,18 +14,18 @@ for sub = 1 : nsub
     %% Generate permuted labels
     for i = 1 : cfg.stats.nper
         tic
-        strpar = cvpartition(Y,'KFold',cfg.mvpa.nfolds);
-        if cfg.mvpa.parcomp
+        strpar = cvpartition(Y,'KFold',cfg.analysis.nfolds);
+        if cfg.analysis.parcomp
             %% Timepoints loop
-            c = cfg.mvpa;
-            parfor tp = 1 : cfg.mvpa.ntp
+            c = cfg.analysis;
+            parfor tp = 1 : cfg.analysis.ntp
                 correct_rate(tp,:) = mvpa_svm_classifier(...
                     X,Y,tp,c,strpar,true);
             end
             
             fprintf(['     - Permutation: ' int2str(i) ' > ']);
         else
-            for tp = 1 : cfg.mvpa.ntp
+            for tp = 1 : cfg.analysis.ntp
                 correct_rate(tp,:) = mvpa_svm_classifier(...
                     X,Y,tp,c,strpar,true);
             end

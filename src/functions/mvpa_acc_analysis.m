@@ -11,7 +11,7 @@ for sub = 1 : nsub
     [X,Y,~,~,cfg] = data_labels(cfg,fv(sub,:));
     
     %% Train and test de classifier with original labels:
-    strpar = cvpartition(Y,'KFold',cfg.mvpa.nfolds);
+    strpar = cvpartition(Y,'KFold',cfg.analysis.nfolds);
     
     %% Compute PCA if needed:
     
@@ -43,15 +43,15 @@ for sub = 1 : nsub
         clear xl yl XS xs ys beta pctvar mse stats
     end
     
-    if cfg.mvpa.parcomp
+    if cfg.analysis.parcomp
         %% Timepoints loop
-        c = cfg.mvpa;
+        c = cfg.analysis;
         parfor tp = 1 : c.ntp
             correct_rate(tp,:) = mvpa_svm_classifier(X,Y,tp,c,strpar,permute);
         end
     else
-        for tp = 1 : cfg.mvpa.ntp
-            correct_rate(tp,:) = mvpa_svm_classifier(X,Y,tp,cfg.mvpa,strpar,permute);
+        for tp = 1 : cfg.sf.ntp
+            correct_rate(tp,:) = mvpa_svm_classifier(X,Y,tp,cfg.analysis,strpar,permute);
         end
     end
     

@@ -2,17 +2,18 @@ function [ cfg ] = analysis_timming( cfg )
 %MVPA_TIMMING This function configures the data in the cfg structure for 
 %the mvpa analysis.
 fprintf('<strong> > Adjusting MVPA timming: </strong>');
+c = cfg.analysis;
 %% Find closest points in the time vector:
-[~,cfg.startidx] = min(abs(cfg.times-cfg.tpstart));
-[~,cfg.endidx] = min(abs(cfg.times-cfg.tpend));
+[~,c.startidx] = min(abs(c.times-c.tpstart));
+[~,c.endidx] = min(abs(c.times-c.tpend));
 
 %% Adjust sizes and timepoints:
-cfg.tpoints = (cfg.startidx:cfg.tpsteps:cfg.endidx);
-cfg.ntp = length(cfg.tpoints);
-cfg.times = cfg.times(cfg.startidx:cfg.tpsteps:cfg.endidx);
+c.tpoints = (c.startidx:c.tpsteps:c.endidx);
+c.ntp = length(c.tpoints);
+c.times = cfg.times(c.startidx:c.tpsteps:c.endidx);
 
 %% Update the cfg structure
-
+cfg.analysis = c;
 fprintf(' - Done!\n');
 
 end

@@ -12,31 +12,26 @@ for sub = 1 : length(folders)
     for freq = 1 : length(files)
         file = [files(freq).folder filesep files(freq).name];
         load(file);
-        load('L:\Matlab\Experiments\EEG_Effort_Choice\analysis\mvpa\times.mat');
-        cfg.mvpa.times = time;
-        cfg.mvpa = analysis_timming(cfg.mvpa);
-        cfg.mvpa.tempgen = false;
-        cfg.stats.nper = 10;
-        fv = inpvec;
+        cfg.analysis = analysis_timming(cfg.analysis);
         %% Data and true labels:
         tic
         [X,Y,~,~,cfg] = data_labels(cfg,fv);
         
         %% Generate permuted labels
-        for i = 1 : cfg.sf.stats.nper
+        for i = 1 : cfg.analysis.stats.nper
             tic
-            strpar = cvpartition(Y,'KFold',cfg.mvpa.nfolds);
-            if cfg.mvpa.parcomp
+            strpar = cvpartition(Y,'KFold',cfg.analysis.nfolds);
+            c = cfg.analysis;
+            if cfg.analysis.parcomp
                 %% Timepoints loop
-                c = cfg.mvpa;
-                parfor tp = 1 : cfg.mvpa.ntp
+                parfor tp = 1 : cfg.sf.ntp
                     correct_rate(1,tp) = mvpa_svm_classifier(...
                         X,Y,tp,c,strpar,true);
                 end
                 
                 fprintf(['     - Permutation: ' int2str(i) ' > ']);
             else
-                for tp = 1 : cfg.mvpa.ntp
+                for tp = 1 : cfg.sf.ntp
                     correct_rate(1,tp) = mvpa_svm_classifier(...
                         X,Y,tp,c,strpar,true);
                 end

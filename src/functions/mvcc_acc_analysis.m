@@ -10,9 +10,9 @@ for sub = 1 : nsub
     tic
     [Xa,Ya,Xb,Yb,cfg] = data_labels(cfg,fv(sub,:));
     
-    if cfg.mvcc.parcomp
+    if cfg.analysis.parcomp
         %% Timepoints loop - PARALLEL COMPUTING
-        c = cfg.mvcc;
+        c = cfg.analysis;
         parfor tp = 1 : c.ntp
             % Direction A - B:
             correct_rate_ab(tp,:) = mvcc_svm_classifier(...
@@ -23,7 +23,7 @@ for sub = 1 : nsub
         end
     else
         %% Timepoints loop - REGULAR COMPUTING
-        for tp = 1 : cfg.mvcc.ntp
+        for tp = 1 : cfg.analysis.ntp
             % Direction A - B:
             correct_rate_ab(tp,:) = mvcc_svm_classifier(...
                 Xa,Ya,Xb,Yb,tp,cfg.mvcc,false);

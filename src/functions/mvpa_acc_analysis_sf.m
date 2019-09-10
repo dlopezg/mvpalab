@@ -10,37 +10,29 @@ fprintf('<strong> > Generating feature vectors </strong>');
 for sub = 1 : length(folders)
     folder = [folders(sub).folder filesep folders(sub).name];
     files = dir([folder filesep 'fv_filtered_*.mat']);
-    
     %% Frequencies loop:
     for freq = 1 : length(files)
         file = [files(freq).folder filesep files(freq).name];
         load(file);
-        load('L:\Matlab\Experiments\EEG_Effort_Choice\analysis\mvpa\times.mat');
-        cfg.mvpa.times = time;
-        cfg.mvpa = analysis_timming(cfg.mvpa);
-        cfg.mvpa.tempgen = false;
-        cfg.stats.nper = 10;
+        cfg.analysis = analysis_timming(cfg.analysis);
         %% Data and true labels:
         tic
-        [X,Y,~,~,cfg] = data_labels(cfg,inpvec);
-        
+        [X,Y,~,~,cfg] = data_labels(cfg,fv);
         %% Train and test de classifier with original labels:
-        strpar = cvpartition(Y,'KFold',cfg.mvpa.nfolds);
-        
-        if cfg.mvpa.parcomp
+        strpar = cvpartition(Y,'KFold',cfg.analysis.nfolds);
+        c = cfg.analysis;
+        if cfg.analysis.parcomp
             %% Timepoints loop
-            c = cfg.mvpa;
             parfor tp = 1 : c.ntp
                 acc(freq,tp,sub) = mvpa_svm_classifier(X,Y,tp,c,strpar,false);
             end
         else
-            for tp = 1 : cfg.mvpa.ntp
-                acc(freq,tp,sub) = mvpa_svm_classifier(X,Y,tp,cfg.mvpa,strpar,false);
+            for tp = 1 : cfg.sf.ntp
+                acc(freq,tp,sub) = mvpa_svm_classifier(X,Y,tp,c,strpar,false);
             end
         end
         toc
     end
-    
 end
 fprintf(' - Done!\n');
 end

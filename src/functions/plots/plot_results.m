@@ -25,8 +25,8 @@ if exist('stats','var')
 
 end
 
-stdshade(squeeze(data)',c.shadealpha,c.linecolor,cfg.mvpa.times,3);
-plot(cfg.mvpa.times,chance_level,'w','LineWidth',.5,'LineStyle','-');
+stdshade(squeeze(data)',c.shadealpha,c.linecolor,cfg.analysis.times,3);
+plot(cfg.analysis.times,chance_level,'w','LineWidth',.5,'LineStyle','-');
 
 end
 

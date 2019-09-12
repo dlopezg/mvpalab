@@ -7,11 +7,10 @@ if permute
     Ya = Ya(randperm(length(Ya)));
 end
 
-%% Train SVM model
-%% Optimization configuration:
 Xatp = Xa(:,:,cfg.tpoints(tp));
 Xbtp = Xb(:,:,cfg.tpoints(tp));
 
+%% Train SVM model
 if cfg.optimize.flag
     mdlSVM = compact(fitcsvm(Xatp,Ya,...
         'OptimizeHyperparameters',cfg.optimize.params,...

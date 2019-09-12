@@ -8,9 +8,17 @@ if permute
 end
 
 %% Train SVM model
+%% Optimization configuration:
 Xatp = Xa(:,:,cfg.tpoints(tp));
 Xbtp = Xb(:,:,cfg.tpoints(tp));
-mdlSVM = compact(fitcsvm(Xatp,Ya));
+
+if cfg.optimize.flag
+    mdlSVM = compact(fitcsvm(Xatp,Ya,...
+        'OptimizeHyperparameters',cfg.optimize.params,...
+        'HyperparameterOptimizationOptions',cfg.optimize.opt));
+else
+    mdlSVM = compact(fitcsvm(Xatp,Ya));
+end
 
 %% Calculate acc:
 if cfg.tempgen
@@ -25,8 +33,6 @@ else
 end
 
 correct_rate = correct_rate/length(Yb);
-
-
 
 end
 

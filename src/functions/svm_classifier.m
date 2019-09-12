@@ -21,7 +21,15 @@ for tp = 1 : cfg.ntp
         l = length(test_Y);
         
         %% Train SVM model
-        mdlSVM = compact(fitcsvm(train_X,train_Y));
+        
+        %% Optimization configuration:
+        if cfg.analysis.optimize.flag
+            mdlSVM = compact(fitcsvm(train_X,train_Y),...
+                'OptimizeHyperparameters',cfg.params,...
+                'HyperparameterOptimizationOptions',cfg.opt);
+        else
+            mdlSVM = compact(fitcsvm(train_X,train_Y));
+        end
         
         %% Test - Temporal generalization matrix:
         

@@ -17,9 +17,16 @@ for k = 1 : strpar.NumTestSets
     end
     
     %% Train SVM model
-    mdlSVM = compact(fitcsvm(train_X,train_Y));
+    %% Optimization configuration:
+    if cfg.optimize.flag
+        mdlSVM = compact(fitcsvm(train_X,train_Y,...
+            'OptimizeHyperparameters',cfg.optimize.params,...
+            'HyperparameterOptimizationOptions',cfg.optimize.opt));
+    else
+        mdlSVM = compact(fitcsvm(train_X,train_Y));
+    end
     
-    %% Test - Temporal generalization matrix:   
+    %% Test - Temporal generalization matrix:
     if cfg.tempgen
         for tp2 = 1 : cfg.ntp
             test_X = X(test_fold,:,cfg.tpoints(tp2));

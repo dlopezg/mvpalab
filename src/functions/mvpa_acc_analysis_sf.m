@@ -16,8 +16,11 @@ for sub = 1 : length(folders)
         load(file);
         cfg.analysis = analysis_timming(cfg.analysis);
         %% Data and true labels:
-        tic
-        [X,Y,~,~,cfg] = data_labels(cfg,fv);
+        tic; [X,Y,~,~,cfg] = data_labels(cfg,fv);
+        
+        %% Feature selection:
+        X = feature_selection(cfg,X,Y);
+        
         %% Train and test de classifier with original labels:
         strpar = cvpartition(Y,'KFold',cfg.analysis.nfolds);
         c = cfg.analysis;

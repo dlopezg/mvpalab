@@ -8,8 +8,11 @@ nsub = length(cfg.subjects);
 for sub = 1 : nsub
     fprintf(['   - Subject: ' int2str(sub) '/' int2str(nsub) '\n']);
     %% Data and true labels:
-    tic
     [Xa,Ya,Xb,Yb,cfg] = data_labels(cfg,fv(sub,:));
+    
+    %% Feature selection:
+    Xa = feature_selection(cfg,Xa,Ya);
+    Xb = feature_selection(cfg,Xb,Yb);
     
     %% Generate permuted labels
     for i = 1 : cfg.stats.nper
@@ -47,7 +50,6 @@ for sub = 1 : nsub
             permuted_maps_ba(:,:,i,sub) = correct_rate_ba';
             
         end
-        
         toc
     end
 end

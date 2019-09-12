@@ -7,11 +7,14 @@ nsub = length(cfg.subjects);
 for sub = 1 : nsub
     fprintf(['   - Subject: ' int2str(sub) '/' int2str(nsub) ' >> ']);
     %% Data and true labels:
-    tic
-    [Xa,Ya,Xb,Yb,cfg] = data_labels(cfg,fv(sub,:));
+    tic; [Xa,Ya,Xb,Yb,cfg] = data_labels(cfg,fv(sub,:));
     
+    %% Feature selection:
+    Xa = feature_selection(cfg,Xa,Ya);
+    Xb = feature_selection(cfg,Xb,Yb);
+    
+    %% Timepoints loop
     if cfg.analysis.parcomp
-        %% Timepoints loop - PARALLEL COMPUTING
         c = cfg.analysis;
         parfor tp = 1 : c.ntp
             % Direction A - B:
@@ -22,7 +25,6 @@ for sub = 1 : nsub
                 Xb,Yb,Xa,Ya,tp,c,false);
         end
     else
-        %% Timepoints loop - REGULAR COMPUTING
         for tp = 1 : cfg.analysis.ntp
             % Direction A - B:
             correct_rate_ab(tp,:) = mvcc_svm_classifier(...
@@ -33,6 +35,7 @@ for sub = 1 : nsub
         end
     end
     
+    %% ACC
     if isrow(correct_rate_ab) && isrow(correct_rate_ba)
         acc_ab(:,:,sub) = correct_rate_ab;
         acc_ba(:,:,sub) = correct_rate_ba;

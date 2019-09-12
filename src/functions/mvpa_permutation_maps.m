@@ -8,13 +8,14 @@ nsub = length(cfg.subjects);
 for sub = 1 : nsub
     fprintf(['   - Subject: ' int2str(sub) '/' int2str(nsub) '\n']);
     %% Data and true labels:
-    tic
     [X,Y,~,~,cfg] = data_labels(cfg,fv(sub,:));
+    
+    %% Feature selection:
+    X = feature_selection(cfg,X,Y);
     
     %% Generate permuted labels
     for i = 1 : cfg.stats.nper
-        tic
-        strpar = cvpartition(Y,'KFold',cfg.analysis.nfolds);
+        tic; strpar = cvpartition(Y,'KFold',cfg.analysis.nfolds);
         if cfg.analysis.parcomp
             %% Timepoints loop
             c = cfg.analysis;
@@ -37,7 +38,6 @@ for sub = 1 : nsub
         else
             permuted_maps(:,:,i,sub) = correct_rate';
         end
-        
         toc
     end
 end

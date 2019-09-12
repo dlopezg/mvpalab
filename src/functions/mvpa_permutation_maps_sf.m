@@ -14,8 +14,10 @@ for sub = 1 : length(folders)
         load(file);
         cfg.analysis = analysis_timming(cfg.analysis);
         %% Data and true labels:
-        tic
-        [X,Y,~,~,cfg] = data_labels(cfg,fv);
+        tic; [X,Y,~,~,cfg] = data_labels(cfg,fv);
+        
+        %% Feature selection:
+        X = feature_selection(cfg,X,Y);
         
         %% Generate permuted labels
         for i = 1 : cfg.analysis.stats.nper

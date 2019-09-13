@@ -12,9 +12,6 @@ for sub = 1 : nsub
     %% Stratified partition for cross validation:
     strpar = cvpartition(Y,'KFold',cfg.analysis.nfolds);
     
-    %% Feature selection:
-     X = feature_selection(cfg,X,Y);
-    
      %% Timepoints loop
     if cfg.analysis.parcomp
         c = cfg.analysis;

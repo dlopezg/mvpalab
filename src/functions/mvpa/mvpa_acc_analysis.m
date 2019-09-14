@@ -1,4 +1,4 @@
-function [ acc ,cfg ] = mvpa_acc_analysis( cfg, fv, permute )
+function [acc,cfg] = mvpa_acc_analysis( cfg,Xs,Ys,permute )
 %CORRECT_RATE Summary of this function goes here
 %   Detailed explanation goes here
 fprintf('<strong> > Computing correct rate: </strong>\n');
@@ -6,9 +6,7 @@ fprintf('<strong> > Computing correct rate: </strong>\n');
 nsub = length(cfg.subjects);
 for sub = 1 : nsub
     fprintf(['   - Subject: ' int2str(sub) '/' int2str(nsub) ' >> ']);
-    %% Data and true labels:
-    tic; [X,Y,~,~,cfg] = data_labels(cfg,fv(sub,:));
-    
+    X = Xs.a{sub}; Y = Ys.a{sub};
     %% Stratified partition for cross validation:
     strpar = cvpartition(Y,'KFold',cfg.analysis.nfolds);
     

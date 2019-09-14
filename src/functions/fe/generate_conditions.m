@@ -27,15 +27,15 @@ for sub = 1 : length(cfg.subjects)
     cfg.datalength = length(EEG.times);
     cfg.times = EEG.times;
     
-    %% Adjust analysis timming:
-    cfg = analysis_timming(cfg);
-    
     %% Print subject counter:
     print_counter(sub,length(cfg.subjects));
     
 end
 
 fprintf(' - Done!\n');
+
+%% Adjust analysis timming:
+cfg = analysis_timming(cfg);
 
 end
 

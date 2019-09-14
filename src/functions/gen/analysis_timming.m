@@ -1,7 +1,7 @@
 function [ cfg ] = analysis_timming( cfg )
 %MVPA_TIMMING This function configures the data in the cfg structure for 
 %the mvpa analysis.
-fprintf('<strong> > Adjusting MVPA timming: </strong>');
+fprintf('<strong> > Adjusting analysis timming: </strong>');
 c = cfg.analysis;
 %% Find closest points in the time vector:
 [~,c.startidx] = min(abs(c.times-c.tpstart));

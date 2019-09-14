@@ -1,4 +1,4 @@
-function [ permuted_maps_ab,permuted_maps_ba,cfg] = mvcc_permutation_maps(cfg,fv)
+function [ permuted_maps_ab,permuted_maps_ba,cfg] = mvcc_permutation_maps(cfg,X,Y)
 %PERMUTATION_MAPS This function generates permutation maps at a subject
 %level for future statistical analyses.
 fprintf('<strong> > Computing permutated maps (MVCC): </strong>\n');
@@ -7,12 +7,7 @@ fprintf('<strong> > Computing permutated maps (MVCC): </strong>\n');
 nsub = length(cfg.subjects);
 for sub = 1 : nsub
     fprintf(['   - Subject: ' int2str(sub) '/' int2str(nsub) '\n']);
-    %% Data and true labels:
-    [Xa,Ya,Xb,Yb,cfg] = data_labels(cfg,fv(sub,:));
-    
-    %% Feature selection:
-    Xa = feature_selection(cfg,Xa,Ya);
-    Xb = feature_selection(cfg,Xb,Yb);
+    Xa = X.a{sub}; Xb = X.b{sub}; Ya = Y.a{sub}; Yb = Y.b{sub};
     
     %% Generate permuted labels
     for i = 1 : cfg.stats.nper

@@ -1,4 +1,4 @@
-function [acc_ab,acc_ba,cfg] = mvcc_acc_analysis(cfg,fv)
+function [acc_ab,acc_ba,cfg] = mvcc_acc_analysis(cfg,X,Y)
 %CORRECT_RATE Summary of this function goes here
 %   Detailed explanation goes here
 fprintf('<strong> > Computing correct rate (MVCC): </strong>\n');
@@ -6,12 +6,7 @@ fprintf('<strong> > Computing correct rate (MVCC): </strong>\n');
 nsub = length(cfg.subjects);
 for sub = 1 : nsub
     fprintf(['   - Subject: ' int2str(sub) '/' int2str(nsub) ' >> ']);
-    %% Data and true labels:
-    tic; [Xa,Ya,Xb,Yb,cfg] = data_labels(cfg,fv(sub,:));
-    
-    %% Feature selection:
-    Xa = feature_selection(cfg,Xa,Ya);
-    Xb = feature_selection(cfg,Xb,Yb);
+    Xa = X.a{sub}; Xb = X.b{sub}; Ya = Y.a{sub}; Yb = Y.b{sub};
     
     %% Timepoints loop
     if cfg.analysis.parcomp

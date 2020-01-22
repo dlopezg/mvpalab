@@ -1,28 +1,22 @@
-function [ cfg ] = init_mvpalab(cfg)
+function [ cfg ] = mvpalab(cfg)
 %INITIALIZE Summary of this function goes here
 %   Detailed explanation goes here
-clc;
+clear
+clc
+cfg = [];
+
 fprintf('<strong> > Initializing MVPA toolbox: </strong>\n');
 
 %% Configuration - Feature extraction:
 %  Configuration of the feature extraction procedure:
 cfg.fe.strial.flag     = 1;
-cfg.fe.strial.ntrials  = 8;
+cfg.fe.zscore.flag     = 1;
+cfg.fe.zscore.dim      = 1;
+cfg.fe.strial.ntrials  = 1;
 cfg.fe.matchc.flag     = 1;
 cfg.fe.matchc.nfolds   = 5;
-cfg.fe.dir             = cfg.conditions.savedir;
-cfg.fe.savedir         = [cfg.savedir filesep 'fv'];
 
-%% Configuration - Feature selection:
-%  Configuration of the feature selection method:
-% .......................... PCA:
-cfg.fs.pca.flag = false;
-cfg.fs.pca.ncom = 5;
-% .......................... PLS:
-cfg.fs.pls.flag = false;
-cfg.fs.pls.ncom = 5;
-
-%% Configure mvpa analysis:
+%% Configure analysis:
 % .......................... Timming:
 cfg.analysis.tpstart = -200;
 cfg.analysis.tpend	 = 1500;
@@ -32,6 +26,21 @@ cfg.analysis.nfolds  = 5;
 % .......................... Analysis:
 cfg.analysis.tempgen = false;
 cfg.analysis.parcomp = true;
+cfg.analysis.permlab = false;
+% .......................... Feature selection - PCA:
+cfg.analysis.pca.flag = false;
+cfg.analysis.pca.ncom = 5;
+% .......................... Feature selection - PLS:
+cfg.analysis.pls.flag = false;
+cfg.analysis.pls.ncom = 5;
+
+%% Optimization configuration:
+cfg.analysis.optimize.flag = 0;
+cfg.analysis.optimize.params = {'BoxConstraint'};
+cfg.analysis.optimize.opt = struct('Optimizer','gridsearch',...
+    'ShowPlots',false,...
+    'Verbose',0,...
+    'Kfold', 5);
 
 %% Configure sliding filter analysis:
 % .......................... Frequency limits:
@@ -49,12 +58,11 @@ cfg.sf.linsp = ~cfg.sf.logsp;   % Lin-spaced frequency steps.
 cfg.sf.fstep = 1;               % Frequency steps - lin (Hz).
 cfg.sf.nfreq = 40;              % Number of steps - log (Hz).
 % .......................... Other:
-cfg.sf.dir = cfg.fe.savedir;
 cfg.sf.stats.nper = 10;
 
 %% Statistic for Stelzer method:
 cfg.stats.nper   = 100;
-cfg.stats.nperg  = 1e6;
+cfg.stats.nperg  = 1e5;
 cfg.stats.pgroup = 99.9;
 cfg.stats.pclust = 99.9;
 
@@ -62,14 +70,14 @@ cfg.stats.pclust = 99.9;
 fprintf('<strong> > Checking parallel computing: </strong>');
 if license('test','Distrib_Computing_Toolbox')
     fprintf('- Toolbox installed.\n');
-    cfg.mvpa.parcomp = true;
+    cfg.analysis.parcomp = true;
     p = gcp('nocreate'); 
     if isempty(p)
         parpool;
     end
 else
     disp('- Toolbox not available');
-    cfg.mvpa.parcomp = false;
+    cfg.analysis.parcomp = false;
 end
 clc
 fprintf('<strong> > MVPATOOLBOX is ready! </strong>\n');

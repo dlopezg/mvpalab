@@ -1,34 +1,21 @@
-function [ X ] = feature_selection(cfg,X,Y)
-%FEATURE_SELECTION Summary of this function goes here
-%   Detailed explanation goes here
-%% Subjects loop:
-nsub = length(cfg.subjects);
-for sub = 1 : nsub
-    if cfg.fs.pca.flag
-        for tp = 1 : size(X,3)
-            [coeff(:,:,tp),scores(:,:,tp),latent(:,:,tp)] = pca(X(:,:,tp));
-        end
-        X = scores(:,1:cfg.fs.pca.ncom,:);
-    elseif cfg.pls.flag
-        for tp = 1 : size(X,3)
-            [xl(:,:,tp),...
-                yl{tp},...
-                xs(:,:,tp),...
-                ys(:,:,tp),...
-                beta(:,:,tp),...
-                pctvar{tp},...
-                mse{tp},...
-                stats{tp}] = plsregress(X(:,:,tp),Y,cfg.fs.pls.ncom);
-            
-            if false
-                w = stats{tp}.W;
-                for i = 1:length(Y)
-                    XS(i,:,tp)= X(i,:,tp)*w;
-                end
-            end
-        end
-        X = XS;
-    end
+function [train_X,test_X,params,cfg] = feature_selection(train_X,train_Y,test_X,test_Y,cfg)
+
+if cfg.pca.flag
+    [coeff,scores,~,~,var,mu] = pca(train_X);
+    train_X = scores(:,1:cfg.pca.ncom,:);
+    %% Project the test set in the principal component space:
+    % When you specify a variable weight, the coefficient matrix is not 
+    % orthonormal, but the reconstruction rule is still
+    % Xcentered = score*coeff'. To get the score, you would have to do 
+    % Xcentered/coeff':
+    test_X = test_X - mu;            % Xcentered
+    test_scores = test_X/coeff';     % Projected scores
+    test_X = test_scores(:,1:cfg.pca.ncom,:);
+    
+    % Return PCA params:
+    params.coeff = coeff; params.mu = mu; params.var = var;
+elseif cfg.pls.flag
+    [xl,yl,xs,ys,beta,pctvar,mse,stats] = plsregress(train_X,train_Y,cfg.pls.ncom);
 end
 
 end

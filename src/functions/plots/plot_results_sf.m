@@ -5,18 +5,13 @@ function [] = plot_results_sf( cfg, data, stats )
 
 %% Plot the results:
 
-x = [cfg.mvpa.tpstart cfg.mvpa.tpend];
-y = 1 : length(cfg.sf.freqvec);
+x = linspace(cfg.mvpa.tpstart,cfg.mvpa.tpend,size(data,2));
+y = cfg.sf.freqvec+2;
 acc_map = mean(-data,3);
-clims = [min(min(acc_map)) max(max(acc_map))];
-clims = [min(min(acc_map)) 0];
-% clims = [-.2 .2];
-imagesc(x,y,acc_map,clims);
+contourf(x,y,acc_map,16,'LineStyle','none')
+
 set(gca, 'YDir','normal')
 set(gca,'YScale','log')
-xlabel('Training time (s)');
-ylabel('Test time (s)');
-colorbar
 
 if exist('stats','var')
     x = linspace(cfg.mvpa.tpstart,cfg.mvpa.tpend,size(data,2));
@@ -31,18 +26,13 @@ if exist('stats','var')
         sig_clusters_l(clusters_l) = 1;
         sig_clusters_l(sig_clusters_l~=1) = 0;
     end
-    
     hold on
+%     sig_clusters = logical(sig_clusters_r) | logical(sig_clusters_l);
+    acc_map = acc_map.* sig_clusters_r;
+    contourf(x,y,acc_map,16,'LineStyle','none')
+    contour(x,y,sig_clusters_r,1,'LineColor',cfg.plot.sigrc,'LineWidth',1);
+%     contour(x,y,sig_clusters_l,1,'LineColor',cfg.plot.siglc,'LineWidth',1);
     
-%     imagesc(x,y,sig_clusters_r);
-    
-    yyaxis right
-    lfreq = cfg.sf.lfreq;
-    hfreq = cfg.sf.hfreq;
-    
-%     contour(x,y,sig_clusters_l,1,'LineColor','r');
-    contour(x,y,sig_clusters_r,1,'LineColor','w','LineWidth',1);
-    title('Significance map')
 end
 end
 

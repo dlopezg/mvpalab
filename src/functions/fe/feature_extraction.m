@@ -1,4 +1,4 @@
-function [ X, Y, cfg, summary ] = feature_extraction ( cfg, sub_data )
+function [ out_data,cfg] = feature_extraction ( cfg, sub_data )
 % FEATURE_EXTRACTION This function generates the feature vectors for the
 % mvpa classification.
 %
@@ -63,6 +63,8 @@ for sub = 1 : length(cfg.subjects)
     
     %% Data and labels:
     [X{sub},Y{sub},cfg] = data_labels(cfg,inpvec(sub,:));
+    out_data.X = X; 
+    out_data.Y = Y;
     
     %% Print subject counter:
     print_counter(sub,length(cfg.subjects));

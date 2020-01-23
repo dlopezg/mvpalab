@@ -37,7 +37,7 @@ end
 
 if isfield(cfg.fe,'zscore')
     if cfg.fe.zscore.flag
-        data = zscore(data,[],3);
+        data = zscore(data,[],2);
     end
 end
 

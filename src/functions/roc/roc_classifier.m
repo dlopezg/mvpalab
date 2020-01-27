@@ -29,10 +29,10 @@ for k = 1 : strpar.NumTestSets
     
     % Data normalization if needed:
     if cfg.analysis.datanorm == 3
-        train_X_tp = zscore(train_X_tp,[],1);
-        test_X_tp = zscore(test_X_tp,[],1);
+        train_X = zscore(train_X,[],1);
+        test_X = zscore(test_X,[],1);
     elseif cfg.analysis.datanorm == 4
-        [train_X_tp, test_X_tp, norm_params] = std_norm(train_X_tp,test_X_tp);
+        [train_X, test_X, norm_params] = std_norm(train_X,test_X);
     end
     
     % Permute labels if needed:

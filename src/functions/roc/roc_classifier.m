@@ -11,20 +11,20 @@ function [x,y,t,auc,cr,cm] = roc_classifier(X,Y,tp,cfg,strpar)
 
 
 %% Kfold validation loop:
-if ~cfg.tempgen
+if ~cfg.analysis.tempgen
     predicted_labels = true(strpar.NumObservations,1);
     predicted_scores = ones(strpar.NumObservations,2);
 else
-    for i = 1 : cfg.ntp
+    for i = 1 : cfg.analysis.ntp
         predicted_labels{i} = true(strpar.NumObservations,1);
         predicted_scores{i} = ones(strpar.NumObservations,2);
     end
 end
 for k = 1 : strpar.NumTestSets
     % Train and test data:
-    train_X = X(strpar.training(k),:,cfg.tpoints(tp));
+    train_X = X(strpar.training(k),:,cfg.analysis.tpoints(tp));
     train_Y = Y(strpar.training(k));
-    test_X = X(strpar.test(k),:,cfg.tpoints(tp));
+    test_X = X(strpar.test(k),:,cfg.analysis.tpoints(tp));
     test_Y = Y(strpar.test(k));
     
     % Data normalization if needed:
@@ -34,32 +34,32 @@ for k = 1 : strpar.NumTestSets
     end
     
     % Permute labels if needed:
-    if cfg.permlab
+    if cfg.analysis.permlab
         train_Y = train_Y(randperm(length(train_Y)));
     end
     
     %% Feature selection if needed:
-    if cfg.pca.flag || cfg.pls.flag
+    if cfg.analysis.pca.flag || cfg.analysis.pls.flag
         [train_X,test_X,params] = ...
             feature_selection(train_X,train_Y,test_X,test_Y,cfg);
     end
     
     %% Train and test SVM model
     % Hyperparameter optimization if needed:
-    if cfg.optimize.flag
+    if cfg.analysis.optimize.flag
         mdlSVM = fitcsvm(train_X,train_Y,...
-            'OptimizeHyperparameters',cfg.optimize.params,...
-            'HyperparameterOptimizationOptions',cfg.optimize.opt);
+            'OptimizeHyperparameters',cfg.analysis.optimize.params,...
+            'HyperparameterOptimizationOptions',cfg.analysis.optimize.opt);
     else
         mdlSVM = fitcsvm(train_X,train_Y);
     end
     
     % Temporal generalization if needed:
-    if cfg.tempgen
-        for tp2 = 1 : cfg.ntp
-            test_X = X(strpar.test(k),:,cfg.tpoints(tp2));
+    if cfg.analysis.tempgen
+        for tp2 = 1 : cfg.analysis.ntp
+            test_X = X(strpar.test(k),:,cfg.analysis.tpoints(tp2));
             % Project new test set in the PC space if needed
-            if cfg.pca.flag; test_X = project_pca(test_X,params,cfg); end
+            if cfg.analysis.pca.flag; test_X = project_pca(test_X,params,cfg); end
             
             % Predict labels:
             [labels,scores] = predict(mdlSVM,test_X);
@@ -81,8 +81,8 @@ end
 
 
 %% Calculate the ROC curve for temporal generalization:
-if cfg.tempgen
-    for tp2 = 1 : cfg.ntp
+if cfg.analysis.tempgen
+    for tp2 = 1 : cfg.analysis.ntp
         %% Compute confusion matrix:
         cm{tp2} = confusionmat(Y,predicted_labels{tp2});
         %% Receiver operating characteristic (ROC curve)

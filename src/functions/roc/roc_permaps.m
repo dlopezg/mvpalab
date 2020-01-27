@@ -13,15 +13,14 @@ for sub = 1 : length(cfg.subjects)
         tic; strpar = cvpartition(Y,'KFold',cfg.analysis.nfolds);
         
         %% Timepoints loop
-        c = cfg.analysis;
         if cfg.analysis.parcomp
-            parfor tp = 1 : c.ntp
-                [~,~,~,auc(tp,:),~,~] = roc_classifier(X,Y,tp,c,strpar);
+            parfor tp = 1 : cfg.analysis.ntp
+                [~,~,~,auc(tp,:),~,~] = roc_classifier(X,Y,tp,cfg,strpar);
             end
             fprintf(['     - Permutation: ' int2str(i) ' > ']);
         else
             for tp = 1 : cfg.analysis.ntp
-                [~,~,~,auc(tp,:),~,~] = roc_classifier(X,Y,tp,c,strpar);
+                [~,~,~,auc(tp,:),~,~] = roc_classifier(X,Y,tp,cfg,strpar);
             end
             fprintf(['     - Permutation: ' int2str(i) ' > ']);
         end

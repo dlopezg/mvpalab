@@ -11,8 +11,7 @@ for sub = 1 : length(cfg.subjects)
     
     %% Timepoints loop
     if cfg.analysis.parcomp
-        c = cfg.analysis;
-        parfor tp = 1 : c.ntp
+        parfor tp = 1 : cfg.analysis.ntp
             [...
                 x{sub,tp},...
                 y{sub,tp},...
@@ -20,12 +19,12 @@ for sub = 1 : length(cfg.subjects)
                 auc(tp,:),...
                 cr(tp,:),...
                 cm{sub,tp}...
-                ] = roc_classifier(X,Y,tp,c,strpar);
+                ] = roc_classifier(X,Y,tp,cfg,strpar);
         end
     else
         for tp = 1 : cfg.analysis.ntp
             [x{sub,tp},y{sub,tp},t{sub,tp},auc(tp,:),cr(tp,:),cm{sub,tp}] = ...
-                roc_classifier(X,Y,tp,cfg.analysis,strpar);
+                roc_classifier(X,Y,tp,cfg,strpar);
         end
     end
     

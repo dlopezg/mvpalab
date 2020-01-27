@@ -3,52 +3,52 @@ function [correct_rate, area_under_curve, roc_xcor, roc_ycor, confusion_matrix, 
 %   Detailed explanation goes here
 
 %% Train and test datasets:
-train_X_tp = train_X(:,:,cfg.tpoints(tp));
-test_X_tp = test_X(:,:,cfg.tpoints(tp));
+train_X_tp = train_X(:,:,cfg.analysis.tpoints(tp));
+test_X_tp = test_X(:,:,cfg.analysis.tpoints(tp));
 
 % Data normalization if needed:
-if cfg.fe.zscore.flag && cfg.fe.zscore.dim == 3
-    train_X_tp = zscore(train_X_tp,[],1);
-    test_X_tp = zscore(test_X_tp,[],1);
-end
+% if cfg.fe.zscore.flag && cfg.fe.zscore.dim == 3
+%     train_X_tp = zscore(train_X_tp,[],1);
+%     test_X_tp = zscore(test_X_tp,[],1);
+% end
 
 % Permute labels if needed:
-if cfg.permlab
+if cfg.analysis.permlab
     train_Y = train_Y(randperm(length(train_Y)));
 end
 
 %% Feature selection if needed:
-if cfg.pca.flag || cfg.pls.flag
+if cfg.analysis.pca.flag || cfg.analysis.pls.flag
     [train_X_tp,test_X_tp,params] = ...
         feature_selection(train_X_tp,train_Y,test_X_tp,test_Y,cfg);
 end
 
 %% Train and test SVM model
 % Hyperparameter optimization if needed:
-if cfg.optimize.flag
+if cfg.analysis.optimize.flag
     mdlSVM = compact(fitcsvm(train_X_tp,train_Y,...
-        'OptimizeHyperparameters',cfg.optimize.params,...
-        'HyperparameterOptimizationOptions',cfg.optimize.opt));
+        'OptimizeHyperparameters',cfg.analysis.optimize.params,...
+        'HyperparameterOptimizationOptions',cfg.analysis.optimize.opt));
 else
     mdlSVM = compact(fitcsvm(train_X_tp,train_Y));
 end
 
 % Temporal generalization if needed:
-if cfg.tempgen
+if cfg.analysis.tempgen
     
     % Preallocating variables for better performance:
-    roc_xcor = cell(1,cfg.ntp);
-    roc_ycor = cell(1,cfg.ntp);
-    confusion_matrix = cell(1,cfg.ntp);
-    correct_rate = zeros(1,cfg.ntp);
-    area_under_curve = zeros(1,cfg.ntp);
+    roc_xcor = cell(1,cfg.analysis.ntp);
+    roc_ycor = cell(1,cfg.analysis.ntp);
+    confusion_matrix = cell(1,cfg.analysis.ntp);
+    correct_rate = zeros(1,cfg.analysis.ntp);
+    area_under_curve = zeros(1,cfg.analysis.ntp);
     
     
-    for tp2 = 1 : cfg.ntp
-        test_X_tp2 = test_X(:,:,cfg.tpoints(tp2));
+    for tp2 = 1 : cfg.analysis.ntp
+        test_X_tp2 = test_X(:,:,cfg.analysis.tpoints(tp2));
         
         % Project new test set in the PC space if needed
-        if cfg.pca.flag 
+        if cfg.analysis.pca.flag 
             test_X_tp2 = project_pca(test_X_tp2,params,cfg);
         end
         
@@ -84,11 +84,11 @@ end
 
 %% Antiguo:
 %% Calculate acc:
-% if cfg.tempgen
-%     for tp2 = 1 : cfg.ntp
-%         test_X_tp2 = test_X(:,:,cfg.tpoints(tp2));
+% if cfg.analysis.tempgen
+%     for tp2 = 1 : cfg.analysis.ntp
+%         test_X_tp2 = test_X(:,:,cfg.analysis.tpoints(tp2));
 %         % Project new test set in the PC space if needed
-%         if cfg.pca.flag; test_X_tp2 = project_pca(test_X_tp2,p,cfg); end
+%         if cfg.analysis.pca.flag; test_X_tp2 = project_pca(test_X_tp2,p,cfg); end
 %         % Compute correct rate
 %         predicted_labels = predict(mdlSVM,test_X_tp2);
 %         cr(tp2) = sum(test_Y == predicted_labels);

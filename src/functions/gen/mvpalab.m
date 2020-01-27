@@ -8,13 +8,15 @@ cfg = [];
 fprintf('<strong> > Initializing MVPA toolbox: </strong>\n');
 
 %% Configuration - Feature extraction:
-%  Configuration of the feature extraction procedure:
+% .......................... Trials:
 cfg.fe.strial.flag     = 1;
-cfg.fe.zscore.flag     = 1;
-cfg.fe.zscore.dim      = 1;
 cfg.fe.strial.ntrials  = 1;
+% .......................... Match class size:
 cfg.fe.matchc.flag     = 1;
 cfg.fe.matchc.nfolds   = 5;
+% .......................... Z-SCORE normalization:
+cfg.fe.zscore.flag     = false;
+cfg.fe.zscore.dim      = 1;
 
 %% Configure analysis:
 % .......................... Timming:

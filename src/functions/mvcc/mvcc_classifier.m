@@ -6,6 +6,12 @@ function [correct_rate, area_under_curve, roc_xcor, roc_ycor, confusion_matrix, 
 train_X_tp = train_X(:,:,cfg.tpoints(tp));
 test_X_tp = test_X(:,:,cfg.tpoints(tp));
 
+% Data normalization if needed:
+if cfg.fe.zscore.flag && cfg.fe.zscore.dim == 3
+    train_X_tp = zscore(train_X_tp,[],1);
+    test_X_tp = zscore(test_X_tp,[],1);
+end
+
 % Permute labels if needed:
 if cfg.permlab
     train_Y = train_Y(randperm(length(train_Y)));

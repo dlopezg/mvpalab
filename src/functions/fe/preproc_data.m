@@ -36,7 +36,7 @@ end
 %% Z-SCORE normalization:
 
 if isfield(cfg.fe,'zscore')
-    if cfg.fe.zscore.flag
+    if cfg.fe.zscore.flag && cfg.fe.zscore.dim ~= 3
         data = zscore(data,[],2);
     end
 end
@@ -44,7 +44,6 @@ end
 %% Generate input vectors:
 
 data = permute(data,[3 1 2]);
-
 
 end
 

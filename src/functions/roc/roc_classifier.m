@@ -27,6 +27,12 @@ for k = 1 : strpar.NumTestSets
     test_X = X(strpar.test(k),:,cfg.tpoints(tp));
     test_Y = Y(strpar.test(k));
     
+    % Data normalization if needed:
+    if cfg.fe.zscore.flag && cfg.fe.zscore.dim == 3
+        train_X = zscore(train_X,[],1);
+        test_X = zscore(test_X,[],1);
+    end
+    
     % Permute labels if needed:
     if cfg.permlab
         train_Y = train_Y(randperm(length(train_Y)));
@@ -37,6 +43,7 @@ for k = 1 : strpar.NumTestSets
         [train_X,test_X,params] = ...
             feature_selection(train_X,train_Y,test_X,test_Y,cfg);
     end
+    
     %% Train and test SVM model
     % Hyperparameter optimization if needed:
     if cfg.optimize.flag

@@ -7,10 +7,10 @@ train_X_tp = train_X(:,:,cfg.analysis.tpoints(tp));
 test_X_tp = test_X(:,:,cfg.analysis.tpoints(tp));
 
 % Data normalization if needed:
-% if cfg.fe.zscore.flag && cfg.fe.zscore.dim == 3
-%     train_X_tp = zscore(train_X_tp,[],1);
-%     test_X_tp = zscore(test_X_tp,[],1);
-% end
+if cfg.fe.zscore.flag && cfg.fe.zscore.dim == 3
+    train_X_tp = zscore(train_X_tp,[],1);
+    test_X_tp = zscore(test_X_tp,[],1);
+end
 
 % Permute labels if needed:
 if cfg.analysis.permlab

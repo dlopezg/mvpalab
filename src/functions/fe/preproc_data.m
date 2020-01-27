@@ -35,11 +35,9 @@ end
 
 %% Z-SCORE normalization:
 
-if isfield(cfg.fe,'zscore')
-    if cfg.fe.zscore.flag && cfg.fe.zscore.dim ~= 3
-        data = zscore(data,[],2);
+    if cfg.analysis.datanorm && cfg.analysis.datanorm < 3
+        data = zscore(data,[],cfg.analysis.datanorm);
     end
-end
 
 %% Generate input vectors:
 

@@ -14,11 +14,16 @@ cfg.fe.strial.ntrials  = 1;
 % .......................... Match class size:
 cfg.fe.matchc.flag     = 1;
 cfg.fe.matchc.nfolds   = 5;
-% .......................... Z-SCORE normalization:
-cfg.fe.zscore.flag     = false;
-cfg.fe.zscore.dim      = 1;
 
 %% Configure analysis:
+% .......................... Data normalization:
+cfg.analysis.datanorm = 0; % Notmalization method:
+                           % 0 - raw data
+                           % 1 - z-score (across features)
+                           % 2 - z-score (across time)
+                           % 3 - z-score (across trials)
+                           % 4 - std_nor (across trials)
+
 % .......................... Timming:
 cfg.analysis.tpstart = -200;
 cfg.analysis.tpend	 = 1500;

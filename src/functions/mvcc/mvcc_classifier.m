@@ -7,9 +7,11 @@ train_X_tp = train_X(:,:,cfg.analysis.tpoints(tp));
 test_X_tp = test_X(:,:,cfg.analysis.tpoints(tp));
 
 % Data normalization if needed:
-if cfg.fe.zscore.flag && cfg.fe.zscore.dim == 3
+if cfg.analysis.datanorm == 3
     train_X_tp = zscore(train_X_tp,[],1);
     test_X_tp = zscore(test_X_tp,[],1);
+elseif cfg.analysis.datanorm == 4
+    [train_X_tp, test_X_tp, norm_params] = std_norm(train_X_tp,test_X_tp);
 end
 
 % Permute labels if needed:
@@ -46,6 +48,13 @@ if cfg.analysis.tempgen
     
     for tp2 = 1 : cfg.analysis.ntp
         test_X_tp2 = test_X(:,:,cfg.analysis.tpoints(tp2));
+        
+        % Data normalization if needed:
+        if cfg.analysis.datanorm == 3
+            test_X_tp2 = zscore(test_X_tp2,[],1);
+        elseif cfg.analysis.datanorm == 4
+            [~,test_X_tp2] = std_norm([],test_X_tp2,norm_params);
+        end
         
         % Project new test set in the PC space if needed
         if cfg.analysis.pca.flag 

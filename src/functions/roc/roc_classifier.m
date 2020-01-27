@@ -28,9 +28,11 @@ for k = 1 : strpar.NumTestSets
     test_Y = Y(strpar.test(k));
     
     % Data normalization if needed:
-    if cfg.fe.zscore.flag && cfg.fe.zscore.dim == 3
-        train_X = zscore(train_X,[],1);
-        test_X = zscore(test_X,[],1);
+    if cfg.analysis.datanorm == 3
+        train_X_tp = zscore(train_X_tp,[],1);
+        test_X_tp = zscore(test_X_tp,[],1);
+    elseif cfg.analysis.datanorm == 4
+        [train_X_tp, test_X_tp, norm_params] = std_norm(train_X_tp,test_X_tp);
     end
     
     % Permute labels if needed:
@@ -58,6 +60,14 @@ for k = 1 : strpar.NumTestSets
     if cfg.analysis.tempgen
         for tp2 = 1 : cfg.analysis.ntp
             test_X = X(strpar.test(k),:,cfg.analysis.tpoints(tp2));
+            
+            % Data normalization if needed:
+            if cfg.analysis.datanorm == 3
+                test_X = zscore(test_X,[],1);
+            elseif cfg.analysis.datanorm == 4
+                [~,test_X] = std_norm([],test_X,norm_params);
+            end
+            
             % Project new test set in the PC space if needed
             if cfg.analysis.pca.flag; test_X = project_pca(test_X,params,cfg); end
             

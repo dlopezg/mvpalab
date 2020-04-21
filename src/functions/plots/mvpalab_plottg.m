@@ -1,0 +1,56 @@
+function [] = mvpalab_plottg(graph,cfg,data,stats)
+%PLOT_RESULTS Summary of this function goes here
+%   Detailed explanation goes here
+
+%% Plot temporal generalization results:
+x = linspace(cfg.tm.tpstart,cfg.tm.tpend,size(data,1));
+y = x;
+acc_map = mean(data,3);
+contourf(x,y,acc_map,16,'LineStyle','none')
+hold on
+
+%% Plot significant clusters:
+if exist('stats','var')
+    if ~isempty(stats.clusters)
+        contour(x,y,stats.sigmask,1,...
+            'LineWidth',graph.clusterLineWidth,...
+            'LineColor',graph.clusterLineColor);
+    end
+    if ~isempty(stats.clusters_)
+        contour(x,y,stats.sigmask_,1,...
+            'LineWidth',graph.clusterLineWidth_,...
+            'LineColor',graph.clusterLineColor_);
+    end
+end
+
+%% Plot stim onscreen:
+if isfield(graph,'onscreen')
+    vline(graph.onscreen(1),'k-.')
+    vline(graph.onscreen(2),'k-.')
+    hline(graph.onscreen(1),'k-.')
+    hline(graph.onscreen(2),'k-.')
+end
+
+%% Configure plot appearance:
+xlabel('Training time (ms)');
+ylabel('Test time (ms)');
+colorbar('Eastoutside');
+colormap(flipud(graph.colorMap));
+
+set(gca,'XMinorTick','on','YMinorTick','on');
+set(gca,'XTickLabelRotation',90);
+set(gca,'YAxisLocation','origin');
+set(gca,'XAxisLocation','origin');
+set(gca,'YColor','k');
+set(gca,'XColor','k');
+set(gca,'FontSize',graph.fontsize);
+set(gca,'Layer','top');
+
+if isfield(graph,'caxis')
+    caxis(graph.caxis);
+else
+    caxis([min(min(acc_map)) max(max(acc_map))]);
+end
+
+end
+

@@ -6,7 +6,7 @@ function [] = mvpalab_plotsf(graph,cfg,data,stats )
 x = linspace(cfg.tm.tpstart,cfg.tm.tpend,size(data,2));
 y = cfg.sf.freqvec+cfg.sf.hbw;
 acc_map = mean(-data,3);
-contourf(x,y,acc_map,16,'LineStyle','none')
+contourf(x,y,acc_map,30,'LineStyle','none')
 hold on
 set(gca, 'YDir','normal')
 set(gca,'YScale','log')
@@ -26,7 +26,7 @@ end
 
 %% Configure plot appearance:
 xlabel('Time (ms)');
-ylabel('Suppressed frequencies (Hz)');
+ylabel('Removed frequencies (Hz) ');
 colorbar('Eastoutside');
 colormap(flipud(graph.colorMap));
 

@@ -9,8 +9,8 @@ graph.colors = sch;
 %% Temporal generalization plots:
 graph.clusterLineColor  = [0 0 0];	% Cluster contour color.
 graph.clusterLineColor_ = [0 0 0];	% Cluster contour color.
-graph.clusterLineWidth  = .5;       % Cluster contour width.
-graph.clusterLineWidth_ = .5;       % Cluster contour width.
+graph.clusterLineWidth  = 1;       % Cluster contour width.
+graph.clusterLineWidth_ = 1;       % Cluster contour width.
 
 graph.colorMap = grd.mvpalab;       % Default gradient colormap.
 graph.colorSch = sch.mvpalab;       % Default color scheme. 

@@ -1,4 +1,4 @@
-function [] = mvpalab_plotcr(graphs,cfg,data,stats)
+function [] = mvpalab_plotcr(graph,cfg,data,stats)
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -7,12 +7,12 @@ datamean = squeeze(mean(data,3));
 chancelevel = zeros(1,length(datamean))+.5;
 
 %% Smooth the data for the representation if needed:
-if graphs.smoothdata
-    datamean = smooth(datamean,graphs.smoothdata);
+if graph.smoothdata
+    datamean = smooth(datamean,graph.smoothdata);
 end
 
 %% Compute the STD/SEM:
-if graphs.stdsem
+if graph.stdsem
     stdsem = nanstd(data,[],3);
 else
     stdsem = nanstd(data,[],3)/sqrt(size(data,3));
@@ -21,7 +21,7 @@ end
 
 %% Plots:
 if exist('stats','var')
-    if graphs.sigmode.shade
+    if graph.sigmode.shade
         fill(...
             [cfg.tm.times fliplr(cfg.tm.times)],...
             [datamean'+stdsem fliplr(datamean'-stdsem)],...
@@ -40,15 +40,15 @@ if exist('stats','var')
                 fill(...
                     [times fliplr(times)],...
                     [values'+var fliplr(values'-var)],...
-                    graphs.shadecolor, 'FaceAlpha',...
-                    graphs.shadealpha,'linestyle','none');
+                    graph.shadecolor, 'FaceAlpha',...
+                    graph.shadealpha,'linestyle','none');
             end
         end
-        if graphs.sigmode.points
-            stpoints = ones(1,length(datamean))*graphs.sigh;
+        if graph.sigmode.points
+            stpoints = ones(1,length(datamean))*graph.sigh;
             times = cfg.tm.times(logical(~stats.sigmask + ~stats.sigmask_));
             points = stpoints(logical(~stats.sigmask + ~stats.sigmask_));
-            scatter(times,points,80,graphs.sigc,'filled','s');
+            scatter(times,points,80,graph.sigc,'filled','s');
             scatter(cfg.tm.times,stpoints,80,'k','s');
         end
         
@@ -56,12 +56,12 @@ if exist('stats','var')
         fill(...
             [cfg.tm.times fliplr(cfg.tm.times)],...
             [datamean'+stdsem fliplr(datamean'-stdsem)],...
-            graphs.shadecolor,...
-            'FaceAlpha',graphs.shadealpha,'linestyle','none');
+            graph.shadecolor,...
+            'FaceAlpha',graph.shadealpha,'linestyle','none');
         
-        if graphs.plotmean
+        if graph.plotmean
             plot(cfg.tm.times,datamean,...
-                'color',graphs.shadecolor,...
+                'color',graph.shadecolor,...
                 'linewidth',1,...
                 'linestyle','-');
         end
@@ -74,14 +74,15 @@ if exist('stats','var')
     set(gca,'XGrid','on');
     set(gca,'YAxisLocation','origin');
     set(gca,'XMinorTick','on','YMinorTick','on')
+    set(gca,'XTickLabelRotation',90);
     set(gca,'XTick',graph.xlim(1):100:graph.xlim(2))
     set(gca,'YTick',graph.ylim(1):.05:graph.ylim(2))
     set(gca,'FontSize',14)
     
     xlabel('Time (ms)');
     ylabel('Classifier performance')
-    ylim(graphs.ylim)
-    xlim(graphs.xlim)
+    ylim(graph.ylim)
+    xlim(graph.xlim)
     set(gca,'Layer','top')
     
     

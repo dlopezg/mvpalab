@@ -73,6 +73,7 @@ cfg.classmodel.parcomp = true;
 cfg.classmodel.permlab = false;
 cfg.classmodel.roc     = true;
 cfg.classmodel.confmat = true;
+cfg.classmodel.wvector = true;
     
 
 % Optimization configuration:

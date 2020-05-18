@@ -1,8 +1,8 @@
-function [x,y,auc,cr,cm] = mvpalab_mvcceval(X,train_Y,Xt,test_Y,tp,cfg)
+function [x,y,auc,cr,cm,w] = mvpalab_mvcceval(X,train_Y,Xt,test_Y,tp,cfg)
 %MVCC_SVM_CLASSIFIER Summary of this function goes here
 %   Detailed explanation goes here
 
-x = {}; y = {}; auc = NaN; cr = NaN; cm = {};
+x = {}; y = {}; auc = NaN; cr = NaN; cm = {}; w = [];
 
 %% Train and test datasets:
 train_X = X(:,:,cfg.tm.tpoints(tp));
@@ -23,7 +23,8 @@ if cfg.fsel.flag
 end
 
 %% Train and test the model:
-mdl = mvpalab_train(train_X,train_Y,cfg);
+[mdl,w] = mvpalab_train(train_X,train_Y,cfg);
+
 
 %% Temporal generalization if needed:
 if cfg.classmodel.tempgen

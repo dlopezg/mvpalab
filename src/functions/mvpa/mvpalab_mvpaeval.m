@@ -1,4 +1,4 @@
-function [x,y,t,auc,cr,cm] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar)
+function [x,y,t,auc,cr,cm,w] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar)
 %SVM_CLASSIFIER This function returns the accuracy of the classifier in a
 %time-resolved way.
 
@@ -9,7 +9,7 @@ function [x,y,t,auc,cr,cm] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar)
 % cr = Correct rate.
 % cm = Confusion matrix.
 
-x = {}; y = {}; t = {}; auc = NaN; cr = NaN; cm = {}; 
+x = {}; y = {}; t = {}; auc = NaN; cr = NaN; cm = {}; w = [];
 
 %% Kfold validation loop:
 if ~cfg.classmodel.tempgen
@@ -44,7 +44,7 @@ for k = 1 : strpar.NumTestSets
     end
     
     %% Train and test the model:
-    mdl = mvpalab_train(train_X,train_Y,cfg);
+    [mdl,w] = mvpalab_train(train_X,train_Y,cfg);
     
     % Temporal generalization if needed:
     if cfg.classmodel.tempgen

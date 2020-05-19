@@ -56,6 +56,9 @@ cfg.tm.times = EEG.times;
 cfg.tm.rtimes = EEG.times;
 cfg = mvpalab_timming(cfg);
 
+%% Save channels location:
+cfg.chanloc = EEG.chanlocs;
+
 
 end
 

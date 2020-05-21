@@ -140,5 +140,9 @@ else
 end
 
 fprintf('<strong> > MVPAlab is ready! </strong>\n');
+
+%% PCA rank warning disabled. 
+warning('off','stats:pca:ColRankDefX');
+
 end
 

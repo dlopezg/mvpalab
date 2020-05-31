@@ -10,8 +10,6 @@ plot_centroid = true;
 color_a = [111 183 214]/255;
 color_b = [204 236 239]/255;
 
-
-
 %% Compute train and test data:
 if plot_centroid
     class_a_train = mean(train_X_tp(train_Y,:));
@@ -63,7 +61,7 @@ end
 
 % Plot titles and axes configuration:
 title('Feature space visualization')
-xlabel(['Timepoint = ' int2str(cfg.analysis.times(tp)) 'ms - Performance = ' num2str(acc)])
+xlabel(['Timepoint = ' int2str(cfg.tm.times(tp)) 'ms - Performance = ' num2str(acc)])
 xlim (x_lim);
 ylim (y_lim);
 legend({'Class boundary: A','Class boundary: B','Test centroid: A',...
@@ -75,8 +73,8 @@ legend({'Class boundary: A','Class boundary: B','Test centroid: A',...
 
 h2 = subplot(1,2,2);
 hold on
-area(cfg.analysis.times(tp),1,'EdgeColor',color_a,'LineWidth',3);
-area(cfg.analysis.times(tp),acc,'EdgeColor',color_b,'LineWidth',3);
+area(cfg.tm.times(tp),1,'EdgeColor',color_a,'LineWidth',3);
+area(cfg.tm.times(tp),acc,'EdgeColor',color_b,'LineWidth',3);
 title('Performance of the classifier')
 xlabel('Time (ms)');
 ylabel('Model performance');

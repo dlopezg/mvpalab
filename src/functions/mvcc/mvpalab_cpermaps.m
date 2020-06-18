@@ -15,9 +15,10 @@ for sub = 1 : length(cfg.subjects)
     if cfg.sf.flag
         folder = [folders(sub).folder filesep folders(sub).name];
         files = dir([folder filesep 'ffv_*.mat']);
+        nfreq = length(files);
     end
     
-    for freq = 1 : length(files)
+    for freq = 1 : nfreq
         tic;
         fprintf(['   - Subject: ' int2str(sub) '/' int2str(length(cfg.subjects)) ' >> ']);
         fprintf([' Bands - ' int2str(freq) '/' int2str(length(files)) ' >> ']);

@@ -7,15 +7,19 @@ cfg = [];
 
 fprintf('<strong> > Initializing MVPAlab toolbox: </strong>\n');
 
+%% Datafiles and paths:
+cfg.study.dataPaths = {{},{};{},{}};
+cfg.study.dataFiles = {{},{};{},{}};
+
 %% Configuration - Feature extraction:
 
 % Supertrial generation:
-cfg.fext.strial.flag     = true;
-cfg.fext.strial.ntrials  = 1;
+cfg.fext.strial.flag     = false;
+cfg.fext.strial.ntrials  = 0;
 
 % Match class size:
-cfg.fext.matchcsize = true;
-cfg.fext.matchkfold = true;
+cfg.fext.matchcsize = false;
+cfg.fext.matchkfold = false;
 
 %% Configuration - Feature selection:
 
@@ -68,12 +72,12 @@ cfg.classmodel.method = 'svm';
 cfg.classmodel.kernel = 'lineal';
 
 % Analysis configuration:
-cfg.classmodel.tempgen = false;
-cfg.classmodel.parcomp = true;
-cfg.classmodel.permlab = false;
-cfg.classmodel.roc     = true;
-cfg.classmodel.confmat = true;
-cfg.classmodel.wvector = true;
+cfg.classmodel.tempgen = 0;
+cfg.classmodel.parcomp = 1;
+cfg.classmodel.permlab = 0;
+cfg.classmodel.roc     = 0;
+cfg.classmodel.confmat = 0;
+cfg.classmodel.wvector = 0;
     
 
 % Optimization configuration:

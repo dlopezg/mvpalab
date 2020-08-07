@@ -10,6 +10,7 @@ fprintf('<strong> > Initializing MVPAlab toolbox: </strong>\n');
 %% Datafiles and paths:
 cfg.study.dataPaths = {{},{};{},{}};
 cfg.study.dataFiles = {{},{};{},{}};
+cfg.study.analysis = 'MVPA';
 
 %% Configuration - Feature extraction:
 
@@ -58,9 +59,9 @@ cfg.smoothdata.window   = 10;
 
 %% Configuration - Analysis timming:
 
-cfg.tm.tpstart   = -200;
-cfg.tm.tpend     = 1500;
-cfg.tm.tpsteps   = 3;
+cfg.tm.tpstart   = 0;
+cfg.tm.tpend     = 0;
+cfg.tm.tpsteps   = 1;
 
 %% Configuration - Classification procedure:
 
@@ -103,6 +104,8 @@ cfg.stats.nper   = 100;
 cfg.stats.nperg  = 1e5;
 cfg.stats.pgroup = 99.9;
 cfg.stats.pclust = 99.9;
+cfg.stats.savepmaps = 1;
+cfg.stats.shownulldis = 0;
 
 %% Configure sliding filter analysis:
 % Flag:

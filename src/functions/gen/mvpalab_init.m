@@ -109,7 +109,8 @@ cfg.stats.shownulldis = 0;
 
 %% Configure sliding filter analysis:
 % Flag:
-cfg.sf.flag = 0;
+cfg.sf.flag = 1;
+cfg.sf.savedir = '';
 
 % Frequency limits:
 cfg.sf.lfreq = 0;              % Analysis inferior limit (Hz).
@@ -123,9 +124,7 @@ cfg.sf.hbw   = cfg.sf.bw/2;     % Halfband width (Hz).
 cfg.sf.order = 1408;            % Filter order.
 
 % Frequency steps:
-cfg.sf.logsp = true;            % Log-spaced frequency steps.
-cfg.sf.linsp = ~cfg.sf.logsp;   % Lin-spaced frequency steps.
-cfg.sf.fstep = 1;               % Frequency steps - lin (Hz).
+cfg.sf.fspac = 'log';           % Linear or logarithmic (lin/log.)
 cfg.sf.nfreq = 40;              % Number of steps - log (Hz).
 
 % For data import (mvpalab_load):

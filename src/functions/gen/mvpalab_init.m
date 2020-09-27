@@ -28,10 +28,9 @@ cfg.fext.matchkfold = false;
 % 'pca' - Principal Component Analysis
 % 'pls' - Partial Least Squares
 % 'lda' - Linear Discriminant Analysis (in progress)
-
-cfg.fsel.method = 'pca';
+cfg.fsel.method = 'none';
 cfg.fsel.flag   = false;
-cfg.fsel.ncomp  = 3;
+cfg.fsel.ncomp  = 0;
 
 %% Configuration - Data normalization:
 
@@ -45,20 +44,11 @@ cfg.fsel.ncomp  = 3;
 cfg.normdata = 0; 
 
 %% Configuration - Data smoothing:
-
-% Notmalization methods:
-% 0 - raw data
-% 1 - z-score (across features)
-% 2 - z-score (across time)
-% 3 - z-score (across trials)
-% 4 - std_nor (across trials)
-
 cfg.smoothdata.flag     = false;
-cfg.smoothdata.method   = 'movmean';
-cfg.smoothdata.window   = 10;
+cfg.smoothdata.method   = 'none';
+cfg.smoothdata.window   = 1;
 
 %% Configuration - Analysis timming:
-
 cfg.tm.tpstart   = 0;
 cfg.tm.tpend     = 0;
 cfg.tm.tpsteps   = 1;
@@ -68,7 +58,6 @@ cfg.tm.tpsteps   = 1;
 % Classification algorithms:
 % 'svm' - Support Vector Machine.
 % 'lda' - Linear Discriminant Analysis.
-
 cfg.classmodel.method = 'svm';
 cfg.classmodel.kernel = 'lineal';
 

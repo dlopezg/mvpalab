@@ -88,7 +88,7 @@ cfg.cv.method  = 'kfold';
 cfg.cv.nfolds  = 5;
 
 %% Configuration - Statistic for permutation method:
-
+cfg.stats.flag   = 0;
 cfg.stats.nper   = 100;
 cfg.stats.nperg  = 1e5;
 cfg.stats.pgroup = 99.9;

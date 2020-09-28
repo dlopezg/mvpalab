@@ -59,11 +59,11 @@ cfg.tm.tpsteps   = 1;
 % 'svm' - Support Vector Machine.
 % 'lda' - Linear Discriminant Analysis.
 cfg.classmodel.method = 'svm';
-cfg.classmodel.kernel = 'lineal';
+cfg.classmodel.kernel = 'linear';
 
 % Analysis configuration:
 cfg.classmodel.tempgen = 0;
-cfg.classmodel.parcomp = 1;
+cfg.classmodel.parcomp = 0;
 cfg.classmodel.permlab = 0;
 cfg.classmodel.roc     = 0;
 cfg.classmodel.confmat = 0;

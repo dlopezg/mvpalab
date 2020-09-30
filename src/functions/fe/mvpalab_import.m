@@ -28,7 +28,7 @@ for sub = 1 : length(cfg.subjects)
         for ctxt = 1 : size(cond.names,1)
             for class = 1 : size(cond.names,2)
                 load([cond.dir cond.names{ctxt,class} filesep subject]);
-                
+                cfg.fs = EEG.srate;
                 % Sliding filter analysis if needed.
                 if cfg.sf.flag
                     EEG.data = mvpalab_filterdata(EEG,freq,cfg);

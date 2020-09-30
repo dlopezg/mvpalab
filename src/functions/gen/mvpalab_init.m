@@ -99,7 +99,7 @@ cfg.stats.shownulldis = 0;
 %% Configure sliding filter analysis:
 % Flag:
 cfg.sf.flag = 1;
-cfg.sf.savedir = '';
+cfg.sf.filesLocation = '';
 
 % Frequency limits:
 cfg.sf.lfreq = 0;              % Analysis inferior limit (Hz).

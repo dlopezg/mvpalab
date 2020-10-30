@@ -1,5 +1,4 @@
 %% Save cfg state:
-cfg = app.cfg;
 save([cfg.study.studyLocation '/cfg.mat'],'cfg');
 
 %% Create result and stats folder

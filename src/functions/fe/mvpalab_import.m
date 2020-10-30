@@ -32,8 +32,13 @@ for sub = 1 : nSubjects
             for class = 1 : nClasses
                 
                 % Load subject data:
-                load([cfg.study.dataPaths{ctxt,class} ...
-                    cfg.study.dataFiles{ctxt,class}{sub}]);
+                try
+                    load([cfg.study.dataPaths{ctxt,class} ...
+                        cfg.study.dataFiles{ctxt,class}{sub}]);
+                catch
+                    error(['Data files not found. '...
+                        'Directory: ' cfg.study.dataPaths{ctxt,class}]);
+                end
                 
                 % Store sampling frequency:
                 cfg.fs = EEG.srate;

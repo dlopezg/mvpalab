@@ -2,38 +2,49 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 %GENERATE_CONDITIONS This function reads the subject's data and generate
 %the required structure for the feature extraction.
 
-%% Variables initialization:
-data = cell(length(cfg.subjects),1);
-fv = cell(length(cfg.subjects),1);
+%% Initialization
+nSubjects = length(cfg.study.dataFiles{1,1});
+nClasses = 2;
+nCtxt = 1;
+
+if strcmp(cfg.study.analysis,'MVCC')
+    nCtxt = 2;
+end
 
 if ~cfg.sf.flag
     cfg.sf.nfreq = 1;
 end
-
 %% Subjects loop:
-for sub = 1 : length(cfg.subjects)
+for sub = 1 : nSubjects
     
     fprintf('<strong> > Importing subject data </strong> - Subject: ');
-    fprintf([int2str(sub) '/' int2str(length(cfg.subjects))]);
+    fprintf([int2str(sub) '/' int2str(length(cfg.study.dataFiles{1,1}))]);
     fprintf('\n');
     
-    subject = cfg.subjects{sub};
-    cond = cfg.conditions;
-    
     for freq = 1 : cfg.sf.nfreq
+        
         if cfg.sf.flag
             fprintf('  <strong> > Filtering data: </strong>');
             fprintf([int2str(freq) '/' int2str(cfg.sf.nfreq) '\n\n']);
         end
-        for ctxt = 1 : size(cond.names,1)
-            for class = 1 : size(cond.names,2)
-                load([cond.dir cond.names{ctxt,class} filesep subject]);
+        
+        for ctxt = 1 : nCtxt
+            for class = 1 : nClasses
+                
+                % Load subject data:
+                load([cfg.study.dataPaths{ctxt,class} ...
+                    cfg.study.dataFiles{ctxt,class}{sub}]);
+                
+                % Store sampling frequency:
                 cfg.fs = EEG.srate;
+                
                 % Sliding filter analysis if needed.
                 if cfg.sf.flag
                     EEG.data = mvpalab_filterdata(EEG,freq,cfg);
                 end
-                classes.(cond.names{ctxt,class}) = EEG.data;
+                
+                classes.(cfg.study.conditionIdentifier{ctxt,class}) = ...
+                    EEG.data;
             end
             data{sub,ctxt} = classes;
             clear classes;

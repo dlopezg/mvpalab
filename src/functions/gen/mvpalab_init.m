@@ -10,6 +10,7 @@ fprintf('<strong> > Initializing MVPAlab toolbox: </strong>\n');
 %% Datafiles and paths:
 cfg.study.dataPaths = {{},{};{},{}};
 cfg.study.dataFiles = {{},{};{},{}};
+cfg.study.conditionIdentifier = {'','';'',''};
 cfg.study.analysis = 'MVPA';
 
 %% Configuration - Feature extraction:
@@ -98,7 +99,7 @@ cfg.stats.shownulldis = 0;
 
 %% Configure sliding filter analysis:
 % Flag:
-cfg.sf.flag = 1;
+cfg.sf.flag = 0;
 cfg.sf.filesLocation = '';
 
 % Frequency limits:

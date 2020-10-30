@@ -1,7 +1,7 @@
 function [ out_data,cfg] = mvpalab_fext ( cfg, data, sub )
 % FEATURE_EXTRACTION This function generates the feature vectors.
 %% Initialize:
-X = cell(length(cfg.subjects),1);
+X = cell(length(cfg.study.dataFiles{1,1}),1);
 Y = X;
 
 %% Match class size (factor of k) is not needed for MVCC:

@@ -3,6 +3,7 @@ function [permaps,cfg] = mvpalab_cpermaps(cfg,fv)
 %level for future statistical analyses.
 fprintf('<strong> > Computing permutated maps (MVCC): </strong>\n');
 
+nSubjects = length(cfg.study.dataFiles{1,1});
 nfreq = 1;
 if cfg.sf.flag
     folders = dir([cfg.dir.savedir filesep 'fv' filesep 's_*']);
@@ -10,7 +11,7 @@ end
 
 
 %% Subjects loop:
-for sub = 1 : length(cfg.subjects)
+for sub = 1 : nSubjects 
     
     if cfg.sf.flag
         folder = [folders(sub).folder filesep folders(sub).name];
@@ -20,8 +21,8 @@ for sub = 1 : length(cfg.subjects)
     
     for freq = 1 : nfreq
         tic;
-        fprintf(['   - Subject: ' int2str(sub) '/' int2str(length(cfg.subjects)) ' >> ']);
-        fprintf([' Bands - ' int2str(freq) '/' int2str(length(files)) ' >> ']);
+        fprintf(['   - Subject: ' int2str(sub) '/' int2str(nSubjects) ' >> ']);
+        % fprintf([' Bands - ' int2str(freq) '/' int2str(length(files)) ' >> ']);
         fprintf('- Permutation: ');
         %% Load data if needed:
         if cfg.sf.flag

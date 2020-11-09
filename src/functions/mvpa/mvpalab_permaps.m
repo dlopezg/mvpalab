@@ -3,13 +3,14 @@ function [permaps,cfg] = mvpalab_permaps(cfg,fv )
 %   Detailed explanation goes here
 fprintf('<strong> > Computing permutated maps: </strong>\n');
 
+nSubjects = length(cfg.study.dataFiles{1,1});
 nfreq = 1;
 if cfg.sf.flag
     folders = dir([cfg.dir.savedir filesep 'fv' filesep 's_*']);
 end
 
 %% Subjects loop:
-for sub = 1 : length(cfg.subjects)
+for sub = 1 : nSubjects
     if cfg.sf.flag
         folder = [folders(sub).folder filesep folders(sub).name];
         files = dir([folder filesep 'ffv_*.mat']);
@@ -18,8 +19,8 @@ for sub = 1 : length(cfg.subjects)
     
     for freq = 1 : nfreq
         tic;
-        fprintf(['   - Subject: ' int2str(sub) '/' int2str(length(cfg.subjects)) ' >> ']);
-        fprintf([' Bands - ' int2str(freq) '/' int2str(length(files)) ' >> ']);
+        fprintf(['   - Subject: ' int2str(sub) '/' int2str(nSubjects) ' >> ']);
+%         fprintf([' Bands - ' int2str(freq) '/' int2str(length(files)) ' >> ']);
         fprintf('- Permutation: ');
         %% Load data if needed:
         if cfg.sf.flag
@@ -27,7 +28,7 @@ for sub = 1 : length(cfg.subjects)
             load(file);
             X = fv.X.a; Y = fv.Y.a;
         else
-            X = fv.X{sub}.a; Y = fv.Y{sub}.a;
+            X = fv{sub}.X.a; Y = fv{sub}.Y.a;
         end
         
         %% Stratified partition for cross validation:
@@ -54,16 +55,14 @@ for sub = 1 : length(cfg.subjects)
             end
             
             if cfg.classmodel.tempgen
+                permaps.cr(:,:,sub,per,freq) = cr;
                 if cfg.classmodel.roc
-                    permaps(:,:,sub,per,freq) = auc;
-                else
-                    permaps(:,:,sub,per,freq) = cr;
+                    permaps.auc(:,:,sub,per,freq) = auc;
                 end
             else
+                permaps.cr(:,:,sub,per,freq) = cr';
                 if cfg.classmodel.roc
-                    permaps(:,:,sub,per,freq) = auc';
-                else
-                    permaps(:,:,sub,per,freq) = cr';
+                    permaps.auc(:,:,sub,per,freq) = auc';
                 end
             end
         end

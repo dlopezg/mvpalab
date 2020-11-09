@@ -5,8 +5,8 @@ fprintf('<strong> > Stelzer permutation test: </strong>\n');
 %% Initilization - Generate permutation idx matrix:
 % Here we determine the map of each subject that has to be selected in each
 % permutation.
-
-cfg.stats.sub = length(cfg.subjects);
+nSubjects = length(cfg.study.dataFiles{1,1});
+cfg.stats.sub = nSubjects;
 perm_idxs = randi(cfg.stats.nper,cfg.stats.sub,cfg.stats.nperg,'single');
 
 %% Generate permuted maps at group level:

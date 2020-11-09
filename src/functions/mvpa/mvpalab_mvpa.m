@@ -2,15 +2,18 @@ function [res,cfg] = mvpalab_mvpa(cfg,fv)
 
 fprintf('<strong> > Computing MVPA analysis: </strong>\n');
 
+%% Initialization
+nSubjects = length(cfg.study.dataFiles{1,1});
+
 nfreq = 1;
 if cfg.sf.flag
     folders = dir([cfg.dir.savedir filesep 'fv' filesep 's_*']);
 end
 
 %% Subjects loop:
-for sub = 1 : length(cfg.subjects)
+for sub = 1 : nSubjects
     tic;
-    fprintf(['   - Subject: ' int2str(sub) '/' int2str(length(cfg.subjects)) ' >> ']);
+    fprintf(['   - Subject: ' int2str(sub) '/' int2str(nSubjects) ' >> ']);
     
     if cfg.sf.flag
         fprintf(' Frequency bands - ');

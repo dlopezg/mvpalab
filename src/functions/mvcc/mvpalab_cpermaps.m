@@ -6,9 +6,8 @@ fprintf('<strong> > Computing permutated maps (MVCC): </strong>\n');
 nSubjects = length(cfg.study.dataFiles{1,1});
 nfreq = 1;
 if cfg.sf.flag
-    folders = dir([cfg.dir.savedir filesep 'fv' filesep 's_*']);
+    folders = dir([cfg.sf.filesLocation filesep 'fv' filesep 's_*']);
 end
-
 
 %% Subjects loop:
 for sub = 1 : nSubjects 

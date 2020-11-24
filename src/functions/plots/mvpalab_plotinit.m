@@ -1,4 +1,4 @@
-function graph = mvpalab_plotinit()
+function graph = mvpalab_plotinit(cfg)
 %MVPALAB_PLOTINIT Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -25,6 +25,18 @@ graph.plotmean = 0;
 graph.stdsem = 0;  % 1 - STD | 0 - SEM
 graph.sigmode.shade = 1;
 graph.sigmode.points = 1;
+
+graph.ylim = [0 1];
+if nargin > 0
+    graph.xlim = [cfg.tm.tpstart cfg.tm.tpend];
+end
+
+% Colors:
+graph.shadecolor = graph.colors.mvpalab{1};
+graph.shadealpha = .5;
+graph.sigh = 0.5;
+graph.sigc = graph.colors.mvpalab{1};
+
 
 %% Plot parameters:
 graph.stats.above = false;

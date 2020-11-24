@@ -45,6 +45,7 @@ mvpalab_savecfg(cfg);
 
 %% Extract diag:
 if cfg.classmodel.tempgen
+    cfg.classmodel.tempgen = 0;
     if exist('permaps','var')
         [resultdiag.cr.ab,permapsdiag.cr.ab] = mvpalab_extractdiag(...
             result.cr.ab,permaps.cr.ab);
@@ -90,6 +91,7 @@ if cfg.classmodel.tempgen
         %% Save diag:
         mvpalab_savediag(cfg,resultdiag);
     end
+    cfg.classmodel.tempgen = 1;
 end
 
 

@@ -21,10 +21,10 @@ graph.fontsize = 14;
 graph.smoothdata = 5; % (ODD) | 1 - No smooth
 
 %% Correct rate:
-graph.plotmean = 0;
+graph.plotmean = 1;
 graph.stdsem = 0;  % 1 - STD | 0 - SEM
 graph.sigmode.shade = 1;
-graph.sigmode.points = 1;
+graph.sigmode.points = 0;
 
 graph.ylim = [0 1];
 if nargin > 0

@@ -95,9 +95,7 @@ cfg.stats.nper   = 100;
 cfg.stats.nperg  = 1e5;
 cfg.stats.pgroup = 99.9;
 cfg.stats.pclust = 99.9;
-cfg.stats.savepmaps = 1;
 cfg.stats.shownulldis = 0;
-cfg.stats.pmetric = 'cr';
 
 %% Configure sliding filter analysis:
 % Flag:

@@ -1,7 +1,7 @@
 function [ stats ] = mvpalab_permtest( cfg, acc, permuted_maps )
 %MVPALAB_PERMTEST Summary of this function goes here
 %   Detailed explanation goes here
-fprintf('<strong> > Stelzer permutation test: </strong>\n');
+fprintf('<strong> > Permutation test: </strong>\n');
 %% Initilization - Generate permutation idx matrix:
 % Here we determine the map of each subject that has to be selected in each
 % permutation.

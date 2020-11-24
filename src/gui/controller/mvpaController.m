@@ -7,8 +7,9 @@ mvpalab_mkdir([cfg.study.studyLocation '/results']);
 %% Load data, generate conditions and feature extraction:
 [cfg,data,fv] = mvpalab_import(cfg);
 
-%% Compute MVPA analysis:
+%% Compute MVPA analysis and save results:
 [result,cfg] = mvpalab_mvpa(cfg,fv);
+mvpalab_saveresults(cfg,result);
 
 %% If permutation analysis is enabled
 if cfg.stats.flag
@@ -21,12 +22,36 @@ if cfg.stats.flag
     if cfg.classmodel.roc
         stats.auc = mvpalab_permtest(cfg,result.auc,permaps.auc);
     end
+    
+    %% Save stats:
+    mvpalab_savestats(cfg,stats);
+    mvpalab_savepermaps(cfg,permaps);
 end
 
 %% Save results:
 mvpalab_savecfg(cfg);
-mvpalab_saveresults(cfg,result);
-if cfg.stats.savepmaps
-    mvpalab_savepermaps(cfg,permaps);
+
+%% Extract diag:
+if cfg.classmodel.tempgen
+    if exist('permaps','var')
+        [resultdiag.cr,permapsdiag.cr] = mvpalab_extractdiag(result.cr,permaps.cr);
+        statsdiag = mvpalab_permtest(cfg,resultdiag.cr,permapsdiag.cr);
+        
+        if cfg.classmodel.roc
+            [resultdiag.auc,permapsdiag.auc] = mvpalab_extractdiag(result.auc,permaps.auc);
+            statsdiag = mvpalab_permtest(cfg,resultdiag.auc,permapsdiag.auc);
+        end
+        
+        mvpalab_savediag(cfg,resultdiag,permapsdiag,statsdiag);
+    else
+        resultdiag.cr = mvpalab_extractdiag(result.cr);
+         
+        if cfg.classmodel.roc
+            [resultdiag.auc] = mvpalab_extractdiag(result.auc);
+        end
+        
+        mvpalab_savediag(cfg,resultdiag);
+    end
 end
-mvpalab_savestats(cfg,stats);
+    
+    

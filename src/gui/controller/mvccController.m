@@ -9,6 +9,7 @@ mvpalab_mkdir([cfg.study.studyLocation '/results']);
 
 %% Compute MVCC analysis:
 [result,cfg] = mvpalab_mvcc(cfg,fv);
+mvpalab_saveresults(cfg,result);
 
 %% If permutation analysis is enabled
 if cfg.stats.flag
@@ -33,13 +34,62 @@ if cfg.stats.flag
             stats.auc.ba = mvpalab_permtest(cfg,result.auc.ba,permaps.auc.ba);
         end
     end
+    %% Save stats:
+    mvpalab_savepermaps(cfg,permaps);
+    mvpalab_savestats(cfg,stats);
     
 end
 
 %% Save results:
 mvpalab_savecfg(cfg);
-mvpalab_saveresults(cfg,result);
-if cfg.stats.savepmaps
-    mvpalab_savepermaps(cfg,permaps);
+
+%% Extract diag:
+if cfg.classmodel.tempgen
+    if exist('permaps','var')
+        [resultdiag.cr.ab,permapsdiag.cr.ab] = mvpalab_extractdiag(...
+            result.cr.ab,permaps.cr.ab);
+        statsdiag.ab = mvpalab_permtest(...
+            cfg,resultdiag.cr.ab,permapsdiag.cr.ab);
+        
+        if isfield(result.cr,'ba')
+            [resultdiag.cr.ba,permapsdiag.cr.ba] = mvpalab_extractdiag(...
+                result.cr.ba,permaps.cr.ba);
+            statsdiag.ba = mvpalab_permtest(...
+                cfg,resultdiag.cr.ba,permapsdiag.cr.ba);
+        end
+        
+        if cfg.classmodel.roc
+            [resultdiag.auc.ab,permapsdiag.auc.ab] = mvpalab_extractdiag(...
+                result.auc.ab,permaps.auc.ab);
+            statsdiag.ab = mvpalab_permtest(...
+                cfg,resultdiag.auc.ab,permapsdiag.auc.ab);
+            
+            if isfield(result.cr,'ba')
+                [resultdiag.auc.ba,permapsdiag.auc.ba] = mvpalab_extractdiag(...
+                    result.auc.ba,permaps.auc.ba);
+                statsdiag.ba = mvpalab_permtest(...
+                    cfg,resultdiag.auc.ba,permapsdiag.auc.ba);
+            end
+        end
+        
+        %% Save diag:
+        mvpalab_savediag(cfg,resultdiag,permapsdiag,statsdiag);
+    else
+        resultdiag.cr.ab = mvpalab_extractdiag(result.cr.ab);
+        if isfield(result.cr,'ba')
+            resultdiag.cr.ba = mvpalab_extractdiag(result.cr.ba);
+        end
+        
+        if cfg.classmodel.roc
+            [resultdiag.auc.ab] = mvpalab_extractdiag(result.auc.ab);
+            if isfield(result.cr,'ba')
+                [resultdiag.auc.ba] = mvpalab_extractdiag(result.auc.ba);
+            end
+        end
+        
+        %% Save diag:
+        mvpalab_savediag(cfg,resultdiag);
+    end
 end
-mvpalab_savestats(cfg,stats);
+
+

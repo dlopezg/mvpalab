@@ -49,6 +49,14 @@ if  exist('stats','var')
         end
     end
     if graph.sigmode.points
+        
+        fill(...
+            [cfg.tm.times fliplr(cfg.tm.times)],...
+            [datamean'+stdsem fliplr(datamean'-stdsem)],...
+            graph.shadecolor, 'FaceAlpha',...
+            graph.shadealpha,'linestyle','none');
+        
+        
         stpoints = ones(1,length(datamean))*graph.sigh;
         times = cfg.tm.times(logical(~stats.sigmask + ~stats.sigmask_));
         points = stpoints(logical(~stats.sigmask + ~stats.sigmask_));
@@ -62,13 +70,13 @@ else
         [datamean'+stdsem fliplr(datamean'-stdsem)],...
         graph.shadecolor,...
         'FaceAlpha',graph.shadealpha,'linestyle','none');
-    
-    if graph.plotmean
-        plot(cfg.tm.times,datamean,...
-            'color',graph.shadecolor,...
-            'linewidth',1,...
-            'linestyle','-');
-    end
+end
+
+if graph.plotmean
+    plot(cfg.tm.times,datamean,...
+        'color',graph.shadecolor,...
+        'linewidth',graph.linewidth,...
+        'linestyle',graph.linestyle);
 end
 
 plot(cfg.tm.times,chancelevel,'k','LineWidth',.5,'LineStyle',':');
@@ -81,14 +89,13 @@ set(gca,'XMinorTick','on','YMinorTick','on')
 set(gca,'XTickLabelRotation',90);
 set(gca,'XTick',graph.xlim(1):100:graph.xlim(2))
 set(gca,'YTick',graph.ylim(1):.05:graph.ylim(2))
-set(gca,'FontSize',14)
+set(gca,'FontSize',graph.fontsize)
 
-xlabel('Time (ms)');
-ylabel('Classifier performance')
+xlabel(graph.xlabel);
+ylabel(graph.ylabel);
 ylim(graph.ylim)
 xlim(graph.xlim)
+title(graph.title);
 set(gca,'Layer','top')
-
-
 end
 

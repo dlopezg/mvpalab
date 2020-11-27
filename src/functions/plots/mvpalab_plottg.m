@@ -32,10 +32,15 @@ if isfield(graph,'onscreen')
 end
 
 %% Configure plot appearance:
-xlabel('Training time (ms)');
-ylabel('Test time (ms)');
+title(graph.title)
+xlabel(graph.xlabel);
+ylabel(graph.ylabel);
+
+xlim(graph.xlim);
+ylim(graph.ylim);
+
 colorbar('Eastoutside');
-colormap(flipud(graph.colorMap));
+colormap(graph.colorMap);
 
 set(gca,'XMinorTick','on','YMinorTick','on');
 set(gca,'XTickLabelRotation',90);
@@ -46,7 +51,7 @@ set(gca,'XColor','k');
 set(gca,'FontSize',graph.fontsize);
 set(gca,'Layer','top');
 
-if isfield(graph,'caxis')
+if abs(sum(graph.caxis(1)))
     caxis(graph.caxis);
 else
     caxis([min(min(acc_map)) max(max(acc_map))]);

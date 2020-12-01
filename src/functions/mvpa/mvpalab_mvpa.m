@@ -66,22 +66,36 @@ for sub = 1 : nSubjects
         end
         
         if cfg.classmodel.tempgen
-            res_auc(:,:,sub,freq) = auc;
             res_cr(:,:,sub,freq) = cr;
+            if cfg.classmodel.roc
+                res_auc(:,:,sub,freq) = auc;
+            end
         else
-            res_auc(:,:,sub,freq) = auc';
             res_cr(:,:,sub,freq) = cr';
+            if cfg.classmodel.roc
+                res_auc(:,:,sub,freq) = auc';
+            end
         end
     end
     toc;
 end
-res.x = x;
-res.y = y;
-res.t = t;
-res.auc = res_auc;
+
 res.cr = res_cr;
-res.cm = cm;
-res.w = w;
+
+if cfg.classmodel.roc
+    res.x = x;
+    res.y = y;
+    res.t = t;
+    res.auc = res_auc;
+end
+
+if cfg.classmodel.confmat
+    res.cm = cm;
+end 
+
+if cfg.classmodel.confmat
+    res.w = w;
+end
 
 fprintf(' - Done!\n');
 end

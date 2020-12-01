@@ -46,7 +46,7 @@ for sub = 1 : nSubjects
                     auc_ab(tp,:),...
                     cr_ab(tp,:), ...
                     cm_ab{sub,tp,freq},...
-                    w_ab(:,tp,sub,freq)...
+                    w_ab{sub,tp,freq}...
                     ] = mvpalab_mvcceval(train_X,train_Y,test_X,test_Y,tp,cfg);
                 
                 % Direction B - A:
@@ -56,7 +56,7 @@ for sub = 1 : nSubjects
                     auc_ba(tp,:),...
                     cr_ba(tp,:),...
                     cm_ba{sub,tp,freq},...
-                    w_ba(:,tp,sub,freq)...
+                    w_ba{sub,tp,freq}...
                     ] = mvpalab_mvcceval(test_X,test_Y,train_X,train_Y,tp,cfg);
             end
         else
@@ -68,7 +68,7 @@ for sub = 1 : nSubjects
                     auc_ab(tp,:),...
                     cr_ab(tp,:),...
                     cm_ab{sub,tp,freq},...
-                    w_ab(:,tp,sub,freq)...
+                    w_ab{sub,tp,freq}...
                     ] = mvpalab_mvcceval(train_X,train_Y,test_X,test_Y,tp,cfg);
                 
                 % Direction B - A:
@@ -78,7 +78,7 @@ for sub = 1 : nSubjects
                     auc_ba(tp,:),...
                     cr_ba(tp,:), ...
                     cm_ba{sub,tp,freq},...
-                    w_ba(:,tp,sub,freq)...
+                    w_ba{sub,tp,freq}...
                     ] = mvpalab_mvcceval(test_X,test_Y,train_X,train_Y,tp,cfg);
             end
         end
@@ -88,27 +88,38 @@ for sub = 1 : nSubjects
         if cfg.classmodel.tempgen
             res.cr.ab(:,:,sub,freq) = cr_ab;
             res.cr.ba(:,:,sub,freq) = cr_ba;
-            res.auc.ab(:,:,sub,freq) = auc_ab;
-            res.auc.ba(:,:,sub,freq) = auc_ba;
-            
+            if cfg.classmodel.roc
+                res.auc.ab(:,:,sub,freq) = auc_ab;
+                res.auc.ba(:,:,sub,freq) = auc_ba;
+            end
         else
             res.cr.ab(:,:,sub,freq) = cr_ab';
             res.cr.ba(:,:,sub,freq) = cr_ba';
-            res.auc.ab(:,:,sub,freq) = auc_ab';
-            res.auc.ba(:,:,sub,freq) = auc_ba';
+            if cfg.classmodel.roc
+                res.auc.ab(:,:,sub,freq) = auc_ab';
+                res.auc.ba(:,:,sub,freq) = auc_ba';
+            end
         end
     end
     toc
 end
 
-res.x.ab = x_ab;
-res.x.ba = x_ba;
-res.y.ab = y_ab;
-res.y.ba = y_ba;
-res.cm.ab = cm_ab;
-res.cm.ba = cm_ba; 
-res.w.ab = w_ab;
-res.w.ba = w_ba; toc
+if cfg.classmodel.roc
+    res.x.ab = x_ab;
+    res.x.ba = x_ba;
+    res.y.ab = y_ab;
+    res.y.ba = y_ba;
+end
+
+if cfg.classmodel.confmat
+    res.cm.ab = cm_ab;
+    res.cm.ba = cm_ba; 
+end
+
+if cfg.classmodel.wvector
+    res.w.ab = w_ab;
+    res.w.ba = w_ba; 
+end
 
 fprintf(' - Done!\n');
 

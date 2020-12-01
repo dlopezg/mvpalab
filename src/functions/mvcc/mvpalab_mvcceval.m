@@ -78,7 +78,7 @@ else
     end
     
     % Receiver operating characteristic (ROC curve)
-    if cfg.classmodel.confmat
+    if cfg.classmodel.roc
         [x,y,~,auc] = perfcurve(test_Y,scores(:,mdl.ClassNames),1);
     end
     

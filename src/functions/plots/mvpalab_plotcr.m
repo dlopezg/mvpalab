@@ -58,8 +58,10 @@ if  exist('stats','var')
         
         
         stpoints = ones(1,length(datamean))*graph.sigh;
-        times = cfg.tm.times(logical(~stats.sigmask + ~stats.sigmask_));
-        points = stpoints(logical(~stats.sigmask + ~stats.sigmask_));
+        times = cfg.tm.times(logical(~stats.sigmask  * graph.stats.above ...
+            + ~stats.sigmask_ * graph.stats.below));
+        points = stpoints(logical(~stats.sigmask  * graph.stats.above ...
+            + ~stats.sigmask_ * graph.stats.below));
         scatter(times,points,80,graph.sigc,'filled','s');
         scatter(cfg.tm.times,stpoints,80,'k','s');
     end

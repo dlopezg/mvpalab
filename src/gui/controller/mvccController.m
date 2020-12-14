@@ -45,30 +45,29 @@ mvpalab_savecfg(cfg);
 
 %% Extract diag:
 if cfg.classmodel.tempgen
-    cfg.classmodel.tempgen = 0;
     if exist('permaps','var')
         [resultdiag.cr.ab,permapsdiag.cr.ab] = mvpalab_extractdiag(...
             result.cr.ab,permaps.cr.ab);
-        statsdiag.ab = mvpalab_permtest(...
+        statsdiag.cr.ab = mvpalab_permtest(...
             cfg,resultdiag.cr.ab,permapsdiag.cr.ab);
         
         if isfield(result.cr,'ba')
             [resultdiag.cr.ba,permapsdiag.cr.ba] = mvpalab_extractdiag(...
                 result.cr.ba,permaps.cr.ba);
-            statsdiag.ba = mvpalab_permtest(...
+            statsdiag.cr.ba = mvpalab_permtest(...
                 cfg,resultdiag.cr.ba,permapsdiag.cr.ba);
         end
         
         if cfg.classmodel.roc
             [resultdiag.auc.ab,permapsdiag.auc.ab] = mvpalab_extractdiag(...
                 result.auc.ab,permaps.auc.ab);
-            statsdiag.ab = mvpalab_permtest(...
+            statsdiag.auc.ab = mvpalab_permtest(...
                 cfg,resultdiag.auc.ab,permapsdiag.auc.ab);
             
-            if isfield(result.cr,'ba')
+            if isfield(result.auc,'ba')
                 [resultdiag.auc.ba,permapsdiag.auc.ba] = mvpalab_extractdiag(...
                     result.auc.ba,permaps.auc.ba);
-                statsdiag.ba = mvpalab_permtest(...
+                statsdiag.auc.ba = mvpalab_permtest(...
                     cfg,resultdiag.auc.ba,permapsdiag.auc.ba);
             end
         end
@@ -91,7 +90,6 @@ if cfg.classmodel.tempgen
         %% Save diag:
         mvpalab_savediag(cfg,resultdiag);
     end
-    cfg.classmodel.tempgen = 1;
 end
 
 

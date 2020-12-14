@@ -1,13 +1,13 @@
 function [] = mvpalab_savediag(cfg,results,permaps,statistics)
 cfg.classmodel.tempgen = 0;
 result = results.cr;
-stats = statistics.cr;
 macc_dir = [cfg.study.studyLocation filesep ...
     'results' filesep 'macc' filesep 'diag'];
 mvpalab_mkdir(macc_dir);
 save([macc_dir filesep 'result.mat'],'result','cfg','-v7.3');
 
 if nargin > 2
+    stats = statistics.cr;
     save([macc_dir filesep 'stats.mat'],'stats','-v7.3');
     save([macc_dir filesep 'permaps.mat'],'permaps','-v7.3');
 end
@@ -21,6 +21,7 @@ if cfg.classmodel.roc
     save([auc_dir filesep 'result.mat'],'result','cfg','-v7.3');
     
     if nargin > 2
+        stats = statistics.cr;
         save([auc_dir filesep 'stats.mat'],'stats','-v7.3');
         save([auc_dir filesep 'permaps.mat'],'permaps','-v7.3');
     end

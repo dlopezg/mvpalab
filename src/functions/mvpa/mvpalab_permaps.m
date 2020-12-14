@@ -46,7 +46,7 @@ for sub = 1 : nSubjects
                 end
                 mvpalab_pcounter(per,cfg.stats.nper);
             else
-                for tp = 1 : cfg.analysis.ntp
+                for tp = 1 : cfg.tm.ntp
                     [~,~,~,auc(tp,:),cr(tp,:),~] = mvpalab_mvpaeval(...
                         X,Y,tp,cfg,strpar);
                 end

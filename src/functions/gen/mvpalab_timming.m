@@ -22,5 +22,7 @@ c.times = cfg.tm.times(c.startidx:c.tpsteps:c.endidx);
 %% Update the cfg structure
 cfg.tm = c;
 
+fprintf(' > Done! \n\n');
+
 end
 

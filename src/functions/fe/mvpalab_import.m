@@ -16,7 +16,7 @@ if ~cfg.sf.flag
 end
 %% Subjects loop:
 for sub = 1 : nSubjects
-    
+    fprintf('\n');
     fprintf('<strong> > Importing subject data </strong> - Subject: ');
     fprintf([int2str(sub) '/' int2str(length(cfg.study.dataFiles{1,1}))]);
     fprintf('\n');
@@ -74,7 +74,6 @@ cfg = mvpalab_timming(cfg);
 
 %% Save channels location:
 cfg.chanloc = EEG.chanlocs;
-
 
 end
 

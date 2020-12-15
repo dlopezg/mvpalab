@@ -1,4 +1,4 @@
-src/extlibs
+src/extlibs/altmany-export_fig
 src/test_data
 **/results
 cfg.mat

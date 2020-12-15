@@ -25,6 +25,7 @@ cfg.study.dataFiles{2,2} = {'1.mat','2.mat','3.mat'};
 % Supertrial generation:
 cfg.fext.strial.flag     = 1;
 cfg.fext.strial.ntrials  = 3;
+cfg.fext.strial.rand = true;
 
 % Match data size to nfold:
 cfg.fext.matchcsize = 1;

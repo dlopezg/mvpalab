@@ -1,4 +1,4 @@
-function [ cfg ] = mvpalab_init(cfg)
+function [ cfg ] = mvpalab_init()
 %INITIALIZE Summary of this function goes here
 %   Detailed explanation goes here
 clear
@@ -19,6 +19,7 @@ cfg.study.mvccDirection = 'both';
 % Supertrial generation:
 cfg.fext.strial.flag     = false;
 cfg.fext.strial.ntrials  = 0;
+cfg.fext.strial.rand = true;
 
 % Match class size:
 cfg.fext.matchcsize = false;

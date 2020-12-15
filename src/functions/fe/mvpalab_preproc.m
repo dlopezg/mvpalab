@@ -13,7 +13,11 @@ end
 if cfg.fext.strial.flag
     fprintf('       # Generating supertrials... ');
     for i = 1 : floor(size(data,3)/cfg.fext.strial.ntrials)
-        idxs = randperm(size(data,3),cfg.fext.strial.ntrials);
+        if cfg.fext.strial.rand
+            idxs = randperm(size(data,3),cfg.fext.strial.ntrials);
+        else
+            idxs = (1:cfg.fext.strial.ntrials);
+        end
         super_trials(:,:,i) = mean(data(:,:,idxs),3);
         data(:,:,idxs) = [];
     end

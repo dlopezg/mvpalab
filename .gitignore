@@ -1,3 +1,5 @@
 src/extlibs
 src/test_data
+**/results
+cfg.mat
 *.asv

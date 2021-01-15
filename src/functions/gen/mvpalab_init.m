@@ -17,10 +17,10 @@ cfg.study.mvccDirection = 'both';
 %% Configuration - Feature extraction:
 
 % Power envelope as features:
-cfg.fext.powenv.flag    = true;
-cfg.fext.powenv.method  = 'analytic';
-cfg.fext.powenv.upper   = true;
-cfg.fext.powenv.length  = 5;
+cfg.fext.feature         = 'voltage';
+cfg.fext.powenv.method   = 'analytic';
+cfg.fext.powenv.envelope = 'upper';
+cfg.fext.powenv.length   = 5;
 
 % Supertrial generation:
 cfg.fext.strial.flag     = false;

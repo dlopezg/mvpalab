@@ -19,6 +19,12 @@ for ctxt = 1 : size(data,2)
     for class = 1 : length(class_names)
         fprintf('\n    <strong> - Generating feature vectors:</strong>\n');
         data_ = classes.(class_names{class});
+        
+        % Power envelope as a feature if needed:
+        if isfield(cfg.fext,'powenv') && cfg.fext.powenv.flag
+           [cfg, data_] = mvpalab_powenvelope(cfg,data_);
+        end
+        
         fv{ctxt,class} = mvpalab_preproc(cfg,data_);
         class_size(ctxt,class) = size(fv{ctxt,class},1);
     end

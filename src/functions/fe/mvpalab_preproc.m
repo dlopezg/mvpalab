@@ -42,7 +42,7 @@ end
 
 %% Generate input vectors:
 data = permute(data,[3 1 2]);
-fprintf('       # Done.');
+fprintf('       # Done.\n');
 
 end
 

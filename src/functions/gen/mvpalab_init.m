@@ -16,10 +16,16 @@ cfg.study.mvccDirection = 'both';
 
 %% Configuration - Feature extraction:
 
+% Power envelope as features:
+cfg.fext.powenv.flag    = true;
+cfg.fext.powenv.method  = 'analytic';
+cfg.fext.powenv.upper   = true;
+cfg.fext.powenv.length  = 5;
+
 % Supertrial generation:
 cfg.fext.strial.flag     = false;
 cfg.fext.strial.ntrials  = 0;
-cfg.fext.strial.rand = true;
+cfg.fext.strial.rand     = true;
 
 % Match class size:
 cfg.fext.matchcsize = false;
@@ -51,7 +57,7 @@ cfg.smoothdata.flag     = false;
 cfg.smoothdata.method   = 'none';
 cfg.smoothdata.window   = 1;
 
-%% Configuration - Analysis timming:
+%% Configuration - Analysis timing:
 cfg.tm.tpstart   = 0;
 cfg.tm.tpend     = 0;
 cfg.tm.tpsteps   = 1;

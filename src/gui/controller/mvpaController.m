@@ -2,7 +2,7 @@
 mvpalab_savecfg(cfg);
 
 %% Create result and stats folder
-mvpalab_mkdir([cfg.study.studyLocation '/results']);
+mvpalab_mkdir([cfg.location '/results']);
 
 %% Load data, generate conditions and feature extraction:
 [cfg,data,fv] = mvpalab_import(cfg);

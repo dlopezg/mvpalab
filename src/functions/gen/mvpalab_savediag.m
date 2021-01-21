@@ -1,7 +1,7 @@
 function [] = mvpalab_savediag(cfg,results,permaps,statistics)
 cfg.classmodel.tempgen = 0;
 result = results.cr;
-macc_dir = [cfg.study.studyLocation filesep ...
+macc_dir = [cfg.location filesep ...
     'results' filesep 'macc' filesep 'diag'];
 mvpalab_mkdir(macc_dir);
 save([macc_dir filesep 'result.mat'],'result','cfg','-v7.3');
@@ -14,7 +14,7 @@ end
 
 if cfg.classmodel.roc
     result = results.auc;
-    auc_dir = [cfg.study.studyLocation filesep ...
+    auc_dir = [cfg.location filesep ...
         'results' filesep 'auc' filesep 'diag'];
     mvpalab_mkdir(auc_dir);
     save([auc_dir filesep 'result.mat'],'result','cfg','-v7.3');

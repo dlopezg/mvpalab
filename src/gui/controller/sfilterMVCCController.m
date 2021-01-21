@@ -1,12 +1,12 @@
 %% Save cfg state:
-save([cfg.study.studyLocation '/cfg.mat'],'cfg');
+save([cfg.location '/cfg.mat'],'cfg');
 
 %% Update cutoff frequency vector:
 cfg = mvpalab_genfreqvec(cfg);
 
 %% Create result and stats folder
-mvpalab_mkdir([cfg.study.studyLocation '/results']);
-mvpalab_mkdir([cfg.study.studyLocation '/stats']);
+mvpalab_mkdir([cfg.location '/results']);
+mvpalab_mkdir([cfg.location '/stats']);
 mvpalab_mkdir(cfg.sf.filesLocation);
 
 %% Load data, generate conditions and feature extraction:
@@ -17,15 +17,15 @@ cfg.sf.flag = true;
 [accmap,cfg] = mvpalab_mvcc(cfg);
 
 %% Save accmaps and cfg structure:
-save([cfg.study.studyLocation filesep 'results' filesep ...
+save([cfg.location filesep 'results' filesep ...
     'accmap.mat'],'accmap','-v7.3');
-save([cfg.study.studyLocation filesep 'cfg.mat'],'cfg','-v7.3');
+save([cfg.location filesep 'cfg.mat'],'cfg','-v7.3');
 
 %% Generate permuted maps for each frequency band:
 if cfg.stats.flag
     [permaps,cfg] = mvpalab_cpermaps(cfg);
     if cfg.stats.savepmaps
-        save([cfg.study.studyLocation filesep 'stats' filesep...
+        save([cfg.location filesep 'stats' filesep...
             'permaps.mat'],'permaps','-v7.3');
     end
 end
@@ -49,7 +49,7 @@ if strcmp(cfg.stats.pmetric,'cr')
     permaps = permaps.cr;
     accmap = accmap.cr;
     
-    mvpalab_mkdir([cfg.study.studyLocation filesep 'stats'...
+    mvpalab_mkdir([cfg.location filesep 'stats'...
         filesep 'cr']);
 elseif strcmp(cfg.stats.pmetric,'auc')
     
@@ -59,7 +59,7 @@ elseif strcmp(cfg.stats.pmetric,'auc')
     permaps = permaps.auc;
     accmap = accmap.auc;
     
-    mvpalab_mkdir([cfg.study.studyLocation filesep 'stats'...
+    mvpalab_mkdir([cfg.location filesep 'stats'...
         filesep 'auc']);
 end
 
@@ -73,8 +73,8 @@ stats.ab = mvpalab_permtest(cfg,diffMap.ab,perdiffMap.ab);
 stats.ba = mvpalab_permtest(cfg,diffMap.ba,perdiffMap.ba);
 
 %% Save stats and cfg structure:
-save([cfg.study.studyLocation filesep...
+save([cfg.location filesep...
     'stats' filesep cfg.stats.pmetric filesep ...
     'stats.mat'],'stats','-v7.3');
-save([cfg.study.studyLocation filesep 'cfg.mat'],'cfg','-v7.3');
+save([cfg.location filesep 'cfg.mat'],'cfg','-v7.3');
 

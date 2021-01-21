@@ -3,7 +3,7 @@
 %% Data files and paths:
 
 cfg.analysis = 'MVCC';
-cfg.study.studyLocation = pwd;
+cfg.location = pwd;
 
 cfg.study.conditionIdentifier{1,1} = 'condition_1';
 cfg.study.conditionIdentifier{1,2} = 'condition_2';

@@ -23,9 +23,9 @@ cfg.fext.powenv.envelope = 'upper';
 cfg.fext.powenv.length   = 5;
 
 % Supertrial generation:
-cfg.fext.strial.flag     = false;
-cfg.fext.strial.ntrials  = 0;
-cfg.fext.strial.rand     = true;
+cfg.trialaver.flag     = false;
+cfg.trialaver.ntrials  = 0;
+cfg.trialaver.order    = 'rand';
 
 % Match class size:
 cfg.fext.matchcsize = false;

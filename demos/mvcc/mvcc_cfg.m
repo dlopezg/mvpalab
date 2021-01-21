@@ -23,9 +23,9 @@ cfg.study.dataFiles{2,2} = {'1.mat','2.mat','3.mat'};
 %% Configuration - Feature extraction:
 
 % Supertrial generation:
-cfg.fext.strial.flag     = 1;
-cfg.fext.strial.ntrials  = 3;
-cfg.fext.strial.rand = true;
+cfg.trialaver.flag     = 1;
+cfg.trialaver.ntrials  = 3;
+cfg.trialaver.order    = 'rand';
 
 % Match data size to nfold:
 cfg.fext.matchcsize = 1;

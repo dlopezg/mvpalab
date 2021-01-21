@@ -10,13 +10,13 @@ if cfg.smoothdata.flag
 end
 
 %% Average trials if needed:
-if cfg.fext.strial.flag
+if cfg.trialaver.flag
     fprintf('       # Generating supertrials... ');
-    for i = 1 : floor(size(data,3)/cfg.fext.strial.ntrials)
-        if cfg.fext.strial.rand
-            idxs = randperm(size(data,3),cfg.fext.strial.ntrials);
+    for i = 1 : floor(size(data,3)/cfg.trialaver.ntrials)
+        if strcmp(cfg.trialaver.order,'rand')
+            idxs = randperm(size(data,3),cfg.trialaver.ntrials);
         else
-            idxs = (1:cfg.fext.strial.ntrials);
+            idxs = (1:cfg.trialaver.ntrials);
         end
         super_trials(:,:,i) = mean(data(:,:,idxs),3);
         data(:,:,idxs) = [];

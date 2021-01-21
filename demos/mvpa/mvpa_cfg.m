@@ -27,9 +27,9 @@ cfg.fext.matchkfold = 1;
 
 %% Configuration - Feature selection:
 
-cfg.fsel.method = 'pca';
-cfg.fsel.flag   = false;
-cfg.fsel.ncomp  = 1;
+cfg.dimred.method = 'pca';
+cfg.dimred.flag   = false;
+cfg.dimred.ncomp  = 1;
 
 %% Configuration - classification analysis:
 

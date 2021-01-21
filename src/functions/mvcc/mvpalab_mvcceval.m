@@ -17,9 +17,9 @@ if cfg.classmodel.permlab
 end
 
 %% Feature selection if needed:
-if cfg.fsel.flag
+if cfg.dimred.flag
     [train_X,test_X,params] = ...
-        mvpalab_fsel(train_X,train_Y,test_X,test_Y,cfg);
+        mvpalab_dimred(train_X,train_Y,test_X,test_Y,cfg);
 end
 
 %% Train and test the model:
@@ -45,7 +45,7 @@ if cfg.classmodel.tempgen
         [~,test_X,nparams] = mvpalab_datanorm(cfg,[],test_X,nparams);
         
         % Project new test set in the PC space if needed:
-        if cfg.fsel.flag
+        if cfg.dimred.flag
             test_X = mvpalab_project(test_X,params,cfg);
         end
         

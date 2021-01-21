@@ -37,9 +37,9 @@ cfg.fext.matchkfold = false;
 % 'pca' - Principal Component Analysis
 % 'pls' - Partial Least Squares
 % 'lda' - Linear Discriminant Analysis (in progress)
-cfg.fsel.method = 'none';
-cfg.fsel.flag   = false;
-cfg.fsel.ncomp  = 0;
+cfg.dimred.method = 'none';
+cfg.dimred.flag   = false;
+cfg.dimred.ncomp  = 0;
 
 %% Configuration - Data normalization:
 

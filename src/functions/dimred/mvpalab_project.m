@@ -3,6 +3,6 @@ function projected_data = mvpalab_project(input_data,params,cfg)
 %   Detailed explanation goes here
 input_data = input_data - params.mu;  % Xcentered
 projected_data = input_data/params.coeff';   % Projected scores
-projected_data = projected_data(:,1:cfg.fsel.ncomp,:);
+projected_data = projected_data(:,1:cfg.dimred.ncomp,:);
 end
 

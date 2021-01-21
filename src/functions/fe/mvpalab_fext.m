@@ -6,7 +6,7 @@ Y = X;
 
 %% Match class size (factor of k) is not needed for MVCC:
 if size(data) > 1
-    cfg.classize.matchkfold = false;
+    cfg.classsize.matchkfold = false;
 end
 
 %% Context loop:
@@ -35,7 +35,7 @@ c = 1;
 for ctxt = 1 : size(fv,1)
     minsize = min(class_size(ctxt,:));
     for class = 1 : size(fv,2)
-        if cfg.classize.match
+        if cfg.classsize.match
             inpvec{1,c} = fv{ctxt,class}(1:minsize,:,:);
         else
             inpvec{1,c} = fv{ctxt,class};

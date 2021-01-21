@@ -22,8 +22,8 @@ cfg.trialaver.ntrials  = 5;
 cfg.trialaver.order    = 'rand';
 
 % Match data size to nfold:
-cfg.classize.match = true;
-cfg.classize.matchkfold = true;
+cfg.classsize.match = true;
+cfg.classsize.matchkfold = true;
 
 %% Configuration - Feature selection:
 

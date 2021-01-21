@@ -28,8 +28,8 @@ cfg.trialaver.ntrials  = 0;
 cfg.trialaver.order    = 'rand';
 
 % Match class size:
-cfg.fext.matchcsize = false;
-cfg.fext.matchkfold = false;
+cfg.classize.match = false;
+cfg.classize.matchkfold = false;
 
 %% Configuration - Feature selection:
 

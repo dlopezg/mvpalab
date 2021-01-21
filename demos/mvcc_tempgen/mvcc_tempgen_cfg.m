@@ -23,13 +23,13 @@ cfg.study.dataFiles{2,2} = {'1.mat','2.mat','3.mat'};
 %% Configuration - Feature extraction:
 
 % Supertrial generation:
-cfg.trialaver.flag     = 1;
+cfg.trialaver.flag     = true;
 cfg.trialaver.ntrials  = 3;
 cfg.trialaver.order    = 'rand';
 
 % Match data size to nfold:
-cfg.fext.matchcsize = 1;
-cfg.fext.matchkfold = 0;
+cfg.classize.match = true;
+cfg.classize.matchkfold = false;
 
 %% Configuration - Feature selection:
 

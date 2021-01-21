@@ -26,7 +26,7 @@ if cfg.trialaver.flag
 end
 
 %% Adjust class size (factor of k):
-if cfg.fext.matchkfold && strcmp(cfg.cv.method,'kfold')
+if cfg.classize.matchkfold && strcmp(cfg.cv.method,'kfold')
     fprintf('       # Adjusting class size (factor of k)... ');
     data = data(:,:,1:floor(size(data,3)/...
         cfg.cv.nfolds)*cfg.cv.nfolds);

@@ -3,7 +3,7 @@ figure;
 hold on;
 
 %%
-if strcmp(cfg.study.analysis,'MVPA')
+if strcmp(cfg.analysis,'MVPA')
     if cfg.classmodel.tempgen
         if (graph.stats.above || graph.stats.below)
             mvpalab_plottg(graph,cfg,result,stats);
@@ -17,7 +17,7 @@ if strcmp(cfg.study.analysis,'MVPA')
             mvpalab_plotcr(graph,cfg,result);
         end
     end
-elseif strcmp(cfg.study.analysis,'MVCC')
+elseif strcmp(cfg.analysis,'MVCC')
     if cfg.classmodel.tempgen
         if (graph.stats.above || graph.stats.below)
             if isfield(result,'ab')

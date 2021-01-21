@@ -7,7 +7,7 @@ nSubjects = length(cfg.study.dataFiles{1,1});
 nClasses = 2;
 nCtxt = 1;
 
-if strcmp(cfg.study.analysis,'MVCC')
+if strcmp(cfg.analysis,'MVCC')
     nCtxt = 2;
 end
 

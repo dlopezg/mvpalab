@@ -2,7 +2,7 @@
 
 %% Data files and paths:
 
-cfg.study.analysis = 'MVPA';
+cfg.analysis = 'MVPA';
 cfg.study.studyLocation = pwd;
 
 cfg.study.conditionIdentifier{1,1} = 'condition_a';

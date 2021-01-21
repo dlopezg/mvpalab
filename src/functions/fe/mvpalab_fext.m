@@ -21,7 +21,7 @@ for ctxt = 1 : size(data,2)
         data_ = classes.(class_names{class});
         
         % Power envelope as a feature if needed:
-        if isfield(cfg.fext,'feature') && strcmp(cfg.fext.feature,'envelope')
+        if isfield(cfg,'feature') && strcmp(cfg.feature,'envelope')
            [cfg, data_] = mvpalab_powenvelope(cfg,data_);
         end
         

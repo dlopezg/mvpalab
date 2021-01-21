@@ -3,8 +3,8 @@ function [cfg, data] = mvpalab_powenvelope(cfg, data)
     for trial = 1 : size(data,3)
         for channel = 1 : size(data,1)
             [env,env_] = envelope(data(channel,:,trial), ...
-                cfg.fext.powenv.length, cfg.fext.powenv.method);
-            if strcmp(cfg.fext.powenv.envelope,'upper')
+                cfg.powenv.length, cfg.powenv.method);
+            if strcmp(cfg.powenv.uplow,'upper')
                 data(channel,:,trial) = env;
             else
                 data(channel,:,trial) = env_;

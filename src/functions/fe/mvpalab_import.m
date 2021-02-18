@@ -48,8 +48,11 @@ for sub = 1 : nSubjects
                     EEG.data = mvpalab_filterdata(EEG,freq,cfg);
                 end
                 
-                classes.(cfg.study.conditionIdentifier{ctxt,class}) = ...
-                    EEG.data;
+                % Remove spaces to avoid errors: 
+                id = cfg.study.conditionIdentifier{ctxt,class};
+                id = id(~isspace(id));
+                
+                classes.(id) = EEG.data;
             end
             data{sub,ctxt} = classes;
             clear classes;

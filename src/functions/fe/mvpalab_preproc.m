@@ -3,9 +3,9 @@ function [ data ] = mvpalab_preproc( cfg, data )
 %   Detailed explanation goes here
 
 %% Smooth data:
-if cfg.smoothdata.flag
+if ~strcmp(cfg.smoothdata.method,'none')
     fprintf('       # Smoothing the data... ');
-    data = smoothdata(data,2,cfg.smoothdata.method,cfg.smoothdata.window);
+    data = mvpalab_smoothdata(cfg,data);
     fprintf('Done.\n');
 end
 

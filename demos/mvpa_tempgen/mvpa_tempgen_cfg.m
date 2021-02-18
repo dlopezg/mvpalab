@@ -34,8 +34,7 @@ cfg.dimred.ncomp  = 1;
 %% Configuration - classification analysis:
 
 % Data smoothing:
-cfg.smoothdata.flag = true;
-cfg.smoothdata.method = 'movmean';
+cfg.smoothdata.method = 'moving';
 cfg.smoothdata.window = 10;
 
 % Notmalization methods:

@@ -53,7 +53,6 @@ cfg.dimred.ncomp  = 0;
 cfg.normdata = 0; 
 
 %% Configuration - Data smoothing:
-cfg.smoothdata.flag     = false;
 cfg.smoothdata.method   = 'none';
 cfg.smoothdata.window   = 1;
 

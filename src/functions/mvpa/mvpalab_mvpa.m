@@ -93,7 +93,7 @@ if cfg.classmodel.confmat
     res.cm = cm;
 end 
 
-if cfg.classmodel.confmat
+if cfg.classmodel.wvector
     res.w = w;
 end
 

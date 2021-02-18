@@ -54,7 +54,7 @@ if cfg.classmodel.tempgen
         
         % Compute confusion matrix:
         if cfg.classmodel.confmat
-            cm{tp_} = confusionmat(test_Y,labels);
+            cm{tp_} = mvpalab_perfmetrics(confusionmat(test_Y,labels));
         end
         
         % Receiver operating characteristic (ROC curve)
@@ -63,7 +63,7 @@ if cfg.classmodel.tempgen
                 perfcurve(test_Y,scores(:,mdl.ClassNames),1);
         end
         
-        % Compute correct rate:
+        % Compute mean accuracy:
         cr(tp_) = sum(test_Y == labels)/length(test_Y);
         
     end
@@ -74,7 +74,7 @@ else
     
     % Compute confusion matrix:
     if cfg.classmodel.confmat
-        cm = confusionmat(test_Y,labels);
+        cm = mvpalab_perfmetrics(confusionmat(test_Y,labels));
     end
     
     % Receiver operating characteristic (ROC curve)
@@ -82,7 +82,7 @@ else
         [x,y,~,auc] = perfcurve(test_Y,scores(:,mdl.ClassNames),1);
     end
     
-    % Compute correct rate:
+    % Compute mean accuracy:
     cr = sum(test_Y == labels)/length(test_Y);
     
     % mvpalab_svmvisualization(mdl,train_X,test_X,cfg,tp,train_Y,test_Y,auc);

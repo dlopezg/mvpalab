@@ -41,26 +41,38 @@ for sub = 1 : nSubjects
             %% Timepoints loop
             if cfg.classmodel.parcomp
                 parfor tp = 1 : cfg.tm.ntp
-                    [~,~,~,auc(tp,:),cr(tp,:),~] = mvpalab_mvpaeval(...
-                        X,Y,tp,cfg,strpar);
+                    [~,~,~,...
+                    auc(tp,:),...
+                    acc(tp,:),...
+                    ~,...
+                    precision{sub,tp,freq,per},...
+                    recall{sub,tp,freq,per},...
+                    f1score{sub,tp,freq,per},...
+                    ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
                 end
                 mvpalab_pcounter(per,cfg.stats.nper);
             else
                 for tp = 1 : cfg.tm.ntp
-                    [~,~,~,auc(tp,:),cr(tp,:),~] = mvpalab_mvpaeval(...
-                        X,Y,tp,cfg,strpar);
+                    [~,~,~,...
+                    auc(tp,:),...
+                    acc(tp,:),...
+                    ~,...
+                    precision{sub,tp,freq,per},...
+                    recall{sub,tp,freq,per},...
+                    f1score{sub,tp,freq,per},...
+                    ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
                 end
                 
                 mvpalab_pcounter(per,cfg.stats.nper);
             end
             
             if cfg.classmodel.tempgen
-                permaps.cr(:,:,sub,per,freq) = cr;
+                permaps.acc(:,:,sub,per,freq) = acc;
                 if cfg.classmodel.roc
                     permaps.auc(:,:,sub,per,freq) = auc;
                 end
             else
-                permaps.cr(:,:,sub,per,freq) = cr';
+                permaps.acc(:,:,sub,per,freq) = acc';
                 if cfg.classmodel.roc
                     permaps.auc(:,:,sub,per,freq) = auc';
                 end
@@ -70,6 +82,22 @@ for sub = 1 : nSubjects
         toc;
     end
 end
+
+% Return precision if needed:
+if cfg.classmodel.precision
+    permaps.precision = mvpalab_reorganize(cfg,precision);
+end 
+
+% Return recall if needed:
+if cfg.classmodel.precision
+    permaps.recall = mvpalab_reorganize(cfg,recall);
+end 
+
+% Return f1score if needed:
+if cfg.classmodel.precision
+    permaps.f1score = mvpalab_reorganize(cfg,f1score);
+end 
+
 cfg.classmodel.permlab = false;
 fprintf(' - Done!\n');
 end

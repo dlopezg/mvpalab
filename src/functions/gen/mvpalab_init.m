@@ -70,12 +70,17 @@ cfg.classmodel.method = 'svm';
 cfg.classmodel.kernel = 'linear';
 
 % Analysis configuration:
-cfg.classmodel.tempgen = 0;
-cfg.classmodel.parcomp = 0;
-cfg.classmodel.permlab = 0;
-cfg.classmodel.roc     = 0;
-cfg.classmodel.confmat = 0;
-cfg.classmodel.wvector = 0;
+cfg.classmodel.tempgen = false;
+cfg.classmodel.parcomp = false;
+cfg.classmodel.permlab = false;
+
+% Performance metrics:
+cfg.classmodel.roc       = false;
+cfg.classmodel.confmat   = false;
+cfg.classmodel.precision = false;
+cfg.classmodel.recall    = false;
+cfg.classmodel.f1score   = false;
+cfg.classmodel.wvector   = false;
     
 
 % Optimization configuration:

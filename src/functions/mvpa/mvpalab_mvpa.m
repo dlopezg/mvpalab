@@ -46,9 +46,12 @@ for sub = 1 : nSubjects
                     y{sub,tp,freq},...
                     t{sub,tp,freq},...
                     auc(tp,:),...
-                    cr(tp,:),...
-                    cm{sub,tp,freq},...
-                    w{sub,tp,freq}...
+                    acc(tp,:),...
+                    confmat{sub,tp,freq},...
+                    precision{sub,tp,freq},...
+                    recall{sub,tp,freq},...
+                    f1score{sub,tp,freq},...
+                    w{1,tp,sub,freq}...
                     ] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
             end
         else
@@ -58,41 +61,60 @@ for sub = 1 : nSubjects
                     y{sub,tp,freq},...
                     t{sub,tp,freq},...
                     auc(tp,:),...
-                    cr(tp,:),...
-                    cm{sub,tp,freq},...
-                    w{sub,tp,freq}...
+                    acc(tp,:),...
+                    confmat{sub,tp,freq},...
+                    precision{sub,tp,freq},...
+                    recall{sub,tp,freq},...
+                    f1score{sub,tp,freq},...
+                    w{1,tp,sub,freq}...
                     ] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
             end
         end
         
+        % Reestructure result:
         if cfg.classmodel.tempgen
-            res_cr(:,:,sub,freq) = cr;
+            res.acc(:,:,sub,freq) = acc;
             if cfg.classmodel.roc
-                res_auc(:,:,sub,freq) = auc;
+                res.auc(:,:,sub,freq) = auc;
             end
         else
-            res_cr(:,:,sub,freq) = cr';
+            res.acc(:,:,sub,freq) = acc';
             if cfg.classmodel.roc
-                res_auc(:,:,sub,freq) = auc';
+                res.auc(:,:,sub,freq) = auc';
             end
         end
     end
     toc;
 end
 
-res.cr = res_cr;
-
+% Return confusion ROC values and AUC if needed:
 if cfg.classmodel.roc
-    res.x = x;
-    res.y = y;
-    res.t = t;
-    res.auc = res_auc;
+    res.roc.x =  mvpalab_reorganize_(cfg,x); 
+    res.roc.y =  mvpalab_reorganize_(cfg,y); 
+    res.roc.t =  mvpalab_reorganize_(cfg,t);
 end
 
+% Return confusion matrix if needed:
 if cfg.classmodel.confmat
-    res.cm = cm;
+    res.confmat = mvpalab_reorganize_(cfg,confmat);
 end 
 
+% Return precision if needed:
+if cfg.classmodel.precision
+    res.precision = mvpalab_reorganize(cfg,precision);
+end 
+
+% Return recall if needed:
+if cfg.classmodel.recall
+    res.recall = mvpalab_reorganize(cfg,recall);
+end 
+
+% Return f1score if needed:
+if cfg.classmodel.f1score
+    res.f1score = mvpalab_reorganize(cfg,f1score);
+end 
+
+% Return wvector if needed:
 if cfg.classmodel.wvector
     res.w = w;
 end

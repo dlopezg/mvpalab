@@ -1,6 +1,5 @@
-function [x,y,t,auc,cr,cm,w] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar)
-%SVM_CLASSIFIER This function returns the accuracy of the classifier in a
-%time-resolved way.
+function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar)
+%This function returns the accuracy of the classifier in a time-resolved way.
 
 % x = x-coordinates of the ROC curve.
 % y = y-coordinates of the ROC curve.
@@ -9,9 +8,12 @@ function [x,y,t,auc,cr,cm,w] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar)
 % cr = Correct rate.
 % cm = Confusion matrix.
 
-x = {}; y = {}; t = {}; auc = NaN; cr = NaN; cm = {}; w = [];
+x = {}; y = {}; t = {}; auc = NaN;   
+cm = {}; pr = {}; re = {}; f1 = {};
+cr = NaN;
+w = []; 
 
-%% Kfold validation loop:
+%% Cross validation loop:
 if ~cfg.classmodel.tempgen
     predicted_labels = true(strpar.NumObservations,1);
     predicted_scores = ones(strpar.NumObservations,2);
@@ -81,34 +83,55 @@ end
 %% Calculate the performance of the model:
 if cfg.classmodel.tempgen
     for tp_ = 1 : cfg.tm.ntp
-        % Compute confusion matrixif needed:
-        if cfg.classmodel.confmat
-            cm{tp_} = mvpalab_perfmetrics(...
-                confusionmat(Y,predicted_labels{tp_}));
+        % Compute confusion matrix if needed:
+        if cfg.classmodel.confmat || cfg.classmodel.precision ...
+            || cfg.classmodel.recall || cfg.classmodel.f1score
+            cm{tp_} = confusionmat(Y,predicted_labels{tp_});
         end
-        
+        % Compute precision if needed:
+        if cfg.classmodel.precision
+            pr{tp_} =  mvpalab_precision(cm{tp_}');
+        end
+        % Compute recall if needed:
+        if cfg.classmodel.precision
+            re{tp_} =  mvpalab_recall(cm{tp_}');
+        end
+        % Compute F1-score if needed:
+        if cfg.classmodel.precision
+            f1{tp_} =  mvpalab_f1score(cm{tp_}');
+        end
         % Receiver operating characteristic (ROC curve) if needed:
         if cfg.classmodel.roc
             [x{tp_},y{tp_},t{tp_},auc(tp_)] = ...
                 perfcurve(Y,predicted_scores{tp_}(:,mdl.ClassNames),1);
         end
     end
-    
     % Mean accuracy:
     cr = mean(acc);
 else
-    % Compute confusion matrix:
-    if cfg.classmodel.confmat
-        cm = mvpalab_perfmetrics(confusionmat(Y,predicted_labels));
+    % Mean accuracy:
+    cr = mean(acc);
+    % Compute confusion matrix if needed:
+    if cfg.classmodel.confmat || cfg.classmodel.precision ...
+            || cfg.classmodel.recall || cfg.classmodel.f1score
+        cm = confusionmat(Y,predicted_labels);
     end
-    
+    % Compute precision if needed:
+    if cfg.classmodel.precision
+        pr =  mvpalab_precision(cm');
+    end
+    % Compute recall if needed:
+    if cfg.classmodel.precision
+        re =  mvpalab_recall(cm');
+    end
+    % Compute F1-score if needed:
+    if cfg.classmodel.precision
+        f1 =  mvpalab_f1score(cm');
+    end
     % Receiver operating characteristic (ROC curve):
     if cfg.classmodel.roc
         [x,y,t,auc] = perfcurve(Y,predicted_scores(:,mdl.ClassNames),1);
     end
-    
-    % Mean accuracy:
-    cr = mean(acc);
 end
 
 end

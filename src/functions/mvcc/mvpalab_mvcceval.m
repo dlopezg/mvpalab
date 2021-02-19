@@ -64,7 +64,7 @@ if cfg.classmodel.tempgen
             cm{tp_} = confusionmat(test_Y,labels);
         end
         % Receiver operating characteristic (ROC curve)
-        if cfg.classmodel.roc
+        if cfg.classmodel.auc || cfg.classmodel.roc
             [x{tp_},y{tp_},t{tp_},auc(tp_)] = ...
                 perfcurve(test_Y,scores(:,mdl.ClassNames),1);
         end
@@ -106,7 +106,7 @@ else
         f1 =  mvpalab_f1score(cm');
     end
     % Receiver operating characteristic (ROC curve):
-    if cfg.classmodel.roc
+    if cfg.classmodel.auc || cfg.classmodel.roc
         [x,y,t,auc] = perfcurve(test_Y,scores(:,mdl.ClassNames),1);
     end
     % mvpalab_svmvisualization(mdl,train_X,test_X,cfg,tp,train_Y,test_Y,auc);

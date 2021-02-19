@@ -104,14 +104,14 @@ for sub = 1 : nSubjects
         if cfg.classmodel.tempgen
             res.acc.ab(:,:,sub,freq) = acc_ab;
             res.acc.ba(:,:,sub,freq) = acc_ba;
-            if cfg.classmodel.roc
+            if cfg.classmodel.auc
                 res.auc.ab(:,:,sub,freq) = auc_ab;
                 res.auc.ba(:,:,sub,freq) = auc_ba;
             end
         else
             res.acc.ab(:,:,sub,freq) = acc_ab';
             res.acc.ba(:,:,sub,freq) = acc_ba';
-            if cfg.classmodel.roc
+            if cfg.classmodel.auc
                 res.auc.ab(:,:,sub,freq) = auc_ab';
                 res.auc.ba(:,:,sub,freq) = auc_ba';
             end
@@ -149,8 +149,8 @@ end
 
 % Return wvector if needed:
 if cfg.classmodel.wvector
-    res.w.ab = w_ab;
-    res.w.ba = w_ba;
+    res.wvector.ab = w_ab;
+    res.wvector.ba = w_ba;
 end
 
 fprintf(' - Done!\n');

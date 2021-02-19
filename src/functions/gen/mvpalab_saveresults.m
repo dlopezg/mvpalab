@@ -2,7 +2,7 @@ function [] = mvpalab_saveresults(cfg,results)
 
 fields = fieldnames(results);
 additionalmetrics = {'precision','recall','f1score'};
-metrics = {'acc','auc','confmat','precision','recall','f1score','w'};
+metrics = {'acc','auc','roc','confmat','precision','recall','f1score','wvector'};
 
 if cfg.classmodel.tempgen
     folder = 'temporal_generalization';

@@ -74,12 +74,12 @@ for sub = 1 : nSubjects
         % Reestructure result:
         if cfg.classmodel.tempgen
             res.acc(:,:,sub,freq) = acc;
-            if cfg.classmodel.roc
+            if cfg.classmodel.auc
                 res.auc(:,:,sub,freq) = auc;
             end
         else
             res.acc(:,:,sub,freq) = acc';
-            if cfg.classmodel.roc
+            if cfg.classmodel.auc
                 res.auc(:,:,sub,freq) = auc';
             end
         end
@@ -116,7 +116,7 @@ end
 
 % Return wvector if needed:
 if cfg.classmodel.wvector
-    res.w = w;
+    res.wvector = w;
 end
 
 fprintf(' - Done!\n');

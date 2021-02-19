@@ -101,7 +101,7 @@ if cfg.classmodel.tempgen
             f1{tp_} =  mvpalab_f1score(cm{tp_}');
         end
         % Receiver operating characteristic (ROC curve) if needed:
-        if cfg.classmodel.roc
+        if cfg.classmodel.auc || cfg.classmodel.roc
             [x{tp_},y{tp_},t{tp_},auc(tp_)] = ...
                 perfcurve(Y,predicted_scores{tp_}(:,mdl.ClassNames),1);
         end
@@ -129,7 +129,7 @@ else
         f1 =  mvpalab_f1score(cm');
     end
     % Receiver operating characteristic (ROC curve):
-    if cfg.classmodel.roc
+    if cfg.classmodel.auc || cfg.classmodel.roc
         [x,y,t,auc] = perfcurve(Y,predicted_scores(:,mdl.ClassNames),1);
     end
 end

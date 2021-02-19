@@ -76,6 +76,7 @@ cfg.classmodel.permlab = false;
 
 % Performance metrics:
 cfg.classmodel.roc       = false;
+cfg.classmodel.auc       = false;
 cfg.classmodel.confmat   = false;
 cfg.classmodel.precision = false;
 cfg.classmodel.recall    = false;

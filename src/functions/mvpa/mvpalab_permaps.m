@@ -68,12 +68,12 @@ for sub = 1 : nSubjects
             
             if cfg.classmodel.tempgen
                 permaps.acc(:,:,sub,per,freq) = acc;
-                if cfg.classmodel.roc
+                if cfg.classmodel.auc
                     permaps.auc(:,:,sub,per,freq) = auc;
                 end
             else
                 permaps.acc(:,:,sub,per,freq) = acc';
-                if cfg.classmodel.roc
+                if cfg.classmodel.auc
                     permaps.auc(:,:,sub,per,freq) = auc';
                 end
             end

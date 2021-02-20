@@ -99,6 +99,9 @@ if cfg.classmodel.precision
 end 
 
 cfg.classmodel.permlab = false;
+
+mvpalab_savepermaps(cfg,permaps);
+
 fprintf(' - Done!\n');
 end
 

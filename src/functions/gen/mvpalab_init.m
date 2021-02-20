@@ -71,6 +71,7 @@ cfg.classmodel.kernel = 'linear';
 
 % Analysis configuration:
 cfg.classmodel.tempgen = false;
+cfg.classmodel.extdiag = false;
 cfg.classmodel.parcomp = false;
 cfg.classmodel.permlab = false;
 

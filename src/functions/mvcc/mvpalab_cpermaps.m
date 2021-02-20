@@ -123,6 +123,9 @@ end
 
 
 cfg.classmodel.permlab = false;
+
+mvpalab_savepermaps(cfg,permaps);
+
 fprintf(' - Done!\n');
 end
 

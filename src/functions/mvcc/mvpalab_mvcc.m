@@ -153,6 +153,8 @@ if cfg.classmodel.wvector
     res.wvector.ba = w_ba;
 end
 
+mvpalab_saveresults(cfg,res);
+
 fprintf(' - Done!\n');
 
 end

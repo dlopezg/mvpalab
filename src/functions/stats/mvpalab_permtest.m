@@ -32,7 +32,7 @@ for i = 1 : numel(fields)
                     fprintf('<strong>   - Direction: B-A </strong>\n');
                     stats.(fields{i}).(subfields{j}).ba = mvpalab_computepermtest(...
                         cfg,performance_.ba,permuted_maps_.ba);
-                % MVPA    
+                    % MVPA
                 else
                     stats.(fields{i}).(subfields{j}) = mvpalab_computepermtest(...
                         cfg,performance_,permuted_maps_);
@@ -56,7 +56,7 @@ for i = 1 : numel(fields)
                 fprintf('<strong>   - Direction: B-A </strong>\n');
                 stats.(fields{i}).ba = mvpalab_computepermtest(...
                     cfg,performance_.ba,permuted_maps_.ba);
-            % MVPA    
+                % MVPA
             else
                 stats.(fields{i}) = mvpalab_computepermtest(...
                     cfg,performance_,permuted_maps_);
@@ -64,6 +64,11 @@ for i = 1 : numel(fields)
         end
     end
 end
+
+%% Save data:
+fprintf('<strong> > Saving results... </strong>\n');
+mvpalab_savestats(cfg,stats);
+
 fprintf('<strong> > Permutation test finished!</strong>\n');
 
 end

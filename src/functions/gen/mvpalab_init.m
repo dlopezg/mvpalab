@@ -12,7 +12,6 @@ cfg.study.dataPaths = {{},{};{},{}};
 cfg.study.dataFiles = {{},{};{},{}};
 cfg.study.conditionIdentifier = {'','';'',''};
 cfg.analysis = 'MVPA';
-cfg.study.mvccDirection = 'both';
 
 %% Configuration - Feature extraction:
 

@@ -32,7 +32,7 @@ mvpalab_savecfg(cfg);
 
 %% Extract diag:
 if cfg.classmodel.tempgen
-    if exist('permaps','var')
+    if cfg.stats.flag
         [resultdiag,permapsdiag] =  mvpalab_extractdiag(cfg,result,permaps);
         statsdiag = mvpalab_permtest(cfg,resultdiag,permapsdiag);
     else

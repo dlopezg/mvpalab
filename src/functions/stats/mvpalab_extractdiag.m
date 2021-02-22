@@ -10,7 +10,7 @@ for i = 1 : numel(fields)
         % Extract performance metric:
         performance_ = performance.(fields{i});
         % Extract permuted maps if needed:
-        if nargin > 1
+        if nargin > 2
             permuted_maps_ = permuted_maps.(fields{i});
         end
         
@@ -19,7 +19,7 @@ for i = 1 : numel(fields)
             % Extract performance metric:
             temp = performance_;
             % Extract permuted maps if needed:
-            if nargin > 1
+            if nargin > 2
                 temp_ = permuted_maps_;
             end
             subfields = fieldnames(temp);
@@ -28,21 +28,21 @@ for i = 1 : numel(fields)
             for j = 1 : numel(subfields)
                 performance_ = performance_.(subfields{j});
                 
-                if nargin > 1
+                if nargin > 2
                     permuted_maps_ = permuted_maps_.(subfields{j});
                 end
                 
                 % MVCC
                 if isstruct(performance_)
                     % Extract diagonal (results)  - Both directions
-                    for k = 1 : size(performance_,3)
+                    for k = 1 : size(performance_.ab,3)
                         per.(fields{i}).(subfields{j}).ab(1,:,k) = diag(performance_.ab(:,:,k));
                         per.(fields{i}).(subfields{j}).ba(1,:,k) = diag(performance_.ba(:,:,k));
                     end
                     % Extract diagonal (permuted maps)  - Both directions:
-                    if nargin > 1
-                        for k = 1 : size(permuted_maps_,4)
-                            for l = 1 : size(permuted_maps_,3)
+                    if nargin > 2
+                        for k = 1 : size(permuted_maps_.ab,4)
+                            for l = 1 : size(permuted_maps_.ab,3)
                                 permaps.(fields{i}).(subfields{j}).ab(1,:,l,k) = diag(permuted_maps_.ab(:,:,l,k));
                                 permaps.(fields{i}).(subfields{j}).ba(1,:,l,k) = diag(permuted_maps_.ba(:,:,l,k));
                             end
@@ -55,7 +55,7 @@ for i = 1 : numel(fields)
                         per.(fields{i}).(subfields{j})(1,:,k) = diag(performance_(:,:,k));
                     end
                     % Extract diagonal (permuted maps)
-                    if nargin > 1
+                    if nargin > 2
                         for k = 1 : size(permuted_maps_,4)
                             for l = 1 : size(permuted_maps_,3)
                                 permaps.(fields{i}).(subfields{j})(1,:,l,k) = diag(permuted_maps_(:,:,l,k));
@@ -70,14 +70,14 @@ for i = 1 : numel(fields)
             % MVCC
             if isstruct(performance_)
                 % Extract diagonal (results) - Both directions:
-                for k = 1 : size(performance_,3)
+                for k = 1 : size(performance_.ab,3)
                     per.(fields{i}).ab(1,:,k) = diag(performance_.ab(:,:,k));
                     per.(fields{i}).ba(1,:,k) = diag(performance_.ba(:,:,k));
                 end
                 % Extract diagonal (permuted maps) - Both directions:
-                if nargin > 1
-                    for k = 1 : size(permuted_maps_,4)
-                        for l = 1 : size(permuted_maps_,3)
+                if nargin > 2
+                    for k = 1 : size(permuted_maps_.ab,4)
+                        for l = 1 : size(permuted_maps_.ab,3)
                             permaps.(fields{i}).ab(1,:,l,k) = diag(permuted_maps_.ab(:,:,l,k));
                             permaps.(fields{i}).ba(1,:,l,k) = diag(permuted_maps_.ba(:,:,l,k));
                         end
@@ -90,7 +90,7 @@ for i = 1 : numel(fields)
                 end
                 
                 % Extract diagonal (permuted maps)
-                if nargin > 1
+                if nargin > 2
                     for k = 1 : size(permuted_maps_,4)
                         for l = 1 : size(permuted_maps_,3)
                             permaps.(fields{i})(1,:,l,k) = diag(permuted_maps_(:,:,l,k));
@@ -104,7 +104,7 @@ end
 
 %% Save results:
 mvpalab_saveresults(cfg,per);
-if nargin > 1
+if nargin > 2
     mvpalab_savepermaps(cfg,permaps);
 end
 end

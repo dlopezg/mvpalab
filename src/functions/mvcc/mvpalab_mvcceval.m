@@ -73,11 +73,11 @@ if cfg.classmodel.tempgen
             pr{tp_} =  mvpalab_precision(cm{tp_}');
         end
         % Compute recall if needed:
-        if cfg.classmodel.precision
+        if cfg.classmodel.recall
             re{tp_} =  mvpalab_recall(cm{tp_}');
         end
         % Compute F1-score if needed:
-        if cfg.classmodel.precision
+        if cfg.classmodel.f1score
             f1{tp_} =  mvpalab_f1score(cm{tp_}');
         end
     end

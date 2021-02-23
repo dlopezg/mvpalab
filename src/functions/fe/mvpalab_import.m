@@ -3,6 +3,7 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 %the required structure for the feature extraction.
 
 %% Initialization
+cfg = mvpalab_checkcfg(cfg);
 nSubjects = length(cfg.study.dataFiles{1,1});
 nClasses = 2;
 nCtxt = 1;

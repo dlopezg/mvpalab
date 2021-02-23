@@ -1,4 +1,4 @@
-function [per,permaps] = mvpalab_extractdiag(cfg,performance,permuted_maps)
+function [per,permaps,stats] = mvpalab_extractdiag(cfg,performance,permuted_maps)
 cfg.classmodel.tempgen = false;
 %% Loop over different performance metrics:
 fields = fieldnames(performance);
@@ -102,10 +102,11 @@ for i = 1 : numel(fields)
     end
 end
 
-%% Save results:
+%% Permutations tests and save result:
 mvpalab_saveresults(cfg,per);
 if nargin > 2
     mvpalab_savepermaps(cfg,permaps);
+    stats = mvpalab_permtest(cfg,per,permaps);
 end
 end
 

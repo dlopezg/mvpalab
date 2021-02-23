@@ -10,7 +10,11 @@ fprintf('<strong> > Initializing MVPAlab toolbox: </strong>\n');
 %% Datafiles and paths:
 cfg.study.dataPaths = {{},{};{},{}};
 cfg.study.dataFiles = {{},{};{},{}};
-cfg.study.conditionIdentifier = {'','';'',''};
+
+cfg.study.conditionIdentifier = {
+    'condition_a','condition_b';
+    'condition_c','condition_d'};
+
 cfg.analysis = 'MVPA';
 
 %% Configuration - Feature extraction:

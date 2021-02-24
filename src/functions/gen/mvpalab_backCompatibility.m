@@ -5,6 +5,7 @@ function cfg = mvpalab_backCompatibility(cfg)
         cfg.powenv.method   = 'analytic';
         cfg.powenv.uplow = 'upper';
         cfg.powenv.length   = 5;
+        warning('CFG structure updated > Field renamed.');
     end
 end
 

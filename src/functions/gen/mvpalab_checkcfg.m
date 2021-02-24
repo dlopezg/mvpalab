@@ -21,6 +21,8 @@ if isstruct(cfg)
                 cfg_.(subfields{subfield}),...
                 cfg.(subfields{subfield}));
         else
+            warning(['CFG structure updated > New field created: '...
+                subfields{subfield}])
             cfg_.(subfields{subfield}) = cfg.(subfields{subfield});
         end
     end

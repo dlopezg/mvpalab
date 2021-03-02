@@ -1,5 +1,13 @@
-function values = mvpalab_reorganize(cfg,metric,metric_)
-mvccdirections = exist('metric_','var');
+function o = mvpalab_reorganize(cfg,metric,metric_)
+
+% Class names:
+id_1 = cfg.study.conditionIdentifier{1,1};
+id_2 = cfg.study.conditionIdentifier{1,2};
+id_3 = cfg.study.conditionIdentifier{2,1};
+id_4 = cfg.study.conditionIdentifier{2,2};
+
+mvcc = exist('metric_','var');
+
 for sub = 1 : size(metric,1)
     for tp = 1 : size(metric,2)
         for freq = 1 : size(metric,3)
@@ -8,7 +16,7 @@ for sub = 1 : size(metric,1)
                 
                 temp = metric{sub,tp,freq};
                 
-                if mvccdirections
+                if mvcc
                     temp_ = metric_{sub,tp,freq};
                 end
                 
@@ -16,47 +24,43 @@ for sub = 1 : size(metric,1)
                 if cfg.classmodel.tempgen
                     for tp_ = 1 : length(temp)
                         % MVPA or MVCC
-                        if mvccdirections
+                        if mvcc
                             
                             % MVCC - Direction A - B
-                            values.class_a.ab(tp,tp_,sub,freq) = temp{tp_}(1);
-                            values.class_b.ab(tp,tp_,sub,freq) = temp{tp_}(2);
-                            values.mean_model.ab(tp,tp_,sub,freq) = mean(temp{tp_});
+                            o.(id_1)(tp,tp_,sub,freq) = temp_{tp_}(1);
+                            o.(id_2)(tp,tp_,sub,freq) = temp_{tp_}(2);
                             
                             % MVCC - Direction B - A
-                            values.class_a.ba(tp,tp_,sub,freq) = temp_{tp_}(1);
-                            values.class_b.ba(tp,tp_,sub,freq) = temp_{tp_}(2);
-                            values.mean_model.ba(tp,tp_,sub,freq) = mean(temp_{tp_});
+                            o.(id_3)(tp,tp_,sub,freq) = temp{tp_}(1);
+                            o.(id_4)(tp,tp_,sub,freq) = temp{tp_}(2);
                             
                         else
                             
                             % MVPA
-                            values.class_a(tp,tp_,sub,freq) = temp{tp_}(1);
-                            values.class_b(tp,tp_,sub,freq) = temp{tp_}(2);
-                            values.mean_model(tp,tp_,sub,freq) = mean(temp{tp_});
+                            o.(id_1)(tp,tp_,sub,freq) = temp{tp_}(1);
+                            o.(id_2)(tp,tp_,sub,freq) = temp{tp_}(2);
+                            o.mean(tp,tp_,sub,freq) = mean(temp{tp_});
                             
                         end
                     end
                 else
                     % MVPA or MVCC
-                    if mvccdirections
+                    if mvcc
                         
                         % MVCC - Direction A - B
-                        values.class_a.ab(1,tp,sub,freq) = temp(1);
-                        values.class_b.ab(1,tp,sub,freq) = temp(2);
-                        values.mean_model.ab(1,tp,sub,freq) = mean(temp);
+                        o.(id_1)(1,tp,sub,freq) = temp_(1);
+                        o.(id_2)(1,tp,sub,freq) = temp_(2);
                         
                         % MVCC - Direction B - A
-                        values.class_a.ba(1,tp,sub,freq) = temp_(1);
-                        values.class_b.ba(1,tp,sub,freq) = temp_(2);
-                        values.mean_model.ba(1,tp,sub,freq) = mean(temp_);
+                        o.(id_3)(1,tp,sub,freq) = temp(1);
+                        o.(id_4)(1,tp,sub,freq) = temp(2);
                         
                     else
                         
                         % MVPA
-                        values.class_a(1,tp,sub,freq) = temp(1);
-                        values.class_b(1,tp,sub,freq) = temp(2);
-                        values.mean_model(1,tp,sub,freq) = mean(temp);
+                        o.(id_1)(1,tp,sub,freq) = temp(1);
+                        o.(id_2)(1,tp,sub,freq) = temp(2);
+                        o.mean(1,tp,sub,freq) = mean(temp);
                         
                     end
                 end
@@ -64,7 +68,7 @@ for sub = 1 : size(metric,1)
                 for per = 1 : size(metric,4)
                     temp = metric{sub,tp,freq,per};
                     
-                    if mvccdirections
+                    if mvcc
                         temp_ = metric_{sub,tp,freq,per};
                     end
                     
@@ -73,49 +77,45 @@ for sub = 1 : size(metric,1)
                         for tp_ = 1 : length(temp)
                             
                             % MVPA or MVCC
-                            if mvccdirections
+                            if mvcc
                                 
                                 % MVCC - Direction A - B
-                                values.class_a.ab(tp,tp_,sub,per,freq) = temp{tp_}(1);
-                                values.class_b.ab(tp,tp_,sub,per,freq) = temp{tp_}(2);
-                                values.mean_model.ab(tp,tp_,sub,per,freq) = mean(temp{tp_});
+                                o.(id_1)(tp,tp_,sub,per,freq) = temp_{tp_}(1);
+                                o.(id_2)(tp,tp_,sub,per,freq) = temp_{tp_}(2);
                                 
                                 % MVCC - Direction B - A
-                                values.class_a.ba(tp,tp_,sub,per,freq) = temp_{tp_}(1);
-                                values.class_b.ba(tp,tp_,sub,per,freq) = temp_{tp_}(2);
-                                values.mean_model.ba(tp,tp_,sub,per,freq) = mean(temp_{tp_});
+                                o.(id_3)(tp,tp_,sub,per,freq) = temp{tp_}(1);
+                                o.(id_4)(tp,tp_,sub,per,freq) = temp{tp_}(2);
                                 
                             else
                                 
                                 % MVPA
-                                values.class_a(tp,tp_,sub,per,freq) = temp{tp_}(1);
-                                values.class_b(tp,tp_,sub,per,freq) = temp{tp_}(2);
-                                values.mean_model(tp,tp_,sub,per,freq) = mean(temp{tp_});
+                                o.(id_1)(tp,tp_,sub,per,freq) = temp{tp_}(1);
+                                o.(id_2)(tp,tp_,sub,per,freq) = temp{tp_}(2);
+                                o.mean(tp,tp_,sub,per,freq) = mean(temp{tp_});
                                 
                             end
                         end
                     else
                         % MVPA or MVCC
-                            if mvccdirections
-                                
-                                % MVCC - Direction A - B
-                                values.class_a.ab(1,tp,sub,per,freq) = temp(1);
-                                values.class_b.ab(1,tp,sub,per,freq) = temp(2);
-                                values.mean_model.ab(1,tp,sub,per,freq) = mean(temp);
-                                
-                                % MVCC - Direction B - A
-                                values.class_a.ba(1,tp,sub,per,freq) = temp_(1);
-                                values.class_b.ba(1,tp,sub,per,freq) = temp_(2);
-                                values.mean_model.ba(1,tp,sub,per,freq) = mean(temp_);
-                                
-                            else
-                                
-                                % MVPA
-                                values.class_a(1,tp,sub,per,freq) = temp(1);
-                                values.class_b(1,tp,sub,per,freq) = temp(2);
-                                values.mean_model(1,tp,sub,per,freq) = mean(temp);
-                        
-                            end
+                        if mvcc
+                            
+                            % MVCC - Direction A - B
+                            o.(id_1)(1,tp,sub,per,freq) = temp_(1);
+                            o.(id_2)(1,tp,sub,per,freq) = temp_(2);
+                            
+                            % MVCC - Direction B - A
+                            o.(id_3)(1,tp,sub,per,freq) = temp(1);
+                            o.(id_4)(1,tp,sub,per,freq) = temp(2);
+                            
+                        else
+                            
+                            % MVPA
+                            o.(id_1)(1,tp,sub,per,freq) = temp(1);
+                            o.(id_2)(1,tp,sub,per,freq) = temp(2);
+                            o.mean(1,tp,sub,per,freq) = mean(temp);
+                            
+                        end
                     end
                 end
             end

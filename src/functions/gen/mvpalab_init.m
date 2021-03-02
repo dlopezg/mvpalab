@@ -12,8 +12,9 @@ cfg.study.dataPaths = {{},{};{},{}};
 cfg.study.dataFiles = {{},{};{},{}};
 
 cfg.study.conditionIdentifier = {
-    'condition_a','condition_b';
-    'condition_c','condition_d'};
+    'condition_a','condition_b'; % Context 1
+    'condition_c','condition_d'  % Context 2
+    };
 
 cfg.analysis = 'MVPA';
 

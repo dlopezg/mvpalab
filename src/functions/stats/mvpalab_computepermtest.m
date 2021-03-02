@@ -42,17 +42,16 @@ fprintf(' - Done!\n');
 % (i) and permuted map (j).
 
 figure;
-subplot(1,4,[1 2]);
+subplot(2,2,[1 2]);
 h = histogram(gpermaps(i,j,:),'Normalization','probability');
 h.FaceColor = [.5 .5 .5];
 h.EdgeColor = [.5 .5 .5];
 hold on
-vl = vline(double(pctval(i,j)),'r-','performanceuracy threshold (p<.001)');
-vl = vline(double(pctval_(i,j)),'r-','performanceuracy threshold (p<.001)');
-xlabel('performance');
+vl = vline(double(pctval(i,j)),'r-','Above chance threshold (p<.001)');
+vl = vline(double(pctval_(i,j)),'r-','Below chance threshold (p<.001)');
 grid minor
-title('performanceuracy null distribution (group level)')
-xlabel('performanceuracy');
+title('Permuted distribution (group level)')
+xlabel('Data distribution');
 ylabel('Normalized histogram')
 
 
@@ -87,7 +86,7 @@ fprintf(' - Done!\n');
 %% Plot the null distribution of cluster sizes:
 
 % Cluster size distribution - above chance level.
-subplot(1,4,3);
+subplot(2,2,3);
 hold on
 h = histogram(...
     sizedist,'Normalization','probability','BinMethod','integers');
@@ -102,7 +101,7 @@ ylabel('Normalized histogram (log scale)')
 title('Cluster size null distribution (above chance)')
 
 % Cluster size distribution - below chance level.
-subplot(1,4,4);
+subplot(2,2,4);
 hold on
 h_ = histogram(...
     sizedist_,'Normalization','probability','BinMethod','integers');
@@ -131,9 +130,9 @@ corrcsize_ = find((fdr_ < pval) & (fdr_ ~= 0),1);
 if isempty(corrcsize); corrcsize = length(fdr); end
 if isempty(corrcsize_); corrcsize_ = length(fdr_); end
 
-subplot(1,4,3);
+subplot(2,2,3);
 vl = vline(corrcsize,'r-','Cluster size threshold (p<.001)');
-subplot(1,4,4);
+subplot(2,2,4);
 vl = vline(corrcsize_,'r-','Cluster size threshold (p<.001)');
 
 %% Search clusters in real data:

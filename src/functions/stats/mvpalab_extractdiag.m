@@ -64,7 +64,10 @@ for i = 1 : numel(fields)
                     end
                 end
                 performance_ = temp;
-                permuted_maps_ = temp_;
+                
+                if nargin > 2
+                    permuted_maps_ = temp_;
+                end
             end
         else
             % MVCC

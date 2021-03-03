@@ -4,82 +4,103 @@ function [ cfg ] = mvpalab_init()
 clear
 clc
 cfg = [];
-
 fprintf('<strong> > Initializing MVPAlab toolbox: </strong>\n');
 
-%% Datafiles and paths:
-cfg.study.dataPaths = {{},{};{},{}};
-cfg.study.dataFiles = {{},{};{},{}};
-
-cfg.study.conditionIdentifier = {
-    'condition_a','condition_b'; % Context 1
-    'condition_c','condition_d'  % Context 2
-    };
+%% ANALYSIS TYPE:
 
 cfg.analysis = 'MVPA';
 
-%% Configuration - Feature extraction:
+% cfg.analysis = 'MVPA' - Multivariate Pattern Analysis.
+% cfg.analysis = 'MVCC' - Multivariate Cross-Classification.
 
-% Power envelope as features:
-cfg.feature         = 'voltage';
-cfg.powenv.method   = 'analytic';
-cfg.powenv.uplow    = 'upper';
-cfg.powenv.length   = 5;
+%% FEATURE EXTRACTION:
 
-% Supertrial generation:
+cfg.feature = 'voltage';
+
+% cfg.feature = 'voltage'  - Raw voltage as feature.
+% cfg.feature = 'envelope' - Power evelope as feature.
+
+cfg.powenv.method = 'analytic';
+cfg.powenv.uplow  = 'upper';
+cfg.powenv.length = 5;
+
+% cfg.powenv.method = 'analytic' - Envelope using the analytic signal.
+% cfg.powenv.method = 'peak'     - Peak envelopes.
+
+% cfg.powenv.uplow = 'upper' - Select upper envelope.
+% cfg.powenv.uplow = 'lower' - Select lower envelope.
+
+%% TRIAL AVERAGE:
+
 cfg.trialaver.flag     = false;
 cfg.trialaver.ntrials  = 0;
 cfg.trialaver.order    = 'rand';
 
-% Match class size:
+% cfg.trialaver.order = 'rand' - Random order.
+% cfg.trialaver.order = 'seq'  - Secuential order.
+
+%% BALANCED DATASETS:
+
 cfg.classsize.match = false;
 cfg.classsize.matchkfold = false;
 
-%% Configuration - Feature selection:
+%% DIMENSION REDUCTION:
 
-% Feature selection methods:
-% 'pca' - Principal Component Analysis
-% 'pls' - Partial Least Squares
-% 'lda' - Linear Discriminant Analysis (in progress)
+% cfg.dimred.method = 'none' - Diemnsion reduction disabled.
+% cfg.dimred.method = 'pca'  - Principal Component Analysis.
+
 cfg.dimred.method = 'none';
-cfg.dimred.flag   = false;
 cfg.dimred.ncomp  = 0;
 
-%% Configuration - Data normalization:
+%% DATA NORMALIZATION:
 
-% Notmalization methods:
-% 0 - raw data
-% 1 - z-score (across features)
-% 2 - z-score (across time)
-% 3 - z-score (across trials)
-% 4 - std_nor (across trials)
+% cfg.normdata = 0 - raw data
+% cfg.normdata = 1 - z-score (across features)
+% cfg.normdata = 2 - z-score (across time)
+% cfg.normdata = 3 - z-score (across trials)
+% cfg.normdata = 4 - std_nor (across trials)
 
 cfg.normdata = 0; 
 
-%% Configuration - Data smoothing:
+%% DATA SMOOTHING:
+
+% cfg.smoothdata.method = 'none'   - Data smooth disabled.
+% cfg.smoothdata.method = 'moving' - Moving average method.
+
 cfg.smoothdata.method   = 'none';
 cfg.smoothdata.window   = 1;
 
-%% Configuration - Analysis timing:
+%% ANALYSIS TIMING:
+
 cfg.tm.tpstart   = 0;
 cfg.tm.tpend     = 0;
 cfg.tm.tpsteps   = 1;
 
-%% Configuration - Classification procedure:
+%% CLASSIFICATION ALGORITHM:
 
-% Classification algorithms:
-% 'svm' - Support Vector Machine.
-% 'lda' - Linear Discriminant Analysis.
+% cfg.classmodel.method = 'svm' - Support Vector Machine.
+% cfg.classmodel.method = 'lda' - Linear Discriminant Analysis.
+
+% cfg.classmodel.kernel = 'linear'     - Support Vector Machine.
+% cfg.classmodel.kernel = 'gaussian'   - Support Vector Machine.
+% cfg.classmodel.kernel = 'rbf'        - Support Vector Machine.
+% cfg.classmodel.kernel = 'polynomial' - Support Vector Machine.
+
+% cfg.classmodel.kernel = 'linear' - Discriminant Analysis.
+% cfg.classmodel.kernel = 'quadratic' - Discriminant Analysis.
+
 cfg.classmodel.method = 'svm';
 cfg.classmodel.kernel = 'linear';
 
-% Analysis configuration:
-cfg.classmodel.tempgen = false;
-cfg.classmodel.extdiag = false;
-cfg.classmodel.parcomp = false;
-cfg.classmodel.permlab = false;
+%% HYPERPARAMETERS OPTIMIZATION:
 
-% Performance metrics:
+cfg.classmodel.optimize.flag = false;
+cfg.classmodel.optimize.params = {'BoxConstraint'};
+cfg.classmodel.optimize.opt = struct('Optimizer','gridsearch',...
+    'ShowPlots',false,'Verbose',0,'Kfold', 5);
+
+%% PERFORMANCE METRICS:
+
 cfg.classmodel.roc       = false;
 cfg.classmodel.auc       = false;
 cfg.classmodel.confmat   = false;
@@ -87,26 +108,24 @@ cfg.classmodel.precision = false;
 cfg.classmodel.recall    = false;
 cfg.classmodel.f1score   = false;
 cfg.classmodel.wvector   = false;
-    
 
-% Optimization configuration:
-cfg.classmodel.optimize.flag = false;
-cfg.classmodel.optimize.params = {'BoxConstraint'};
-cfg.classmodel.optimize.opt = struct('Optimizer','gridsearch',...
-    'ShowPlots',false,...
-    'Verbose',0,...
-    'Kfold', 5);
+%% EXTRA CONFIGURATION:
 
-%% Configuration - Cross-validation procedure:
+cfg.classmodel.tempgen = false;
+cfg.classmodel.extdiag = false;
+cfg.classmodel.parcomp = false;
+cfg.classmodel.permlab = false;
 
-% Classification algorithms:
-% 'kfold' - K-Fold cross-validation.
-% 'loo'   - Leave-one-out cross-validation.
+%% CROSS-VALIDATIONN PROCEDURE:
+
+% cfg.cv.method = 'kfold' - K-Fold cross-validation.
+% cfg.cv.method = 'loo'   - Leave-one-out cross-validation.
 
 cfg.cv.method  = 'kfold';
 cfg.cv.nfolds  = 5;
 
-%% Configuration - Statistic for permutation method:
+%% PERMUTATION TEST
+
 cfg.stats.flag   = 0;
 cfg.stats.nper   = 100;
 cfg.stats.nperg  = 1e5;
@@ -114,14 +133,15 @@ cfg.stats.pgroup = 99.9;
 cfg.stats.pclust = 99.9;
 cfg.stats.shownulldis = 0;
 
-%% Configure sliding filter analysis:
+%% SLIDING FILTER ANALYSIS CONFIGURATION:
+
 % Flag:
 cfg.sf.flag = 0;
 cfg.sf.filesLocation = '';
 
 % Frequency limits:
-cfg.sf.lfreq = 0;              % Analysis inferior limit (Hz).
-cfg.sf.hfreq = 40;             % Analysis superior limit (Hz).
+cfg.sf.lfreq = 0;   % Analysis inferior limit (Hz).
+cfg.sf.hfreq = 40;  % Analysis superior limit (Hz).
 
 % Filter design:
 cfg.sf.ftype = 'bandstop';      % Filter type.
@@ -131,34 +151,28 @@ cfg.sf.hbw   = cfg.sf.bw/2;     % Halfband width (Hz).
 cfg.sf.order = 1408;            % Filter order.
 
 % Frequency steps:
-cfg.sf.fspac = 'log';           % Linear or logarithmic (lin/log.)
-cfg.sf.nfreq = 40;              % Number of steps - log (Hz).
+cfg.sf.fspac = 'log';  % Linear or logarithmic (lin/log.)
+cfg.sf.nfreq = 40;     % Number of steps - log (Hz).
 
 % For data import (mvpalab_load):
 if ~cfg.sf.flag; cfg.sf.nfreq = 1; end
 
+%% DATAFILES, PATHS AND CONDITIONN :
 
-%% Other configuration - Parallel computing:
-fprintf('<strong> > Checking parallel computing: </strong>');
-% if license('test','Distrib_Computing_Toolbox')
-%     fprintf('- Toolbox installed.\n');
-%     cfg.classmodel.parcomp = true;
-%     p = gcp('nocreate'); 
-%     if isempty(p)
-%         parpool;
-%     end
-% else
-%     disp('- Toolbox not available');
-%     cfg.classmodel.parcomp = false;
-% end
+cfg.study.dataPaths = {{},{};{},{}};
+cfg.study.dataFiles = {{},{};{},{}};
 
+cfg.study.conditionIdentifier = {
+    'condition_a','condition_b'; % Context 1
+    'condition_c','condition_d'  % Context 2
+    };
+
+%% SOFTWARE VERSION:
+cfg.version = 'BETA v0.1';
 fprintf('<strong> > MVPAlab is ready! </strong>\n');
 
 %% PCA rank warning disabled. 
 warning('off','stats:pca:ColRankDefX');
-
-%% Software version:
-cfg.version = 'BETA v0.1';
 
 end
 

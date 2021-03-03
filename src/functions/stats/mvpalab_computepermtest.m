@@ -41,7 +41,7 @@ fprintf(' - Done!\n');
 % Plot the null distribution of performance values for a specific timepoint
 % (i) and permuted map (j).
 
-figure;
+f1 = figure;
 subplot(2,2,[1 2]);
 h = histogram(gpermaps(i,j,:),'Normalization','probability');
 h.FaceColor = [.5 .5 .5];
@@ -181,6 +181,10 @@ stats.clusters_ = clusters_;
 
 stats.sigmask = sigmask;
 stats.sigmask_ = sigmask_;
+
+if ~cfg.stats.shownulldis
+    close(f1);
+end
 
 fprintf(' - Done!\n');
 

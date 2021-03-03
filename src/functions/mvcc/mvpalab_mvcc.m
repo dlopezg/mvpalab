@@ -138,12 +138,12 @@ if cfg.classmodel.precision
 end 
 
 % Return recall if needed:
-if cfg.classmodel.precision
+if cfg.classmodel.recall
     res.recall = mvpalab_reorganize(cfg,recall_ab,recall_ba);
 end 
 
 % Return f1score if needed:
-if cfg.classmodel.precision
+if cfg.classmodel.f1score
     res.f1score = mvpalab_reorganize(cfg,f1score_ab,f1score_ba);
 end 
 

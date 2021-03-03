@@ -35,7 +35,7 @@ if cfg.classmodel.tempgen
     if cfg.stats.flag
         [resultdiag,permapsdiag,statsdiag] = mvpalab_extractdiag(cfg,result,permaps);
     else
-        resultdiag = mvpalab_extractdiag(result);
+        resultdiag = mvpalab_extractdiag(cfg,result);
     end
 end
 

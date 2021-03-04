@@ -41,7 +41,7 @@ function cfg = mvpalab_plotfreqresp(cfg)
         z = z(1:nfft / 2 + 1);
         
         % Color gradient:
-        shift = floor(limit/length(cfg.sf.fcutoff));
+        shift = floor(limit/length(cfg.sf.fcutoff)) - 1;
         color = color + shift;
         
         % Plot magnitude response:
@@ -50,7 +50,7 @@ function cfg = mvpalab_plotfreqresp(cfg)
     end
     
     % Titles and axis:
-    title('Magnitude response');
+    title('Magnitude response (log spacing)');
     ylabel('Magnitude (dB)');
     xlabel('Frequency (Hz)');
     xlim([0,cfg.sf.hfreq]);
@@ -84,7 +84,7 @@ function cfg = mvpalab_plotfreqresp(cfg)
         z = z(1:nfft / 2 + 1);
         
         % Color gradient:
-        shift = floor(limit/length(cfg.sf.fcutoff));
+        shift = floor(limit/length(cfg.sf.fcutoff)) - 1;
         color = color + shift;
         
         % Plot magnitude response:
@@ -93,7 +93,7 @@ function cfg = mvpalab_plotfreqresp(cfg)
     end
     
     % Titles and axis:
-    title('Magnitude response');
+    title('Magnitude response (linear spacing)');
     ylabel('Magnitude (dB)');
     xlabel('Frequency (Hz)');
     xlim([0,cfg.sf.hfreq]);

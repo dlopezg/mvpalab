@@ -43,10 +43,15 @@ function cfg = mvpalab_plotfreqresp(cfg)
         % Color gradient:
         shift = floor(limit/length(cfg.sf.fcutoff)) - 1;
         color = color + shift;
+        index = limit - color;
+        
+        if index == 0
+            index = 1;
+        end
         
         % Plot magnitude response:
         plot(f, 20 * log10(abs(z)), 'LineWidth',1,...
-            'Color', grd.neptune(limit - color,:));
+            'Color', grd.neptune(index,:));
     end
     
     % Titles and axis:
@@ -86,10 +91,16 @@ function cfg = mvpalab_plotfreqresp(cfg)
         % Color gradient:
         shift = floor(limit/length(cfg.sf.fcutoff)) - 1;
         color = color + shift;
+        index = limit - color;
+        
+        if index == 0
+            index = 1;
+        end
+        
         
         % Plot magnitude response:
         plot(f, 20 * log10(abs(z)), 'LineWidth',1,...
-            'Color', grd.neptune(limit - color,:));
+            'Color', grd.neptune(index,:));
     end
     
     % Titles and axis:

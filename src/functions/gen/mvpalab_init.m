@@ -1,8 +1,6 @@
 function [ cfg ] = mvpalab_init()
 %INITIALIZE Summary of this function goes here
 %   Detailed explanation goes here
-clear
-clc
 cfg = [];
 fprintf('<strong> > Initializing MVPAlab toolbox: </strong>\n');
 

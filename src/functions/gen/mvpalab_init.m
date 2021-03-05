@@ -138,6 +138,7 @@ cfg.stats.shownulldis = 0;
 % Flag:
 cfg.sf.flag = 0;
 cfg.sf.filesLocation = '';
+cfg.sf.metric = 'acc';
 
 % Frequency limits:
 cfg.sf.lfreq = 0;   % Analysis inferior limit (Hz).

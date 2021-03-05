@@ -7,19 +7,18 @@ n_maps = size(permaps,4);
 
 %% Generate diffMap for real data and permuted diffMaps for statistics:
 for freq = 1 : n_freq
-    diffMap(freq,:,:) = squeeze(acc - accmap(:,:,:,freq));
+    diffMap.(cfg.sf.metric)(freq,:,:) = squeeze(acc - accmap(:,:,:,freq));
     
-    % Generate permuted diffMaps for statistics:
-    if exist('permaps','var') && exist('peracc','var')
+    % Generate permuted diffMaps for statistics if nedeed:
+    if nargin > 3
         for map = 1 : n_maps
-            perdiffMap(freq,:,:,map) = squeeze(peracc) - squeeze(permaps(:,:,:,map,freq));
+            perdiffMap.(cfg.sf.metric)(freq,:,:,map) = ...
+                squeeze(peracc) - squeeze(permaps(:,:,:,map,freq));
         end
     end
 end
 
 fprintf('Done.\n');
-
-
 
 end
 

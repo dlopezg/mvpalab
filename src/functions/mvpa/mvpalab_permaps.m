@@ -100,7 +100,10 @@ end
 
 cfg.classmodel.permlab = false;
 
-mvpalab_savepermaps(cfg,permaps);
+if ~cfg.sf.flag
+    mvpalab_savepermaps(cfg,permaps);
+end
+
 
 fprintf(' - Done!\n');
 end

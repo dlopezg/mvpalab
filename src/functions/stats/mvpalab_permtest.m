@@ -67,7 +67,10 @@ end
 
 %% Save data:
 fprintf('<strong> > Saving results... </strong>\n');
-mvpalab_savestats(cfg,stats);
+
+if ~cfg.sf.flag
+    mvpalab_savestats(cfg,stats);
+end
 
 fprintf('<strong> > Permutation test finished!</strong>\n');
 

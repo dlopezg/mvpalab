@@ -151,10 +151,7 @@ cfg.sf.order = 1408;            % Filter order.
 
 % Frequency steps:
 cfg.sf.fspac = 'log';  % Linear or logarithmic (lin/log.)
-cfg.sf.nfreq = 40;     % Number of steps - log (Hz).
-
-% For data import (mvpalab_load):
-if ~cfg.sf.flag; cfg.sf.nfreq = 1; end
+cfg.sf.nfreq = 20;     % Number of steps - log (Hz).
 
 %% DATAFILES, PATHS AND CONDITIONN :
 

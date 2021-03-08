@@ -48,6 +48,8 @@ elseif strcmp(cfg.analysis,'MVCC')
     [performance,cfg] = mvpalab_mvcc(cfg,fv);
 end
 
+cfg.sf.nfreq = length(cfg.sf.freqvec);
+
 save([savefolder 'sfilter' filesep 'performance.mat'],...
     'performance','-v7.3');
 

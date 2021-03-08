@@ -1,13 +1,13 @@
-function [diffMap,perdiffMap,cfg] = mvpalab_gendiffmap(cfg,acc,accmap,peracc,permaps)
+function [cfg,diffMap,perdiffMap] = mvpalab_gendiffmap(cfg,acc,accmap,peracc,permaps)
 
 fprintf('<strong> > Generating diffmaps... </strong>');
 
 if strcmp(cfg.analysis,'MVPA')
-    n_freq = size(permaps,5);
-    n_maps = size(permaps,4);
+    n_freq = size(accmap,5);
+    n_maps = size(accmap,4);
 elseif strcmp(cfg.analysis,'MVCC')
-    n_freq = size(permaps.ab,5);
-    n_maps = size(permaps.ab,4);
+    n_freq = size(accmap.ab,5);
+    n_maps = size(accmap.ab,4);
 end
 
 %% Generate diffMap for real data and permuted diffMaps for statistics:

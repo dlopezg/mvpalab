@@ -27,16 +27,13 @@ save([savefolder 'sfilter' filesep 'performance_maps.mat'],...
 
 % Generate permuted maps for each frequency band if needed:
 if cfg.stats.flag
-    
     if strcmp(cfg.analysis,'MVPA')
         [permuted_maps,cfg] = mvpalab_permaps(cfg);
     elseif strcmp(cfg.analysis,'MVCC')
         [permuted_maps,cfg] = mvpalab_cpermaps(cfg);
     end
-    
     save([savefolder 'sfilter' filesep 'permuted_maps.mat'],...
         'permuted_maps','-v7.3');
-    
 end
 
 %% MVPA analysis:
@@ -54,27 +51,39 @@ end
 save([savefolder 'sfilter' filesep 'performance.mat'],...
     'performance','-v7.3');
 
-% Chance level:
-cfg.classmodel.permlab = true;
-
-if strcmp(cfg.analysis,'MVPA')
-    [permuted_performance,cfg] = mvpalab_mvpa(cfg,fv);
-elseif strcmp(cfg.analysis,'MVCC')
-    [permuted_performance,cfg] = mvpalab_mvcc(cfg,fv);
+% Chance level if needed:
+if cfg.stats.flag
+    
+    cfg.classmodel.permlab = true;
+    
+    if strcmp(cfg.analysis,'MVPA')
+        [permuted_performance,cfg] = mvpalab_mvpa(cfg,fv);
+    elseif strcmp(cfg.analysis,'MVCC')
+        [permuted_performance,cfg] = mvpalab_mvcc(cfg,fv);
+    end
+    
+    cfg.classmodel.permlab = false;
+    cfg.sf.flag = true;
+    
+    save([savefolder 'sfilter' filesep 'permuted_performance.mat'],...
+        'permuted_performance','-v7.3');
 end
 
-cfg.sf.flag = true;
-cfg.classmodel.permlab = false;
-save([savefolder 'sfilter' filesep 'permuted_performance.mat'],...
-    'permuted_performance','-v7.3');
+
 
 %% Sliding filter analysis - Generate diffMaps:
 
-[diffMap,perdiffMap,cfg] = mvpalab_gendiffmap(...
-    cfg,performance.(cfg.sf.metric),...
-    performance_maps.(cfg.sf.metric),...
-    permuted_performance.(cfg.sf.metric),...
-    permuted_maps.(cfg.sf.metric));
+if cfg.stats.flag
+    [cfg,diffMap,perdiffMap] = mvpalab_gendiffmap(...
+        cfg,performance.(cfg.sf.metric),...
+        performance_maps.(cfg.sf.metric),...
+        permuted_performance.(cfg.sf.metric),...
+        permuted_maps.(cfg.sf.metric));
+else
+    [cfg,diffMap] = mvpalab_gendiffmap(...
+        cfg,performance.(cfg.sf.metric),...
+        performance_maps.(cfg.sf.metric));
+end
 
 result = diffMap.(cfg.sf.metric);
 save([savefolder 'result.mat'],'result','cfg','-v7.3');

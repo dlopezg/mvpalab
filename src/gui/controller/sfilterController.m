@@ -2,4 +2,9 @@
 mvpalab_savecfg(cfg);
 
 %% Compute analysis:
-[cfg,result,stats] = mvpalab_sfilter(cfg);
+if cfg.stats.flag
+    [cfg,result,stats] = mvpalab_sfilter(cfg);
+else
+    [cfg,result] = mvpalab_sfilter(cfg);
+end
+

@@ -3,6 +3,9 @@ function [ stats ] = mvpalab_permtest( cfg, performance, permuted_maps )
 fields = fieldnames(performance);
 validfields = {'acc' 'auc' 'precision' 'recall' 'f1score'};
 
+% Enable statistics:
+cfg.stats.flag = 1;
+
 % For each field:
 for i = 1 : numel(fields)
     if find(strcmp(validfields, fields{i}))

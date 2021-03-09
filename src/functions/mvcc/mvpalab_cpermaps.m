@@ -3,6 +3,9 @@ function [permaps,cfg] = mvpalab_cpermaps(cfg,fv)
 %level for future statistical analyses.
 fprintf('<strong> > Computing permutated maps (MVCC): </strong>\n');
 
+% Enable statistics:
+cfg.stats.flag = 1;
+
 nSubjects = length(cfg.study.dataFiles{1,1});
 nfreq = 1;
 if cfg.sf.flag

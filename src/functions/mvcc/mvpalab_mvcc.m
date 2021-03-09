@@ -4,7 +4,6 @@ fprintf('<strong> > Computing MVCC analysis: </strong>\n');
 
 nSubjects = length(cfg.study.dataFiles{1,1});
 
-nfreq = 1;
 if cfg.sf.flag
     folders = dir([cfg.sf.filesLocation filesep 'fv' filesep 's_*']);
 end
@@ -18,11 +17,10 @@ for sub = 1 : nSubjects
         fprintf(' Frequency bands - ');
         folder = [folders(sub).folder filesep folders(sub).name];
         files = dir([folder filesep 'ffv_*.mat']);
-        nfreq = length(files);
     end
     
     %% Frequencies loop:
-    for freq = 1 : nfreq
+    for freq = 1 : length(cfg.sf.freqvec)
         
         %% Load data if needed:
         if cfg.sf.flag

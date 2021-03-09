@@ -152,6 +152,7 @@ cfg.sf.order = 1408;            % Filter order.
 % Frequency steps:
 cfg.sf.fspac = 'log';  % Linear or logarithmic (lin/log.)
 cfg.sf.nfreq = 20;     % Number of steps - log (Hz).
+cfg.sf.freqvec = [0];  % Frequency vector.
 
 %% DATAFILES, PATHS AND CONDITIONN :
 

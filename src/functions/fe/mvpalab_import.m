@@ -8,6 +8,10 @@ nSubjects = length(cfg.study.dataFiles{1,1});
 nClasses = 2;
 nCtxt = 1;
 
+if ~isempty(cfg.study.dataFiles{2,1}) && ~isempty(cfg.study.dataFiles{2,2})
+    cfg.analysis = 'MVCC';
+end
+
 if strcmp(cfg.analysis,'MVCC')
     nCtxt = 2;
 end

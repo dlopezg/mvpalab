@@ -9,11 +9,13 @@ mvpalab_mkdir(dirname);
 filename = ['ffv_' sprintf('%03d',freq)];
 save([dirname filesep filename],'fv','cfg');
 
-dirname = [cfg.sf.filesLocation filesep...
-    'data' filesep 's_' sprintf('%03d',sub)];
-mvpalab_mkdir(dirname);
-filename = ['fdata_' sprintf('%03d',freq)];
-save([dirname filesep filename],'data','cfg');
+if cfg.sf.savefdata
+    dirname = [cfg.sf.filesLocation filesep...
+        'data' filesep 's_' sprintf('%03d',sub)];
+    mvpalab_mkdir(dirname);
+    filename = ['fdata_' sprintf('%03d',freq)];
+    save([dirname filesep filename],'data','cfg');
+end
 
 end
 

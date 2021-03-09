@@ -136,6 +136,7 @@ cfg.stats.shownulldis = 0;
 % Flag:
 cfg.sf.flag = 0;
 cfg.sf.filesLocation = '';
+cfg.sf.savefdata = false;
 cfg.sf.metric = 'acc';
 
 % Frequency limits:

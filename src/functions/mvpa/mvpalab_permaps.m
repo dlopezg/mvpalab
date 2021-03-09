@@ -7,7 +7,7 @@ fprintf('<strong> > Computing permutated maps: </strong>\n');
 cfg.stats.flag = 1;
 
 nSubjects = length(cfg.study.dataFiles{1,1});
-
+nfreq = 1;
 if cfg.sf.flag
     folders = dir([cfg.sf.filesLocation filesep 'fv' filesep 's_*']);
 end
@@ -17,9 +17,10 @@ for sub = 1 : nSubjects
     if cfg.sf.flag
         folder = [folders(sub).folder filesep folders(sub).name];
         files = dir([folder filesep 'ffv_*.mat']);
+        nfreq = length(files);
     end
     
-    for freq = 1 : length(cfg.sf.freqvec)
+    for freq = 1 : nfreq
         tic;
         fprintf(['   - Subject: ' int2str(sub) '/' int2str(nSubjects) ' >> ']);
 %         fprintf([' Bands - ' int2str(freq) '/' int2str(length(files)) ' >> ']);

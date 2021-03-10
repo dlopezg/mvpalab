@@ -3,7 +3,7 @@ function [cfg,diffMap,perdiffMap] = mvpalab_gendiffmap(cfg,acc,accmap,peracc,per
 fprintf('<strong> > Generating diffmaps... </strong>');
 
 %% Generate diffMap for real data and permuted diffMaps for statistics:
-for freq = 1 : cfg.sf.nfreq
+for freq = 1 : length(cfg.sf.freqvec)
     if strcmp(cfg.analysis,'MVPA')
         diffMap.(cfg.sf.metric)(freq,:,:) = squeeze(acc - accmap(:,:,:,freq));
     elseif strcmp(cfg.analysis,'MVCC')

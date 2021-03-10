@@ -18,7 +18,7 @@ for sub = 1 : nSubjects
     if cfg.sf.flag
         folder = [folders(sub).folder filesep folders(sub).name];
         files = dir([folder filesep 'ffv_*.mat']);
-        nfreq = length(files);
+        nfreq = length(cfg.sf.freqvec);
     end
     
     for freq = 1 : nfreq

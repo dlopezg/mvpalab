@@ -3,7 +3,14 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 %the required structure for the feature extraction.
 
 %% Initialization
+
+% Check cfg integrity and backwards compatibility:
 cfg = mvpalab_checkcfg(cfg);
+
+if cfg.sf.flag
+    cfg = mvpalab_preparesf(cfg);
+end
+
 nSubjects = length(cfg.study.dataFiles{1,1});
 nClasses = 2;
 nCtxt = 1;

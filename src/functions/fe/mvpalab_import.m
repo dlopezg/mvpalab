@@ -8,6 +8,9 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 cfg = mvpalab_checkcfg(cfg);
 
 if cfg.sf.flag
+    % Check EEGlab:
+    mvpalab_checkeeglab();
+    % Prepare analysis:
     cfg = mvpalab_preparesf(cfg);
 end
 

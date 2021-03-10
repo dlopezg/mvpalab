@@ -1,5 +1,7 @@
 function cfg = mvpalab_plotfreqresp(cfg)
-
+    % Check if EEGlab is installed.
+    mvpalab_checkeeglab();
+    
     % Select FS:
     if isfield(cfg,'fs')
         cfg.sf.fs = cfg.fs;

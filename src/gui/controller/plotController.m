@@ -3,7 +3,10 @@
 %% Select MVCC direction if needed:
 
 resultToPlot = result;
-statsToPlot = stats;
+
+if (graph.stats.above || graph.stats.below)
+    statsToPlot = stats;
+end
 
 if strcmp(cfg.analysis,'MVCC')
     if isstruct(result)

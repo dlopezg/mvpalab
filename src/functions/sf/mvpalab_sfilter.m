@@ -81,6 +81,7 @@ if cfg.stats.flag
     save([cfg.sf.savefolder 'other' filesep 'perdiffMap.mat'],...
         'perdiffMap','-v7.3');
     stats = mvpalab_permtest(cfg,diffMap,perdiffMap);
+    stats = stats.(cfg.sf.metric);
     save([cfg.sf.savefolder 'stats.mat'],'stats','-v7.3');
 end
 

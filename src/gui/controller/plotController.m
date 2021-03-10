@@ -2,25 +2,28 @@
 
 %% Select MVCC direction if needed:
 
+resultToPlot = result;
+statsToPlot = stats;
+
 if strcmp(cfg.analysis,'MVCC')
     if isstruct(result)
         if strcmp(graph.mvccDirection,'ab')
-            result = result.ab;
+            resultToPlot = result.ab;
             if (graph.stats.above || graph.stats.below)
-                stats = stats.ab;
+                statsToPlot = stats.ab;
             end
         elseif strcmp(graph.mvccDirection,'ba')
-            result = result.ba;
+            resultToPlot = result.ba;
             if (graph.stats.above || graph.stats.below)
-                stats = stats.ba;
+                statsToPlot = stats.ba;
             end
         end
     end
 end
-    
+
 %% Plot MVPA and MVCC results:
 
-if strcmp(cfg.analysis,'MVPA') || strcmp(cfg.analysis,'MVCC')
+if ~cfg.sf.flag
     if cfg.classmodel.tempgen
         if (graph.stats.above || graph.stats.below)
             
@@ -29,7 +32,7 @@ if strcmp(cfg.analysis,'MVPA') || strcmp(cfg.analysis,'MVCC')
             end
             
             hold on;
-            mvpalab_plottg(graph,cfg,result,stats);
+            mvpalab_plottg(graph,cfg,resultToPlot,statsToPlot);
         else
             
             if ~graph.add
@@ -37,7 +40,7 @@ if strcmp(cfg.analysis,'MVPA') || strcmp(cfg.analysis,'MVCC')
             end
             
             hold on;
-            mvpalab_plottg(graph,cfg,result);
+            mvpalab_plottg(graph,cfg,resultToPlot);
         end
     else
         if (graph.stats.above || graph.stats.below)
@@ -47,7 +50,7 @@ if strcmp(cfg.analysis,'MVPA') || strcmp(cfg.analysis,'MVCC')
             end
             
             hold on;
-            mvpalab_plotcr(graph,cfg,result,stats);
+            mvpalab_plotcr(graph,cfg,resultToPlot,statsToPlot);
         else
             
             if ~graph.add
@@ -55,7 +58,29 @@ if strcmp(cfg.analysis,'MVPA') || strcmp(cfg.analysis,'MVCC')
             end
             
             hold on;
-            mvpalab_plotcr(graph,cfg,result);
+            mvpalab_plotcr(graph,cfg,resultToPlot);
         end
     end
+    
+    
+else
+    
+    if (graph.stats.above || graph.stats.below)
+        
+        if ~graph.add
+            figure;
+        end
+        
+        hold on;
+        mvpalab_plotsf(graph,cfg,resultToPlot,statsToPlot);
+    else
+        
+        if ~graph.add
+            figure;
+        end
+        
+        hold on;
+        mvpalab_plotsf(graph,cfg,resultToPlot);
+    end
+    
 end

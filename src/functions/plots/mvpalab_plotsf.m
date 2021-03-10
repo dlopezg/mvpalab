@@ -49,11 +49,13 @@ end
 
 set(gca,'YTick',v);
 
-if isfield(graph,'caxis')
-    caxis(graph.caxis);
-else
+if graph.caxis == 0
     caxis([min(min(acc_map)) max(max(acc_map))]);
+else
+    caxis(graph.caxis);
 end
+
+colormap(graph.colorMap);
 
 end
 

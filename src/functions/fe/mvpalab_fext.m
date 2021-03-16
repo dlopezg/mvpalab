@@ -51,6 +51,11 @@ end
 out_data.X = X;
 out_data.Y = Y;
 
+%% Update nfolds if LOOCV:
+if strcmp(cfg.cv.method,'loo')
+    cfg.cv.nfolds = size(X.a,1);
+end
+
 fprintf('\n');
 
 end

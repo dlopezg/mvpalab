@@ -121,6 +121,7 @@ cfg.classmodel.permlab = false;
 
 cfg.cv.method  = 'kfold';
 cfg.cv.nfolds  = 5;
+cfg.cv.loo     = [];
 
 %% PERMUTATION TEST
 

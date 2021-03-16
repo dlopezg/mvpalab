@@ -36,6 +36,10 @@ for sub = 1 : nSubjects
         end
         
         %% Stratified partition for cross validation:
+        if strcmp(cfg.cv.method,'loo')
+            cfg.cv.nfolds = cfg.cv.loo(sub);
+        end
+        
         strpar = cvpartition(Y,'KFold',cfg.cv.nfolds);
         
         %% Timepoints loop

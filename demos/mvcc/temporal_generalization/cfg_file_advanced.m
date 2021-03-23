@@ -85,7 +85,7 @@ cfg.tm.tpsteps   = 1;
 %% CLASSIFICATION ALGORITHM:
 
 % cfg.classmodel.method = 'svm' - Support Vector Machine.
-% cfg.classmodel.method = 'lda' - Linear Discriminant Analysis.
+% cfg.classmodel.method = 'da'  - Linear Discriminant Analysis.
 
 % cfg.classmodel.kernel = 'linear'     - Support Vector Machine.
 % cfg.classmodel.kernel = 'gaussian'   - Support Vector Machine.

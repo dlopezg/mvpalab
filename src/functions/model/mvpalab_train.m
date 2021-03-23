@@ -18,7 +18,7 @@ if strcmp(cfg.classmodel.method,'svm')
         w = mdl.Beta; 
     end
     
-elseif strcmp(cfg.classmodel.method,'lda')
+elseif strcmp(cfg.classmodel.method,'da')
     if cfg.classmodel.optimize.flag
         mdl = fitcdiscr(train_X,train_Y,...
             'DiscrimType',cfg.classmodel.kernel,...

@@ -166,7 +166,7 @@ cfg.study.conditionIdentifier = {
     };
 
 %% SOFTWARE VERSION:
-cfg.version = 'BETA v0.1';
+cfg.version = 'v0.1.0-beta';
 fprintf('<strong> > MVPAlab is ready! </strong>\n');
 
 %% PCA rank warning disabled. 

@@ -9,6 +9,9 @@ chancelevel = zeros(1,length(datamean))+.5;
 %% Smooth the data for the representation if needed:
 if graph.smoothdata
     datamean = smooth(datamean,graph.smoothdata);
+    for subject = 1 : size(data,3) 
+        data(1,:,subject) = smooth(data(1,:,subject));
+    end
 end
 
 %% Compute the STD/SEM:

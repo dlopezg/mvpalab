@@ -31,7 +31,7 @@ end
 mvpalab_savecfg(cfg);
 
 %% Extract diag:
-if cfg.classmodel.tempgen
+if cfg.classmodel.tempgen && cfg.classmodel.extdiag
     if cfg.stats.flag
         [resultdiag,permapsdiag,statsdiag] = mvpalab_extractdiag(cfg,result,permaps);
     else

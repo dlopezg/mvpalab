@@ -120,9 +120,10 @@ end
 
 % Return wvector if needed:
 if cfg.classmodel.wvector
-    res.wvector = w;
+    res.wvector = mvpalab_reorganize_weights(w);
 end
 
+% Save result
 if ~cfg.sf.flag
     mvpalab_saveresults(cfg,res);
 end

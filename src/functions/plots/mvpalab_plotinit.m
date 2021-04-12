@@ -52,6 +52,16 @@ graph.stats.below = false;
 graph.sigh = 0.5;
 graph.sigc = graph.colors.mvpalab{1};
 
+%% Weights:
+graph.weights.animation = 0;
+graph.weights.type = 'raw';
+graph.weights.start = 0;
+graph.weights.end = 0;
+graph.weights.speed = 0.1;
+graph.weights.subject = 1;
+
+
+
 
 end
 

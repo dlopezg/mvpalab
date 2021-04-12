@@ -149,8 +149,8 @@ end
 
 % Return wvector if needed:
 if cfg.classmodel.wvector
-    res.wvector.ab = w_ab;
-    res.wvector.ba = w_ba;
+    res.wvector.ab = mvpalab_reorganize_weights(w_ab);
+    res.wvector.ba = mvpalab_reorganize_weights(w_ba);
 end
 
 if ~cfg.sf.flag

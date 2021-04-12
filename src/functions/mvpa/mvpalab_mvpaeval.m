@@ -11,7 +11,8 @@ function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar)
 x = {}; y = {}; t = {}; auc = NaN;   
 cm = {}; pr = {}; re = {}; f1 = {};
 cr = NaN;
-w = []; 
+raw_weights = []; 
+w = [];
 
 %% Cross validation loop:
 if ~cfg.classmodel.tempgen
@@ -46,7 +47,12 @@ for k = 1 : strpar.NumTestSets
     end
     
     %% Train and test the model:
-    [mdl,w] = mvpalab_train(train_X,train_Y,cfg);
+    [mdl,raw_weights(:,k)] = mvpalab_train(train_X,train_Y,cfg);
+    
+    % Correct feature weights:
+    if cfg.classmodel.wvector
+        haufe_weights(:,k) = mvpalab_wcorrect(train_X,raw_weights(:,k));
+    end
     
     % Temporal generalization if needed:
     if cfg.classmodel.tempgen
@@ -81,6 +87,10 @@ for k = 1 : strpar.NumTestSets
 end
 
 %% Calculate the performance of the model:
+
+% Calculate mean weights.
+% Correct the weights using paper.
+% Return weights and repeat por all needed functions (MVCC). 
 if cfg.classmodel.tempgen
     for tp_ = 1 : cfg.tm.ntp
         % Compute confusion matrix if needed:
@@ -131,6 +141,11 @@ else
     % Receiver operating characteristic (ROC curve):
     if cfg.classmodel.auc || cfg.classmodel.roc
         [x,y,t,auc] = perfcurve(Y,predicted_scores(:,mdl.ClassNames),1);
+    end
+    % Feature weights:
+    if cfg.classmodel.wvector
+        w.raw = mean(raw_weights,2);
+        w.haufe_corrected = mean(haufe_weights,2);
     end
 end
 

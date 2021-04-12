@@ -2,10 +2,11 @@ function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvcceval(X,train_Y,Xt,test_Y,tp,
 %MVCC_SVM_CLASSIFIER Summary of this function goes here
 %   Detailed explanation goes here
 
-x = {}; y = {}; t = {}; auc = NaN;   
+x = {}; y = {}; t = {}; auc = NaN;
 cm = {}; pr = {}; re = {}; f1 = {};
 cr = NaN;
-w = []; 
+raw_weights = [];
+w = [];
 
 %% Train and test datasets:
 train_X = X(:,:,cfg.tm.tpoints(tp));
@@ -26,7 +27,12 @@ if ~strcmp(cfg.dimred.method,'none')
 end
 
 %% Train and test the model:
-[mdl,w] = mvpalab_train(train_X,train_Y,cfg);
+[mdl,raw_weights] = mvpalab_train(train_X,train_Y,cfg);
+
+% Correct feature weights:
+if cfg.classmodel.wvector
+    haufe_weights = mvpalab_wcorrect(train_X,raw_weights);
+end
 
 
 %% Temporal generalization if needed:
@@ -60,7 +66,7 @@ if cfg.classmodel.tempgen
         
         % Compute confusion matrix if needed:
         if cfg.classmodel.confmat || cfg.classmodel.precision ...
-            || cfg.classmodel.recall || cfg.classmodel.f1score
+                || cfg.classmodel.recall || cfg.classmodel.f1score
             cm{tp_} = confusionmat(test_Y,labels);
         end
         % Receiver operating characteristic (ROC curve)
@@ -112,7 +118,10 @@ else
     % mvpalab_svmvisualization(mdl,train_X,test_X,cfg,tp,train_Y,test_Y,auc);
 end
 
-
-
+% Feature weights:
+if cfg.classmodel.wvector
+    w.raw = raw_weights;
+    w.haufe_corrected = mean(haufe_weights,2);
+end
 end
 

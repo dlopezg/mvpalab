@@ -48,15 +48,15 @@ for sub = 1 : nSubjects
                 
                 % Load subject data:
                 try
-                    load([cfg.study.dataPaths{ctxt,class} ...
+                    temp = load([cfg.study.dataPaths{ctxt,class} ...
                         cfg.study.dataFiles{ctxt,class}{sub}]);
                 catch
                     error(['Data files not found. '...
                         'Directory: ' cfg.study.dataPaths{ctxt,class}]);
                 end
                 
-                % Store sampling frequency:
-                cfg.fs = EEG.srate;
+                % Read and prepare input data for MVPAlab:
+                [cfg,EEG] = mvpalab_dataformat(cfg,temp);
                 
                 % Sliding filter analysis if needed.
                 if cfg.sf.flag

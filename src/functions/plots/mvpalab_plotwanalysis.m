@@ -34,12 +34,31 @@ else
     else
         % Compute the mean and plot it:
         weights_to_plot = mean(weights_to_plot,2);
+        
         figure;
         topoplot(weights_to_plot,cfg.chanloc,...
             'colormap', graph.colorMap,...
             'whitebk','on',...
             'electrodes','labels');
         title(['Decoding time: ' int2str(start_time) '-' int2str(end_time) ' ms'])
+        
+        % Sorted feature contribution plot:
+        [sorted,idx] = sort(weights_to_plot);
+        labels = extractfield(cfg.chanloc,'labels');
+        sortedLabels = labels(idx);
+        features = categorical(sortedLabels);
+        features = reordercats(features,sortedLabels);
+        
+        figure; bar(features,sorted,1,'k');
+        xlabel('List of features');
+        ylabel('Feature weights (a.u.)');
+        title('Feature contribution analysis');
+        
+        set(gca,'FontSize',graph.fontsize)
+        set(gca,'Color','w')
+        set(gca,'XGrid','on');
+        set(gca,'YAxisLocation','origin');
+        set(gca,'XMinorTick','on','YMinorTick','on')
     end
 end
 end

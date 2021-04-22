@@ -9,7 +9,6 @@ graph.colorSch = sch.mvpalab;       % Default color scheme.
 
 %% General:
 graph.fontsize = 14;
-graph.smoothdata = 1; % (ODD) | 1 - No smooth
 
 %% Axes configuration:
 % Title and labels:
@@ -28,10 +27,9 @@ if nargin > 0
     graph.xlim = [cfg.tm.tpstart cfg.tm.tpend];
 end
 
-graph.caxis = [0 0];
-
 %% Diagonal plots:
 graph.plotmean = 1;
+graph.smoothdata = 1; % (ODD) | 1 - No smooth
 graph.stdsem = 0;  % 1 - STD | 0 - SEM
 graph.linestyle = '-';
 graph.linewidth = 1;
@@ -41,6 +39,7 @@ graph.clusterLineColor  = [0 0 0];	% Cluster contour color.
 graph.clusterLineColor_ = [1 0 0];	% Cluster contour color.
 graph.clusterLineWidth  = 1;        % Cluster contour width.
 graph.clusterLineWidth_ = 1;        % Cluster contour width.
+graph.caxis = [0 0];
 
 %% Statistics parameters:
 graph.sigmode.shade = 0;
@@ -53,7 +52,7 @@ graph.sigh = 0.5;
 graph.sigc = graph.colors.mvpalab{1};
 
 %% Weights:
-graph.weights.animation = 0;
+graph.weights.anim = 0;
 graph.weights.type = 'raw';
 graph.weights.start = 0;
 graph.weights.end = 0;

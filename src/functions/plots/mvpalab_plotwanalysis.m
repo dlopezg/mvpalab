@@ -61,7 +61,7 @@ else
     %% Plot the weight analysis:
     chancelevel = zeros(1,length(resultToPlot))+.5;
     
-    if graph.weights.animation
+    if graph.weights.anim
         figure;
         disp('Please, press any key to start animation.');
         pause

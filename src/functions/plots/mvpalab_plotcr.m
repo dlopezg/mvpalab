@@ -2,6 +2,9 @@ function [] = mvpalab_plotcr(graph,cfg,data,stats)
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
 
+%% Select subject:
+data = mvpalab_selectsub(graph,data);
+
 %% Calculate the mean for each timepoint:
 datamean = squeeze(mean(data,3));
 chancelevel = zeros(1,length(datamean))+.5;

@@ -2,6 +2,9 @@ function [] = mvpalab_plottg(graph,cfg,data,stats)
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
 
+%% Select subject:
+data = mvpalab_selectsub(graph,data);
+
 %% Plot temporal generalization results:
 x = linspace(cfg.tm.tpstart,cfg.tm.tpend,size(data,1));
 y = x;

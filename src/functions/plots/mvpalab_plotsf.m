@@ -2,6 +2,9 @@ function [] = mvpalab_plotsf(graph,cfg,data,stats )
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
 
+%% Select subject:
+data = mvpalab_selectsub(graph,data);
+
 %% Plot the results:
 x = linspace(cfg.tm.tpstart,cfg.tm.tpend,size(data,2));
 y = cfg.sf.freqvec+cfg.sf.hbw;

@@ -57,7 +57,7 @@ graph.weights.type = 'raw';
 graph.weights.start = 0;
 graph.weights.end = 0;
 graph.weights.speed = 0.1;
-graph.weights.subject = 0;
+graph.weights.sub = 0;
 
 
 

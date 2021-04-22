@@ -10,7 +10,7 @@ else
     end
     
     % Select subject, type and temporal window:
-    subject = graph.weights.subject;
+    subject = graph.weights.sub;
     type = graph.weights.type;
     start_time = graph.weights.start;
     end_time = graph.weights.end;

@@ -3,9 +3,6 @@ if isempty(cfg.chanloc)
     
 else
     
-    % Select subject:
-    result = mvpalab_selectsub(graph,result);
-
     % Check if EEGlab is installed:
     mvpalab_checkeeglab();
     

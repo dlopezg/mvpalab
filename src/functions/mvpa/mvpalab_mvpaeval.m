@@ -103,11 +103,11 @@ if cfg.classmodel.tempgen
             pr{tp_} =  mvpalab_precision(cm{tp_}');
         end
         % Compute recall if needed:
-        if cfg.classmodel.precision
+        if cfg.classmodel.recall
             re{tp_} =  mvpalab_recall(cm{tp_}');
         end
         % Compute F1-score if needed:
-        if cfg.classmodel.precision
+        if cfg.classmodel.f1score
             f1{tp_} =  mvpalab_f1score(cm{tp_}');
         end
         % Receiver operating characteristic (ROC curve) if needed:
@@ -138,11 +138,11 @@ else
         pr =  mvpalab_precision(cm');
     end
     % Compute recall if needed:
-    if cfg.classmodel.precision
+    if cfg.classmodel.recall
         re =  mvpalab_recall(cm');
     end
     % Compute F1-score if needed:
-    if cfg.classmodel.precision
+    if cfg.classmodel.f1score
         f1 =  mvpalab_f1score(cm');
     end
     % Receiver operating characteristic (ROC curve):

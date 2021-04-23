@@ -18,12 +18,12 @@ if strcmp(cfg.sf.fspac,'log')
 end
 
 if exist('stats','var')
-    if ~isempty(stats.clusters)
+    if ~isempty(stats.clusters) && graph.stats.above
         contour(x,y,stats.sigmask,1,...
             'LineWidth',graph.clusterLineWidth,...
             'LineColor',graph.clusterLineColor);
     end
-    if ~isempty(stats.clusters_)
+    if ~isempty(stats.clusters_) && graph.stats.below
         contour(x,y,stats.sigmask_,1,...
             'LineWidth',graph.clusterLineWidth_,...
             'LineColor',graph.clusterLineColor_);

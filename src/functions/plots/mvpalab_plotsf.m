@@ -31,8 +31,11 @@ if exist('stats','var')
 end
 
 %% Configure plot appearance:
-xlabel('Time (ms)');
-ylabel('Removed frequencies (Hz) ');
+title(graph.title);
+xlabel(graph.xlabel);
+ylabel(graph.ylabel);
+xlim(graph.xlim);
+ylim(graph.ylim);
 colorbar('Eastoutside');
 
 set(gca,'XMinorTick','on','YMinorTick','on');
@@ -47,7 +50,7 @@ set(gca,'Layer','top');
 set(gca,'XTick',graph.xlim(1):100:graph.xlim(2))
 
 for i = 1 : length(cfg.sf.fcutoff)
-    v(i) = cfg.sf.fcutoff{i}(2);
+    v(i) = round(cfg.sf.fcutoff{i}(2),2);
 end
 
 set(gca,'YTick',v);

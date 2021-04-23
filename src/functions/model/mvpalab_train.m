@@ -1,7 +1,7 @@
 function [ mdl , w ] = mvpalab_train(train_X,train_Y,cfg)
 %MVPALAB_TRAINCLASS Summary of this function goes here
 %   Detailed explanation goes here
-w = [];
+w = zeros(length(train_Y),1);
 
 if strcmp(cfg.classmodel.method,'svm')
     if cfg.classmodel.optimize.flag

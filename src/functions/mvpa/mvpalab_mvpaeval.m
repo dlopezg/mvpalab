@@ -116,6 +116,13 @@ if cfg.classmodel.tempgen
                 perfcurve(Y,predicted_scores{tp_}(:,mdl.ClassNames),1);
         end
     end
+    
+    % Feature weights:
+    if cfg.classmodel.wvector
+        w.raw = mean(raw_weights,2);
+        w.haufe_corrected = mean(haufe_weights,2);
+    end
+    
     % Mean accuracy:
     cr = mean(acc);
 else

@@ -69,7 +69,7 @@ if  exist('stats','var')
         points = stpoints(logical(~stats.sigmask  * graph.stats.above ...
             + ~stats.sigmask_ * graph.stats.below));
         scatter(times,points,80,graph.sigc,'filled','s');
-        scatter(cfg.tm.times,stpoints,80,'k','s');
+        %scatter(cfg.tm.times,stpoints,80,'k','s');
     end
     
 else

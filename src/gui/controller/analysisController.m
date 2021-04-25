@@ -5,7 +5,7 @@ mvpalab_savecfg(cfg);
 mvpalab_mkdir([cfg.location '/results']);
 
 %% Load data, generate conditions and feature extraction:
-[cfg,data,fv] = mvpalab_import(cfg);
+[cfg,~,fv] = mvpalab_import(cfg);
 
 %% Compute MVPA analysis and save results:
 if strcmp(cfg.analysis,'MVPA')

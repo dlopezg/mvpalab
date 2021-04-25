@@ -95,12 +95,12 @@ if cfg.classmodel.precision
 end 
 
 % Return recall if needed:
-if cfg.classmodel.precision
+if cfg.classmodel.recall
     permaps.recall = mvpalab_reorganize(cfg,recall);
 end 
 
 % Return f1score if needed:
-if cfg.classmodel.precision
+if cfg.classmodel.f1score
     permaps.f1score = mvpalab_reorganize(cfg,f1score);
 end 
 

@@ -134,13 +134,21 @@ else
         % Sorted feature contribution plot:
         
         figure;
+        hold on;
         [sorted,idx] = sort(weights_to_plot);
         labels = extractfield(cfg.chanloc,'labels');
         sortedLabels = labels(idx);
         features = categorical(sortedLabels);
         features = reordercats(features,sortedLabels);
+
+        b = bar(features,sorted,1,'FaceColor','flat');
         
-        bar(features,sorted,1,'k');
+        shift = floor(size(graph.colorMap,1)/length(sorted));
+        idx = 1;
+        for i = 1 : length(sorted)
+            b.CData(i,:) = graph.colorMap(idx,:);
+            idx = idx + shift;
+        end
         
         xlabel('List of features');
         ylabel('Feature weights (a.u.)');

@@ -1,7 +1,6 @@
 function [ mdl , w ] = mvpalab_train(train_X,train_Y,cfg)
 %MVPALAB_TRAINCLASS Summary of this function goes here
 %   Detailed explanation goes here
-w = zeros(length(train_Y),1);
 
 if strcmp(cfg.classmodel.method,'svm')
     if cfg.classmodel.optimize.flag
@@ -14,9 +13,7 @@ if strcmp(cfg.classmodel.method,'svm')
             'KernelFunction',cfg.classmodel.kernel);
     end
     
-    if cfg.classmodel.wvector 
-        w = mdl.Beta; 
-    end
+    w = mdl.Beta; 
     
 elseif strcmp(cfg.classmodel.method,'da')
     if cfg.classmodel.optimize.flag
@@ -28,7 +25,11 @@ elseif strcmp(cfg.classmodel.method,'da')
         mdl = fitcdiscr(train_X,train_Y,...
             'DiscrimType',cfg.classmodel.kernel);
     end
+    
+    w = mdl.DeltaPredictor; 
+    
 else
     mdl = fitcsvm(train_X,train_Y);
+    w = mdl.Beta; 
 end
 

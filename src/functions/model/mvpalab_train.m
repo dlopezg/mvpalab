@@ -26,7 +26,7 @@ elseif strcmp(cfg.classmodel.method,'da')
             'DiscrimType',cfg.classmodel.kernel);
     end
     
-    w = mdl.DeltaPredictor; 
+    w = mdl.DeltaPredictor'; 
     
 else
     mdl = fitcsvm(train_X,train_Y);

@@ -1,4 +1,4 @@
-function bounds = mvpalab_upperbound()
+function upperbounds = mvpalab_upperbound()
 %MVPALAB_UPPERBOUND Upper bound calculation:
 
 %% Initialization
@@ -61,12 +61,16 @@ for s = 1 : numel(l)
 end
 
 %% Save bounds:
-bounds.vcbound = vcbound;
-bounds.gbound = gbound;
-bounds.phibound = phibound;
-bounds.gzbound = gzbound;
+upperbounds.vcbound = vcbound;
+upperbounds.gbound = gbound;
+upperbounds.phibound = phibound;
+upperbounds.gzbound = gzbound;
 
-save('../../res/sam_upperbound.mat','bounds','-v7.3');
+mvpalabdir = which('mvpalab');
+idcs = strfind(mvpalabdir,filesep);
+mvpalabdir = mvpalabdir(1:idcs(end-2));
+
+save([mvpalabdir 'res/sam_upperbound.mat'],'upperbounds','-v7.3');
 
 %% Plot figure:
 figure;

@@ -132,6 +132,9 @@ cfg.stats.pgroup = 99.9;
 cfg.stats.pclust = 99.9;
 cfg.stats.shownulldis = 0;
 
+%% STATISTICAL AGNOSTING MAPPING (SAM):
+cfg.sam.flag = false;
+
 %% SLIDING FILTER ANALYSIS CONFIGURATION:
 
 % Flag:

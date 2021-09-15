@@ -29,7 +29,7 @@ for sub = 1 : nSubjects
     end
     
     % Upper bound:
-    upperb = upperbounds.gbound(10 + size(X,1),cfg.dimred.ncomp);
+    upperb(sub) = upperbounds.gbound(10 + size(X,1),cfg.dimred.ncomp);
     % Reestructure result:
     if cfg.classmodel.tempgen
         res.acc(:,:,sub) = acc - upperb;

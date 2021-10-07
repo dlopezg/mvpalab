@@ -1,7 +1,7 @@
-function [ cfg ] = mvpalab_timming( cfg )
-%MVPALAB_TIMMING This function configures the data in the cfg structure for 
+function [ cfg ] = mvpalab_timing( cfg )
+%MVPALAB_TIMING This function configures the data in the cfg structure for 
 %the mvpa analysis.
-fprintf('<strong> > Adjusting timming: </strong>');
+fprintf('<strong> > Adjusting timing: </strong>');
 c = cfg.tm;
 
 %% If start and end timepoints are zero, analize the entire epoch:

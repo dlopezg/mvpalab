@@ -77,7 +77,7 @@ for sub = 1 : nSubjects
             [fv{sub},cfg] = mvpalab_fext(cfg,data(sub,:),sub);
             cfg.tm.times = EEG.times;
             cfg.tm.rtimes = EEG.times;
-            cfg = mvpalab_timming(cfg);
+            cfg = mvpalab_timing(cfg);
             mvpalab_savesfdata(cfg,data(sub,:),fv{sub},sub,freq);
         else
             [fv{sub},cfg] = mvpalab_fext(cfg,data(sub,:),sub);
@@ -88,7 +88,7 @@ end
 %% Save times vector:
 cfg.tm.times = EEG.times;
 cfg.tm.rtimes = EEG.times;
-cfg = mvpalab_timming(cfg);
+cfg = mvpalab_timing(cfg);
 
 %% Save channels location:
 cfg.chanloc = EEG.chanlocs;

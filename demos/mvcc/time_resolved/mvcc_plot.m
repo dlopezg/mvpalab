@@ -26,11 +26,11 @@ subplot(1,2,1);
 hold on
 % Colors A - B:
 graph.shadecolor = graph.colors.mvpalab{10};
-mvpalab_plotcr(graph,cfg,result.ab);
+mvpalab_plotdecoding(graph,cfg,result.ab);
 
 % Colors B - A:
 graph.shadecolor = graph.colors.mvpalab{1};
-mvpalab_plotcr(graph,cfg,result.ba);
+mvpalab_plotdecoding(graph,cfg,result.ba);
 
 %% Mean accuracy plot (statistical significance)
 
@@ -55,10 +55,10 @@ hold on
 % Colors A - B:
 graph.shadecolor = graph.colors.mvpalab{10};
 graph.sigc = graph.colors.mvpalab{10};
-mvpalab_plotcr(graph,cfg,result.ab,stats.ab);
+mvpalab_plotdecoding(graph,cfg,result.ab,stats.ab);
 
 % Colors B - A:
 graph.sigh = .45;
 graph.shadecolor = graph.colors.mvpalab{1};
 graph.sigc = graph.colors.mvpalab{1};
-mvpalab_plotcr(graph,cfg,result.ba,stats.ba);
+mvpalab_plotdecoding(graph,cfg,result.ba,stats.ba);

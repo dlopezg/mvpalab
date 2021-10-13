@@ -1,8 +1,6 @@
-function [] = mvpalab_plotcr(graph,cfg,data,stats)
-% PLOT_CR This function is deprecated, please use mvpalab_plotdecoding()
-% instead.
-
-warning('This function is deprecated, please use mvpalab_plotdecoding() instead.')
+function [] = mvpalab_plotdecoding(graph,cfg,data,stats)
+%PLOT_RESULTS Summary of this function goes here
+%   Detailed explanation goes here
 
 %% Select subject:
 data = mvpalab_selectsub(graph,data);

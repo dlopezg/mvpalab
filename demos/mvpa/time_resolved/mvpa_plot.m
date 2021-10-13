@@ -23,7 +23,7 @@ graph.smoothdata = 1; % (1 => no smoothing)
 % Plot results:
 figure;
 hold on
-mvpalab_plotcr(graph,cfg,result);
+mvpalab_plotdecoding(graph,cfg,result);
 
 %% Mean accuracy plot (statistical significance)
 
@@ -44,4 +44,4 @@ graph.title = 'Demo plot (statistical significance)';
 % Plot results:
 figure;
 hold on
-mvpalab_plotcr(graph,cfg,result,stats);
+mvpalab_plotdecoding(graph,cfg,result,stats);

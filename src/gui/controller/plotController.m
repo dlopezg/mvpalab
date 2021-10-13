@@ -53,7 +53,7 @@ if ~cfg.sf.flag
             end
             
             hold on;
-            mvpalab_plotcr(graph,cfg,resultToPlot,statsToPlot);
+            mvpalab_plotdecoding(graph,cfg,resultToPlot,statsToPlot);
         else
             
             if ~graph.add
@@ -61,7 +61,7 @@ if ~cfg.sf.flag
             end
             
             hold on;
-            mvpalab_plotcr(graph,cfg,resultToPlot);
+            mvpalab_plotdecoding(graph,cfg,resultToPlot);
         end
     end
     

@@ -1,9 +1,6 @@
-function [] = mvpalab_plottg(graph,cfg,data,stats)
+function [] = mvpalab_plottempogen(graph,cfg,data,stats)
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
-
-
-warning('This function is deprecated, please use mvpalab_plottempogen() instead.')
 
 %% Select subject:
 data = mvpalab_selectsub(graph,data);

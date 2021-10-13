@@ -35,7 +35,7 @@ if ~cfg.sf.flag
             end
             
             hold on;
-            mvpalab_plottg(graph,cfg,resultToPlot,statsToPlot);
+            mvpalab_plottempogen(graph,cfg,resultToPlot,statsToPlot);
         else
             
             if ~graph.add
@@ -43,7 +43,7 @@ if ~cfg.sf.flag
             end
             
             hold on;
-            mvpalab_plottg(graph,cfg,resultToPlot);
+            mvpalab_plottempogen(graph,cfg,resultToPlot);
         end
     else
         if (graph.stats.above || graph.stats.below)

@@ -28,7 +28,7 @@ graph.title = 'Demo plot (no statistical significance)';
 figure;
 subplot(1,2,1);
 hold on;
-mvpalab_plottg(graph,cfg,result);
+mvpalab_plottempogen(graph,cfg,result);
 
 
 %% Mean accuracy plot (statistical significance)
@@ -50,4 +50,4 @@ graph.title = 'Demo plot (statistical significance)';
 % Plot results:
 subplot(1,2,2);
 hold on;
-mvpalab_plottg(graph,cfg,result,stats);
+mvpalab_plottempogen(graph,cfg,result,stats);

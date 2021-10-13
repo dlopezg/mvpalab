@@ -75,7 +75,7 @@ else
         end
         
         hold on;
-        mvpalab_plotsf(graph,cfg,resultToPlot,statsToPlot);
+        mvpalab_plotslidfilt(graph,cfg,resultToPlot,statsToPlot);
     else
         
         if ~graph.add
@@ -83,7 +83,7 @@ else
         end
         
         hold on;
-        mvpalab_plotsf(graph,cfg,resultToPlot);
+        mvpalab_plotslidfilt(graph,cfg,resultToPlot);
     end
     
 end

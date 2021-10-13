@@ -14,7 +14,7 @@ graph.xlim = [-100 1000];
 figure;
 subplot(1,2,1)
 hold on
-mvpalab_plotsf(graph,cfg,result);
+mvpalab_plotslidfilt(graph,cfg,result);
 
 %% Mean accuracy plot (statistical significance)
 
@@ -24,4 +24,4 @@ load results/diffMaps/stats.mat
 % Plot results:
 subplot(1,2,2)
 hold on
-mvpalab_plotsf(graph,cfg,result,stats);
+mvpalab_plotslidfilt(graph,cfg,result,stats);

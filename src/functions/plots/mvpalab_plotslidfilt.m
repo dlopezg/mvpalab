@@ -1,10 +1,6 @@
-function [] = mvpalab_plotsf(graph,cfg,data,stats )
+function [] = mvpalab_plotslidfilt(graph,cfg,data,stats )
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
-
-
-warning('This function is deprecated, please use mvpalab_plotslidfilt() instead.')
-
 
 %% Select subject:
 data = mvpalab_selectsub(graph,data);

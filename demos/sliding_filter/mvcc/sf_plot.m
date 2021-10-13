@@ -14,10 +14,10 @@ graph.xlim = [-100 1000];
 figure;
 subplot(2,2,1)
 hold on
-mvpalab_plotslidfilt(graph,cfg,result.ab);
+mvpalab_plotfreqcont(graph,cfg,result.ab);
 subplot(2,2,2)
 hold on
-mvpalab_plotslidfilt(graph,cfg,result.ba);
+mvpalab_plotfreqcont(graph,cfg,result.ba);
 
 %% Mean accuracy plot (statistical significance)
 
@@ -27,7 +27,7 @@ load results/diffMaps/stats.mat
 % Plot results:
 subplot(2,2,3)
 hold on
-mvpalab_plotslidfilt(graph,cfg,result.ab,stats.ab);
+mvpalab_plotfreqcont(graph,cfg,result.ab,stats.ab);
 subplot(2,2,4)
 hold on
-mvpalab_plotslidfilt(graph,cfg,result.ba,stats.ba);
+mvpalab_plotfreqcont(graph,cfg,result.ba,stats.ba);

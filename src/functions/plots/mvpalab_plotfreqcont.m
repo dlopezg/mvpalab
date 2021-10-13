@@ -1,4 +1,4 @@
-function [] = mvpalab_plotslidfilt(graph,cfg,data,stats )
+function [] = mvpalab_plotfreqcont(graph,cfg,data,stats )
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
 

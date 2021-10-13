@@ -75,7 +75,7 @@ else
         end
         
         hold on;
-        mvpalab_plotslidfilt(graph,cfg,resultToPlot,statsToPlot);
+        mvpalab_plotfreqcont(graph,cfg,resultToPlot,statsToPlot);
     else
         
         if ~graph.add
@@ -83,7 +83,7 @@ else
         end
         
         hold on;
-        mvpalab_plotslidfilt(graph,cfg,resultToPlot);
+        mvpalab_plotfreqcont(graph,cfg,resultToPlot);
     end
     
 end

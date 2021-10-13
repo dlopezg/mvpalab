@@ -3,7 +3,7 @@ function [] = mvpalab_plotsf(graph,cfg,data,stats )
 %   Detailed explanation goes here
 
 
-warning('This function is deprecated, please use mvpalab_plotslidfilt() instead.')
+warning('This function is deprecated, please use mvpalab_plotfreqcont() instead.')
 
 
 %% Select subject:

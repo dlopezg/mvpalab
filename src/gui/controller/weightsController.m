@@ -15,13 +15,13 @@ end
 if strcmp(cfg.analysis,'MVCC')
     if isstruct(wvector)
         if strcmp(graph.mvccDirection,'ab')
-            mvpalab_plotwanalysis(graph,cfg,wvector.ab,performance);
+            mvpalab_plotfeatcont(graph,cfg,wvector.ab,performance);
         elseif strcmp(graph.mvccDirection,'ba')
-            mvpalab_plotwanalysis(graph,cfg,wvector.ba,performance);
+            mvpalab_plotfeatcont(graph,cfg,wvector.ba,performance);
         end
     end
 else
-    mvpalab_plotwanalysis(graph,cfg,wvector,performance);
+    mvpalab_plotfeatcont(graph,cfg,wvector,performance);
 end
 
 

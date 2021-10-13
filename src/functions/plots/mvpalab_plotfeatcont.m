@@ -1,4 +1,4 @@
-function mvpalab_plotwanalysis(graph,cfg,weights,result)
+function mvpalab_plotfeatcont(graph,cfg,weights,result)
 if isempty(cfg.chanloc)
     
 else

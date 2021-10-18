@@ -4,22 +4,22 @@ function [cfg,EEG] = mvpalab_dataformat(cfg,input)
 fields = fieldnames(input);
 
 % Extract data:
-data = input.(fields{1});
+input = input.(fields{1});
 
-if isfield(data,'fsample')
+if isfield(input,'fsample')
     %% Fieldtrip:
     % Store sampling frequency:
-    cfg.fs = data.fsample;
+    cfg.fs = input.fsample;
     cfg.format = 'fieldtrip';
     
     % Prepare data format:
-    EEG.srate = data.fsample;
-    EEG.trials = length(data.trial);
-    EEG.nbchan = length(data.label);
-    EEG.pnts = size(data.trial{1},2);
-    EEG.times = data.time{1} * 1000;
+    EEG.srate = input.fsample;
+    EEG.trials = length(input.trial);
+    EEG.nbchan = length(input.label);
+    EEG.pnts = size(input.trial{1},2);
+    EEG.times = input.time{1} * 1000;
     
-    if isfield(data,'layout')
+    if isfield(input,'layout')
         % Not ready yet:
         % EEG.chanlocs = data.layout;
         EEG.chanlocs = [];
@@ -27,17 +27,41 @@ if isfield(data,'fsample')
         EEG.chanlocs = [];
     end
     
-    for trial = 1 : length(data.trial)
-        EEG.data(:,:,trial) = data.trial{trial};
+    for trial = 1 : length(input.trial)
+        EEG.data(:,:,trial) = input.trial{trial};
     end
     
-else
+elseif isfield(input,'srate')
     %% EEGlab:
     % Store sampling frequency:
     cfg.fs = data.srate;
     % Generate data file:
     EEG = data;
     cfg.format = 'eeglab';
-end
+    
+elseif isfield(input,'format') && strcmp(input.format, 'mvpalab')
+    
+    cfg.fs = input.fs;
+    cfg.format = 'mvpalab';
+    
+    EEG.data = input.data;
+    EEG.srate = input.fs;
+    EEG.nbchan = size(input.data,1);
+    EEG.pnts = size(input.data,2);
+    EEG.trials = size(input.data,3);
+    
+    if isfield(input,'times')
+        EEG.times = input.times;
+    else
+        EEG.times = 1:EEG.pnts;
+        warning('No time vector found. A default time vector will be created. Please define your time vector for a better temporal precision.')
+    end
+    
+    % Not ready yet:
+    % EEG.chanlocs = data.layout;
+    EEG.chanlocs = [];
+    
+else
+    error('Unrecognized data format. Please check your input dataset.')
 end
 

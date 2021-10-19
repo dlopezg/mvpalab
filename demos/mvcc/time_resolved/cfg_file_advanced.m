@@ -1,5 +1,5 @@
 
-%% Basic configuration file for MVPA analysis - Folder and data files:
+%% Advanced configuration file for MVCC analysis - Folder and data files:
 
 cfg.analysis = 'MVCC';
 cfg.location = pwd;

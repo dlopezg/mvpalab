@@ -1,5 +1,4 @@
-
-%% Basic configuration file for MVPA analysis - Folder and data files:
+%% Advacned configuration file for MVPA analysis - Folder and data files:
 
 cfg.analysis = 'MVPA';
 cfg.location = pwd;

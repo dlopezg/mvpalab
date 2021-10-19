@@ -1,4 +1,4 @@
-%% MVPAlab TOOLBOX - (mvpa_demo.m)
+%% MVPAlab TOOLBOX - (mvcc_demo.m)
 % -------------------------------------------------------------------------
 % Brain, Mind and Behavioral Research Center - University of Granada.
 % Contact: dlopez@ugr.es (David Lopez-Garcia)
@@ -14,7 +14,7 @@ run cfg_file; % cfg_file_advanced for advanced configuration.
 
 [cfg,data,fv] = mvpalab_import(cfg);
 
-%% Compute MVPA analysis:
+%% Compute MVCC analysis:
 
 [result,cfg] = mvpalab_mvcc(cfg,fv);
 
@@ -29,4 +29,4 @@ mvpalab_savecfg(cfg);
 
 %% Plot the results:
 
-% run mvcc_plot;
+run mvcc_plot;

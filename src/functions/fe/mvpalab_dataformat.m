@@ -34,9 +34,9 @@ if isfield(input,'fsample')
 elseif isfield(input,'srate')
     %% EEGlab:
     % Store sampling frequency:
-    cfg.fs = data.srate;
+    cfg.fs = input.srate;
     % Generate data file:
-    EEG = data;
+    EEG = input;
     cfg.format = 'eeglab';
     
 elseif isfield(input,'format') && strcmp(input.format, 'mvpalab')

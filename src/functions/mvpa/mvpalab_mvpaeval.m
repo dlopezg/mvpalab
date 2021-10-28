@@ -54,7 +54,7 @@ for k = 1 : strpar.NumTestSets
         haufe_weights(:,k) = mvpalab_wcorrect(train_X,raw_weights(:,k));
     end
     
-    % Temporal generalization if needed:
+    %% Temporal generalization if needed:
     if cfg.classmodel.tempgen
         for tp_ = 1 : cfg.tm.ntp
             

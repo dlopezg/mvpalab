@@ -1,6 +1,4 @@
-function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvcceval(X,train_Y,Xt,test_Y,tp,cfg)
-%MVCC_SVM_CLASSIFIER Summary of this function goes here
-%   Detailed explanation goes here
+function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvcceval(X,Y,Xt,Yt,tp,cfg)
 
 x = {}; y = {}; t = {}; auc = NaN;
 cm = {}; pr = {}; re = {}; f1 = {};
@@ -8,71 +6,94 @@ cr = NaN;
 raw_weights = [];
 w = [];
 
-%% Train and test datasets:
-train_X = X(:,:,cfg.tm.tpoints(tp));
-test_X = Xt(:,:,cfg.tm.tpoints(tp));
+%% Cross validation loop:
 
-%% Data normalization if needed:
-[train_X,test_X,nparams] = mvpalab_datanorm(cfg,train_X,test_X,[]);
+% Stratified partitions for train and test datasets:
+strpar  = cvpartition(Y,'KFold',cfg.cv.nfolds);  % Train
+strpart = cvpartition(Yt,'KFold',cfg.cv.nfolds); % Test
 
-%% Permute labels if needed:
-if cfg.classmodel.permlab
-    train_Y = train_Y(randperm(length(train_Y)));
+if ~cfg.classmodel.tempgen
+    predicted_labels = true(strpart.NumObservations,1);
+    predicted_scores = ones(strpart.NumObservations,2);
+else
+    for i = 1 : cfg.tm.ntp
+        predicted_labels{i} = true(strpart.NumObservations,1);
+        predicted_scores{i} = ones(strpart.NumObservations,2);
+    end
 end
 
-%% Feature selection if needed:
-if ~strcmp(cfg.dimred.method,'none')
-    [train_X,test_X,params] = ...
-        mvpalab_dimred(train_X,train_Y,test_X,test_Y,cfg);
-end
-
-%% Train and test the model:
-[mdl,raw_weights] = mvpalab_train(train_X,train_Y,cfg);
-
-% Correct feature weights:
-if cfg.classmodel.wvector
-    haufe_weights = mvpalab_wcorrect(train_X,raw_weights);
-end
-
-
-%% Temporal generalization if needed:
-if cfg.classmodel.tempgen
+for k = 1 : strpar.NumTestSets
+    %% Update train and test datasets:
+    train_X = X(strpar.training(k),:,cfg.tm.tpoints(tp));
+    train_Y = Y(strpar.training(k));
+    test_X = Xt(strpart.test(k),:,cfg.tm.tpoints(tp));
+    test_Y = Yt(strpart.test(k));
     
-    % Preallocating variables for better performance:
-    x = cell(1,cfg.tm.ntp);
-    y = cell(1,cfg.tm.ntp);
-    cm = cell(1,cfg.tm.ntp);
-    cr = zeros(1,cfg.tm.ntp);
-    auc = zeros(1,cfg.tm.ntp);
+    %% Data normalization if needed:
+    [train_X,test_X,nparams] = mvpalab_datanorm(cfg,train_X,test_X,[]);
     
-    for tp_ = 1 : cfg.tm.ntp
+    %% Permute labels if needed:
+    if cfg.classmodel.permlab
+        train_Y = train_Y(randperm(length(train_Y)));
+    end
+    
+    %% Feature selection if needed:
+    if ~strcmp(cfg.dimred.method,'none')
+        [train_X,test_X,params] = ...
+            mvpalab_dimred(train_X,train_Y,test_X,test_Y,cfg);
+    end
+    
+    %% Train and test the model:
+    [mdl,raw_weights(:,k)] = mvpalab_train(train_X,train_Y,cfg);
+    
+    %% Correct feature weights:
+    if cfg.classmodel.wvector
+        haufe_weights(:,k) = mvpalab_wcorrect(train_X,raw_weights(:,k));
+    end
+    
+    %% Temporal generalization if needed:
+    if cfg.classmodel.tempgen
+        for tp_ = 1 : cfg.tm.ntp
+            
+            % Update test set for the actual timepoint:
+            test_X = Xt(:,:,cfg.tm.tpoints(tp_));
+            
+            % Data normalization if needed:
+            [~,test_X,nparams] = mvpalab_datanorm(cfg,[],test_X,nparams);
+            
+            % Project new test set in the PC space if needed:
+            if ~strcmp(cfg.dimred.method,'none')
+                test_X = mvpalab_project(test_X,params,cfg);
+            end
+            
+            % Predict labels and scores:
+            [labels,scores] = predict(mdl,test_X);
+            acc(k,tp_) = sum(test_Y == labels)/length(test_Y);
+            
+            % Update label and score vectors:
+            predicted_labels{tp_}(strpart.test(k)) = labels;
+            predicted_scores{tp_}(strpart.test(k),:) = scores;
         
-        % Update test set for the actual timepoint:
-        test_X = Xt(:,:,cfg.tm.tpoints(tp_));
-        
-        % Data normalization if needed:
-        [~,test_X,nparams] = mvpalab_datanorm(cfg,[],test_X,nparams);
-        
-        % Project new test set in the PC space if needed:
-        if ~strcmp(cfg.dimred.method,'none')
-            test_X = mvpalab_project(test_X,params,cfg);
         end
+    else
         
-        % Predict labels and scores:
+        % Test classifier:
         [labels,scores] = predict(mdl,test_X);
-        
-        % Compute mean accuracy:
-        cr(tp_) = sum(test_Y == labels)/length(test_Y);
-        
+        acc(k) = sum(test_Y == labels)/length(test_Y);
+        predicted_labels(strpart.test(k)) = labels;
+        predicted_scores(strpart.test(k),:) = scores;
+ 
+    end
+end
+
+%% Calculate the performance of the model:
+
+if cfg.classmodel.tempgen
+    for tp_ = 1 : cfg.tm.ntp
         % Compute confusion matrix if needed:
         if cfg.classmodel.confmat || cfg.classmodel.precision ...
-                || cfg.classmodel.recall || cfg.classmodel.f1score
-            cm{tp_} = confusionmat(test_Y,labels);
-        end
-        % Receiver operating characteristic (ROC curve)
-        if cfg.classmodel.auc || cfg.classmodel.roc
-            [x{tp_},y{tp_},t{tp_},auc(tp_)] = ...
-                perfcurve(test_Y,scores(:,mdl.ClassNames),1);
+            || cfg.classmodel.recall || cfg.classmodel.f1score
+            cm{tp_} = confusionmat(Yt,predicted_labels{tp_});
         end
         % Compute precision if needed:
         if cfg.classmodel.precision
@@ -86,18 +107,28 @@ if cfg.classmodel.tempgen
         if cfg.classmodel.f1score
             f1{tp_} =  mvpalab_f1score(cm{tp_}');
         end
+        % Receiver operating characteristic (ROC curve) if needed:
+        if cfg.classmodel.auc || cfg.classmodel.roc
+            [x{tp_},y{tp_},t{tp_},auc(tp_)] = ...
+                perfcurve(Yt,predicted_scores{tp_}(:,mdl.ClassNames),1);
+        end
     end
+    
+    % Feature weights:
+    if cfg.classmodel.wvector
+        w.raw = mean(raw_weights,2);
+        w.haufe_corrected = mean(haufe_weights,2);
+    end
+    
+    % Mean accuracy:
+    cr = mean(acc);
 else
-    
-    % Predict labels:
-    [labels,scores] = predict(mdl,test_X);
-    
-    % Compute mean accuracy:
-    cr = sum(test_Y == labels)/length(test_Y);
+    % Mean accuracy:
+    cr = mean(acc);
     % Compute confusion matrix if needed:
     if cfg.classmodel.confmat || cfg.classmodel.precision ...
             || cfg.classmodel.recall || cfg.classmodel.f1score
-        cm = confusionmat(test_Y,labels);
+        cm = confusionmat(Yt,predicted_labels);
     end
     % Compute precision if needed:
     if cfg.classmodel.precision
@@ -113,15 +144,14 @@ else
     end
     % Receiver operating characteristic (ROC curve):
     if cfg.classmodel.auc || cfg.classmodel.roc
-        [x,y,t,auc] = perfcurve(test_Y,scores(:,mdl.ClassNames),1);
+        [x,y,t,auc] = perfcurve(Yt,predicted_scores(:,mdl.ClassNames),1);
     end
-    % mvpalab_svmvisualization(mdl,train_X,test_X,cfg,tp,train_Y,test_Y,auc);
+    % Feature weights:
+    if cfg.classmodel.wvector
+        w.raw = mean(raw_weights,2);
+        w.haufe_corrected = mean(haufe_weights,2);
+    end
 end
 
-% Feature weights:
-if cfg.classmodel.wvector
-    w.raw = raw_weights;
-    w.haufe_corrected = mean(haufe_weights,2);
-end
 end
 

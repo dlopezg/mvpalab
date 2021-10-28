@@ -26,8 +26,8 @@ for k = 1 : strpar.NumTestSets
     %% Update train and test datasets:
     train_X = X(strpar.training(k),:,cfg.tm.tpoints(tp));
     train_Y = Y(strpar.training(k));
-    test_X = Xt(strpart.test(k),:,cfg.tm.tpoints(tp));
-    test_Y = Yt(strpart.test(k));
+    test_X = Xt(strpart.training(k),:,cfg.tm.tpoints(tp));
+    test_Y = Yt(strpart.training(k));
     
     %% Data normalization if needed:
     [train_X,test_X,nparams] = mvpalab_datanorm(cfg,train_X,test_X,[]);
@@ -71,8 +71,8 @@ for k = 1 : strpar.NumTestSets
             acc(k,tp_) = sum(test_Y == labels)/length(test_Y);
             
             % Update label and score vectors:
-            predicted_labels{tp_}(strpart.test(k)) = labels;
-            predicted_scores{tp_}(strpart.test(k),:) = scores;
+            predicted_labels{tp_}(strpart.training(k)) = labels;
+            predicted_scores{tp_}(strpart.training(k),:) = scores;
         
         end
     else
@@ -80,8 +80,8 @@ for k = 1 : strpar.NumTestSets
         % Test classifier:
         [labels,scores] = predict(mdl,test_X);
         acc(k) = sum(test_Y == labels)/length(test_Y);
-        predicted_labels(strpart.test(k)) = labels;
-        predicted_scores(strpart.test(k),:) = scores;
+        predicted_labels(strpart.training(k)) = labels;
+        predicted_scores(strpart.training(k),:) = scores;
  
     end
 end

@@ -24,10 +24,14 @@ end
 
 for k = 1 : strpar.NumTestSets
     %% Update train and test datasets:
+    
+    % Select data partition for testing
+    selected_partition = strpart.training(k);
+    
     train_X = X(strpar.training(k),:,cfg.tm.tpoints(tp));
     train_Y = Y(strpar.training(k));
-    test_X = Xt(strpart.training(k),:,cfg.tm.tpoints(tp));
-    test_Y = Yt(strpart.training(k));
+    test_X = Xt(selected_partition,:,cfg.tm.tpoints(tp));
+    test_Y = Yt(selected_partition);
     
     %% Data normalization if needed:
     [train_X,test_X,nparams] = mvpalab_datanorm(cfg,train_X,test_X,[]);
@@ -56,7 +60,7 @@ for k = 1 : strpar.NumTestSets
         for tp_ = 1 : cfg.tm.ntp
             
             % Update test set for the actual timepoint:
-            test_X = Xt(:,:,cfg.tm.tpoints(tp_));
+            test_X = Xt(selected_partition,:,cfg.tm.tpoints(tp_));
             
             % Data normalization if needed:
             [~,test_X,nparams] = mvpalab_datanorm(cfg,[],test_X,nparams);
@@ -71,8 +75,8 @@ for k = 1 : strpar.NumTestSets
             acc(k,tp_) = sum(test_Y == labels)/length(test_Y);
             
             % Update label and score vectors:
-            predicted_labels{tp_}(strpart.training(k)) = labels;
-            predicted_scores{tp_}(strpart.training(k),:) = scores;
+            predicted_labels{tp_}(selected_partition) = labels;
+            predicted_scores{tp_}(selected_partition,:) = scores;
         
         end
     else
@@ -80,8 +84,8 @@ for k = 1 : strpar.NumTestSets
         % Test classifier:
         [labels,scores] = predict(mdl,test_X);
         acc(k) = sum(test_Y == labels)/length(test_Y);
-        predicted_labels(strpart.training(k)) = labels;
-        predicted_scores(strpart.training(k),:) = scores;
+        predicted_labels(selected_partition) = labels;
+        predicted_scores(selected_partition,:) = scores;
  
     end
 end

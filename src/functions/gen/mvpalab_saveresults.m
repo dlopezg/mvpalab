@@ -1,5 +1,8 @@
 function [] = mvpalab_saveresults(cfg,results)
 
+fprintf('\n');
+fprintf('<strong> > Saving the results: </strong>');
+
 fields = fieldnames(results);
 additionalmetrics = {'precision','recall','f1score'};
 metrics = {'acc','auc','roc','confmat','precision','recall','f1score','wvector'};
@@ -36,6 +39,8 @@ for i = 1 : numel(fields)
         end
     end
 end
+
+fprintf(' > Done! ');
 
 end
 

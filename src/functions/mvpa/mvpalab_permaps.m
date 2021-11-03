@@ -1,7 +1,7 @@
 function [permaps,cfg] = mvpalab_permaps(cfg,fv )
 %CORRECT_RATE Summary of this function goes here
 %   Detailed explanation goes here
-fprintf('<strong> > Computing permutated maps: </strong>\n');
+fprintf('<strong> > Computing permuted maps: </strong>\n');
 
 % Enable statistics:
 cfg.stats.flag = 1;
@@ -89,6 +89,8 @@ for sub = 1 : nSubjects
     end
 end
 
+fprintf('\n');
+
 % Return precision if needed:
 if cfg.classmodel.precision
     permaps.precision = mvpalab_reorganize(cfg,precision);
@@ -110,8 +112,6 @@ if ~cfg.sf.flag
     mvpalab_savepermaps(cfg,permaps);
 end
 
-
-fprintf(' - Done!\n');
 end
 
 

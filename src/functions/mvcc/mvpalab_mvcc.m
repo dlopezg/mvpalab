@@ -120,6 +120,8 @@ for sub = 1 : nSubjects
     toc
 end
 
+fprintf('\n');
+
 % Return confusion ROC values and AUC if needed:
 if cfg.classmodel.roc
     res.roc.x =  mvpalab_reorganize_(cfg,x_ab,x_ba); 
@@ -156,8 +158,6 @@ end
 if ~cfg.sf.flag
     mvpalab_saveresults(cfg,res);
 end
-
-fprintf(' - Done!\n');
 
 end
 

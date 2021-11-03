@@ -1,7 +1,7 @@
 function [permaps,cfg] = mvpalab_cpermaps(cfg,fv)
 %PERMUTATION_MAPS This function generates permutation maps at a subject
 %level for future statistical analyses.
-fprintf('<strong> > Computing permutated maps (MVCC): </strong>\n');
+fprintf('<strong> > Computing permuted maps (MVCC): </strong>\n');
 
 % Enable statistics:
 cfg.stats.flag = 1;
@@ -109,6 +109,8 @@ for sub = 1 : nSubjects
     end
 end
 
+fprintf('\n');
+
 % Return precision if needed:
 if cfg.classmodel.precision
     permaps.precision = mvpalab_reorganize(cfg,precision_ab,precision_ba);
@@ -131,6 +133,5 @@ if ~cfg.sf.flag
     mvpalab_savepermaps(cfg,permaps);
 end
 
-fprintf(' - Done!\n');
 end
 

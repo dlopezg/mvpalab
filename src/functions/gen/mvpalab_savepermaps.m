@@ -1,5 +1,7 @@
 function [] = mvpalab_savepermaps(cfg,pmaps)
 
+fprintf('<strong> > Saving permuted maps: </strong>');
+
 fields = fieldnames(pmaps);
 additionalmetrics = {'precision', 'recall', 'f1score'};
 
@@ -33,5 +35,9 @@ for i = 1 : numel(fields)
         save([savefolder fields{i} filesep 'permaps.mat'],'permaps','cfg','-v7.3');
     end
 end
+
+fprintf(' > Done! ');
+fprintf('\n\n');
+
 end
 

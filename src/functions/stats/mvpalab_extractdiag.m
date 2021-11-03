@@ -1,4 +1,7 @@
 function [per,permaps,stats] = mvpalab_extractdiag(cfg,performance,permuted_maps)
+
+fprintf('<strong> > Extracting time resolved diagonal: </strong>');
+
 cfg.classmodel.tempgen = false;
 %% Loop over different performance metrics:
 fields = fieldnames(performance);
@@ -104,6 +107,9 @@ for i = 1 : numel(fields)
         end
     end
 end
+
+fprintf(' > Done! ');
+fprintf('\n\n');
 
 %% Permutations tests and save result:
 mvpalab_saveresults(cfg,per);

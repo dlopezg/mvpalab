@@ -1,6 +1,5 @@
 function [] = mvpalab_saveresults(cfg,results)
 
-fprintf('\n');
 fprintf('<strong> > Saving the results: </strong>');
 
 fields = fieldnames(results);
@@ -41,6 +40,7 @@ for i = 1 : numel(fields)
 end
 
 fprintf(' > Done! ');
+fprintf('\n\n');
 
 end
 

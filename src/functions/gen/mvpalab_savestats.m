@@ -1,5 +1,7 @@
 function [] = mvpalab_savestats(cfg,statistics)
 
+fprintf('<strong> > Saving stats: </strong>');
+
 fields = fieldnames(statistics);
 additionalmetrics = {'precision', 'recall', 'f1score'};
 
@@ -33,5 +35,9 @@ for i = 1 : numel(fields)
         save([savefolder fields{i} filesep 'stats.mat'],'stats','cfg','-v7.3');
     end
 end
+
+fprintf(' > Done! ');
+fprintf('\n\n');
+
 end
 

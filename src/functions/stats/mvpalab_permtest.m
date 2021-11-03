@@ -68,14 +68,12 @@ for i = 1 : numel(fields)
     end
 end
 
-%% Save data:
-fprintf('<strong> > Saving results... </strong>\n');
+fprintf('<strong> > Permutation test finished!</strong>\n\n');
 
 if ~cfg.sf.flag
     mvpalab_savestats(cfg,stats);
 end
 
-fprintf('<strong> > Permutation test finished!</strong>\n');
 
 end
 

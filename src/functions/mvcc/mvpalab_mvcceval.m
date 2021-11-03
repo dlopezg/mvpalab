@@ -7,10 +7,16 @@ raw_weights = [];
 w = [];
 
 %% Cross validation loop:
-
 % Stratified partitions for train and test datasets:
-strpar  = cvpartition(Y,'KFold',cfg.cv.nfolds);  % Train
-strpart = cvpartition(Yt,'KFold',cfg.cv.nfolds); % Test
+if strcmp(cfg.cv.method,'none')
+    strpar.NumTestSets = 1;
+    strpar.NumObservations = length(Y);
+    strpart.NumTestSets = 1;
+    strpart.NumObservations = length(Yt);
+else
+    strpar  = cvpartition(Y,'KFold',cfg.cv.nfolds);  % Train
+    strpart = cvpartition(Yt,'KFold',cfg.cv.nfolds); % Test
+end
 
 if ~cfg.classmodel.tempgen
     predicted_labels = true(strpart.NumObservations,1);
@@ -25,13 +31,21 @@ end
 for k = 1 : strpar.NumTestSets
     %% Update train and test datasets:
     
-    % Select data partition for testing
-    selected_partition = strpart.training(k);
-    
-    train_X = X(strpar.training(k),:,cfg.tm.tpoints(tp));
-    train_Y = Y(strpar.training(k));
-    test_X = Xt(selected_partition,:,cfg.tm.tpoints(tp));
-    test_Y = Yt(selected_partition);
+    if strcmp(cfg.cv.method,'none')
+        % Select data partition for testing
+        selected_partition = (1:strpart.NumObservations);
+        train_X = X(:,:,cfg.tm.tpoints(tp));
+        test_X = Xt(:,:,cfg.tm.tpoints(tp));
+        train_Y = Y;
+        test_Y = Yt;
+    else
+        % Select data partition for testing
+        selected_partition = strpart.training(k);
+        train_X = X(strpar.training(k),:,cfg.tm.tpoints(tp));
+        test_X = Xt(selected_partition,:,cfg.tm.tpoints(tp));
+        train_Y = Y(strpar.training(k));
+        test_Y = Yt(selected_partition);
+    end
     
     %% Data normalization if needed:
     [train_X,test_X,nparams] = mvpalab_datanorm(cfg,train_X,test_X,[]);
@@ -125,7 +139,7 @@ if cfg.classmodel.tempgen
     end
     
     % Mean accuracy:
-    cr = mean(acc);
+    cr = mean(acc,1);
 else
     % Mean accuracy:
     cr = mean(acc);

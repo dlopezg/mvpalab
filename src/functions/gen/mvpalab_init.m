@@ -4,6 +4,11 @@ function [ cfg ] = mvpalab_init()
 cfg = [];
 fprintf('<strong> > Initializing MVPAlab toolbox: </strong>\n');
 
+
+%% UPDATE MATLAB PATH:
+loc = which('mvpalab');
+addpath(genpath_exclude(loc(1:end-9),{'\.git','demos'}));
+
 %% ANALYSIS TYPE:
 
 cfg.analysis = 'MVPA';

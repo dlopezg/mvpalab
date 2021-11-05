@@ -1,4 +1,10 @@
 function [] = mvpalab()
+
+% Update MATLAB paths with subfolders:
+loc = which('mvpalab');
+addpath(genpath_exclude(loc(1:end-9),{'\.git','demos'}));
+
+
 if ~verLessThan('matlab','9.2') %% -v.2017a
     initView; 
 else

@@ -3,10 +3,15 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 %the required structure for the feature extraction.
 
 %% Initialization
+nSubjects = length(cfg.study.dataFiles{1,1});
+nClasses = 2;
+nCtxt = 1;
+cfg.sf.nfreq = 1;
 
 % Check cfg integrity and backwards compatibility:
 cfg = mvpalab_checkcfg(cfg);
 
+% Prepare frequency contribution analysis:
 if cfg.sf.flag
     % Check EEGlab:
     mvpalab_checkeeglab();
@@ -14,21 +19,12 @@ if cfg.sf.flag
     cfg = mvpalab_preparesf(cfg);
 end
 
-nSubjects = length(cfg.study.dataFiles{1,1});
-nClasses = 2;
-nCtxt = 1;
-
+% Prepare MVCC analysis if needed:
 if ~isempty(cfg.study.dataFiles{2,1}) && ~isempty(cfg.study.dataFiles{2,2})
     cfg.analysis = 'MVCC';
-end
-
-if strcmp(cfg.analysis,'MVCC')
     nCtxt = 2;
 end
 
-if ~cfg.sf.flag
-    cfg.sf.nfreq = 1;
-end
 %% Subjects loop:
 for sub = 1 : nSubjects
     fprintf('\n');

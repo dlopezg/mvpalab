@@ -137,6 +137,12 @@ cfg.stats.pgroup = 99.9;
 cfg.stats.pclust = 99.9;
 cfg.stats.shownulldis = 0;
 
+%% REPRESENTATIONAL SIMILARITY ANALYSIS:
+
+cfg.rsa.flag = 0;
+cfg.rsa.nclass = 0;
+cfg.rsa.method = 'pearson';
+
 %% SLIDING FILTER ANALYSIS CONFIGURATION:
 
 % Flag:

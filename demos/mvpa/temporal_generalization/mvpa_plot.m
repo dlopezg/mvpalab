@@ -13,14 +13,14 @@ graph.colorMap = graph.grads.earth;
 graph.colors = graph.colors.earth;
 
 % Axis limits:
-graph.xlim = [-100 1500];
-graph.ylim = [-100 1500];
+graph.xlim = [cfg.tm.tpstart_ cfg.tm.tpend_];
+graph.ylim = [cfg.tm.tpstart cfg.tm.tpend];
 graph.caxis = [.3 .7];
 graph.onscreen = [0 190];
 
 % Axes labels and titles:
-graph.xlabel = 'Train (ms)';
-graph.ylabel = 'Test (ms)';
+graph.xlabel = 'Test (ms)';
+graph.ylabel = 'Train (ms)';
 graph.title = 'Demo plot (no statistical significance)';
 
 

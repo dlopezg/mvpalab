@@ -80,6 +80,8 @@ cfg.smoothdata.window   = 1;
 
 cfg.tm.tpstart   = 0;
 cfg.tm.tpend     = 0;
+cfg.tm.tpstart_  = 0;
+cfg.tm.tpend_    = 0;
 cfg.tm.tpsteps   = 1;
 
 %% CLASSIFICATION ALGORITHM:

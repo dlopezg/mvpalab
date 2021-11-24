@@ -6,8 +6,8 @@ function [] = mvpalab_plottempogen(graph,cfg,data,stats)
 data = mvpalab_selectsub(graph,data);
 
 %% Plot temporal generalization results:
-x = linspace(cfg.tm.tpstart,cfg.tm.tpend,size(data,1));
-y = x;
+y = linspace(cfg.tm.tpstart,cfg.tm.tpend,size(data,1));
+x = linspace(cfg.tm.tpstart_,cfg.tm.tpend_,size(data,2));
 acc_map = mean(data,3);
 contourf(x,y,acc_map,16,'LineStyle','none')
 hold on

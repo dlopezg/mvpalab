@@ -18,7 +18,7 @@ graph.ylabel = 'Classifier performance';
 graph.title = 'Demo plot (no statistical significance)';
 
 % Smooth results:
-graph.smoothdata = 1; % (1 => no smoothing)
+graph.smoothdata = 5; % (1 => no smoothing)
 
 % Plot results:
 figure;

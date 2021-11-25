@@ -6,7 +6,10 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 nSubjects = length(cfg.study.dataFiles{1,1});
 nClasses = 2;
 nCtxt = 1;
-cfg.sf.nfreq = 1;
+
+if ~cfg.sf.flag
+    cfg.sf.nfreq = 1;
+end
 
 % Check cfg integrity and backwards compatibility:
 cfg = mvpalab_checkcfg(cfg);

@@ -32,9 +32,9 @@ for sub = 1 : nSubjects
     upperb(sub) = upperbounds.gbound(10 + size(X,1),cfg.dimred.ncomp);
     % Reestructure result:
     if cfg.classmodel.tempgen
-        res.acc(:,:,sub) = acc - upperb;
+        res.acc(:,:,sub) = acc - upperb(sub);
     else
-        res.acc(:,:,sub) = acc' - upperb;
+        res.acc(:,:,sub) = acc' - upperb(sub);
     end
     toc;
 end

@@ -7,7 +7,7 @@
 %% Initialize project and run configuration file:
 
 cfg = mvpalab_init();
-run cfg_file; % cfg_file_advanced for advanced configuration.
+run cfg_file;
 
 %% Load data, generate conditions and feature extraction:
 

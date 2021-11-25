@@ -39,3 +39,11 @@ cfg.sf.order = 2408;            % Filter order.
 % Frequency steps:
 cfg.sf.fspac = 'log';  % Linear or logarithmic (lin/log.)
 cfg.sf.nfreq = 32;     % Number of steps - log (Hz).
+
+%% Enable parallel comp. if the Distrib_Computing_Toolbox is installed:
+
+if license('test','Distrib_Computing_Toolbox')
+    cfg.classmodel.parcomp = true;
+else
+    cfg.classmodel.parcomp = false;
+end

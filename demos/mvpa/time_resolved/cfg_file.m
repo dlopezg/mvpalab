@@ -15,3 +15,11 @@ cfg.study.dataPaths{1,2} = 'C:\Users\Cimcyc\Desktop\data\condition_b\';
 % Data files:
 cfg.study.dataFiles{1,1} = {'1.mat','2.mat','3.mat'};
 cfg.study.dataFiles{1,2} = {'1.mat','2.mat','3.mat'};
+
+%% Enable parallel comp. if the Distrib_Computing_Toolbox is installed:
+
+if license('test','Distrib_Computing_Toolbox')
+    cfg.classmodel.parcomp = true;
+else
+    cfg.classmodel.parcomp = false;
+end

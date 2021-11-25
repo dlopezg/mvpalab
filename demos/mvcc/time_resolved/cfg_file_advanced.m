@@ -119,8 +119,15 @@ cfg.classmodel.wvector   = false;
 
 cfg.classmodel.tempgen = false;
 cfg.classmodel.extdiag = false;
-cfg.classmodel.parcomp = false;
 cfg.classmodel.permlab = false;
+
+% Enable parallel computation if the Distrib_Computing_Toolbox is installed:
+
+if license('test','Distrib_Computing_Toolbox')
+    cfg.classmodel.parcomp = true;
+else
+    cfg.classmodel.parcomp = false;
+end
 
 %% CROSS-VALIDATIONN PROCEDURE:
 

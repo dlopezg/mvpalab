@@ -25,6 +25,14 @@ cfg.study.dataFiles{2,2} = {'1.mat','2.mat','3.mat'};
 %% Permutation analysis:
 cfg.stats.flag = true;
 
+%% Enable parallel comp. if the Distrib_Computing_Toolbox is installed:
+
+if license('test','Distrib_Computing_Toolbox')
+    cfg.classmodel.parcomp = true;
+else
+    cfg.classmodel.parcomp = false;
+end
+
 %% Sliding filter analysis configuration:
 
 cfg.sf.flag = 1;

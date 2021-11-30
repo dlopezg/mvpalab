@@ -9,6 +9,7 @@ load results/diffMaps/result.mat
 %% Mean accuracy plot (no statistical significance)
 
 graph.xlim = [-100 1000];
+graph.ylim = [0 20];
 
 % Plot results:
 figure;
@@ -23,6 +24,10 @@ mvpalab_plotfreqcont(graph,cfg,result.ba);
 
 % Load results and and statistics if needed:
 load results/diffMaps/stats.mat
+
+% Plot below and above chance clusters:
+graph.stats.above = true;
+graph.stats.below = true;
 
 % Plot results:
 subplot(2,2,3)

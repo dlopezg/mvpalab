@@ -19,7 +19,7 @@ if ~cfg.classmodel.tempgen
     predicted_labels = true(strpar.NumObservations,1);
     predicted_scores = ones(strpar.NumObservations,2);
 else
-    for i = 1 : cfg.tm.ntp
+    for i = 1 : cfg.tm.ntp_
         predicted_labels{i} = true(strpar.NumObservations,1);
         predicted_scores{i} = ones(strpar.NumObservations,2);
     end
@@ -56,10 +56,10 @@ for k = 1 : strpar.NumTestSets
     
     %% Temporal generalization if needed:
     if cfg.classmodel.tempgen
-        for tp_ = 1 : cfg.tm.ntp
+        for tp_ = 1 : cfg.tm.ntp_
             
             % Update test set for the actual timepoint:
-            test_X = X(strpar.test(k),:,cfg.tm.tpoints(tp_));
+            test_X = X(strpar.test(k),:,cfg.tm.tpoints_(tp_));
             
             % Data normalization if needed:
             [~,test_X] = mvpalab_datanorm(cfg,[],test_X,nparams);
@@ -92,7 +92,7 @@ end
 % Correct the weights using paper.
 % Return weights and repeat por all needed functions (MVCC). 
 if cfg.classmodel.tempgen
-    for tp_ = 1 : cfg.tm.ntp
+    for tp_ = 1 : cfg.tm.ntp_
         % Compute confusion matrix if needed:
         if cfg.classmodel.confmat || cfg.classmodel.precision ...
             || cfg.classmodel.recall || cfg.classmodel.f1score

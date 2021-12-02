@@ -91,8 +91,8 @@ cfg.tm.tpsteps   = 1;
 % cfg.classmodel.kernel = 'rbf'        - Support Vector Machine.
 % cfg.classmodel.kernel = 'polynomial' - Support Vector Machine.
 
-% cfg.classmodel.kernel = 'linear' - Discriminant Analysis.
-% cfg.classmodel.kernel = 'quadratic' - Discriminant Analysis.
+% cfg.classmodel.kernel = 'linear'     - Discriminant Analysis.
+% cfg.classmodel.kernel = 'quadratic'  - Discriminant Analysis.
 
 cfg.classmodel.method = 'svm';
 cfg.classmodel.kernel = 'linear';
@@ -139,11 +139,16 @@ cfg.cv.loo     = [];
 
 %% PERMUTATION TEST
 
+% cfg.stats.type   = 'above';  - Above chance clusters (Rigth tail)
+% cfg.stats.type   = 'below';  - Below chance clusters (Rigth tail)
+% cfg.stats.type   = 'both';   - Above and below chance (Two tails)
+
 cfg.stats.flag   = 0;
 cfg.stats.nper   = 100;
 cfg.stats.nperg  = 1e5;
-cfg.stats.pgroup = 99.9;
-cfg.stats.pclust = 99.9;
+cfg.stats.pgroup = 95;
+cfg.stats.pclust = 95;
+cfg.stats.tails  = 2;
 cfg.stats.shownulldis = 0;
 
 %% SLIDING FILTER ANALYSIS CONFIGURATION:

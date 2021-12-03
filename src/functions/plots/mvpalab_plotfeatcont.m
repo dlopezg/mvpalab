@@ -1,4 +1,8 @@
 function mvpalab_plotfeatcont(graph,cfg,weights,result)
+
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
 if isempty(cfg.chanloc)
     
 else

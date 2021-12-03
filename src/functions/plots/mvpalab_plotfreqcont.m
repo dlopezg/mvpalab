@@ -2,6 +2,9 @@ function [] = mvpalab_plotfreqcont(graph,cfg,data,stats )
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
 
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
 %% Select subject:
 data = mvpalab_selectsub(graph,data);
 

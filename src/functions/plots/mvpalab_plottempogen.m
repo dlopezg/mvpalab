@@ -2,6 +2,16 @@ function [] = mvpalab_plottempogen(graph,cfg,data,stats)
 %PLOT_RESULTS Summary of this function goes here
 %   Detailed explanation goes here
 
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
+% Bug fix for older versions of mvpalab:
+if ~cfg.tm.tpstart_ && ~cfg.tm.tpend_
+    cfg.tm.tpstart_ = cfg.tm.tpstart;
+    cfg.tm.tpend_ = cfg.tm.tpend;
+    mvpalab_savecfg(cfg);
+end
+
 %% Select subject:
 data = mvpalab_selectsub(graph,data);
 

@@ -1,5 +1,9 @@
 function [permaps,cfg] = mvpalab_permaps(cfg,fv )
 %CORRECT_RATE Summary of this function goes here
+
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
 %   Detailed explanation goes here
 fprintf('<strong> > Computing permuted maps: </strong>\n');
 

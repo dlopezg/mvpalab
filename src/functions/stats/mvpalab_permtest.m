@@ -1,4 +1,8 @@
 function [ stats ] = mvpalab_permtest( cfg, performance, permuted_maps )
+
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
 %% Loop over different performance metrics:
 fields = fieldnames(performance);
 validfields = {'acc' 'auc' 'precision' 'recall' 'f1score'};

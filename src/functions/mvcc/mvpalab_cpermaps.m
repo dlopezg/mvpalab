@@ -1,6 +1,10 @@
 function [permaps,cfg] = mvpalab_cpermaps(cfg,fv)
 %PERMUTATION_MAPS This function generates permutation maps at a subject
 %level for future statistical analyses.
+
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
 fprintf('<strong> > Computing permuted maps (MVCC): </strong>\n');
 
 % Enable statistics:

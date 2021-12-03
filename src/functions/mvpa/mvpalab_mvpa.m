@@ -1,5 +1,8 @@
 function [res,cfg] = mvpalab_mvpa(cfg,fv)
 
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
 fprintf('<strong> > Computing MVPA analysis: </strong>\n');
 
 %% Initialization

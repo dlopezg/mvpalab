@@ -1,5 +1,8 @@
 function [res,cfg] = mvpalab_mvcc(cfg,fv)
 
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
 fprintf('<strong> > Computing MVCC analysis: </strong>\n');
 
 nSubjects = length(cfg.study.dataFiles{1,1});

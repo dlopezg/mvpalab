@@ -1,5 +1,8 @@
 function [per,permaps,stats] = mvpalab_extractdiag(cfg,performance,permuted_maps)
 
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
 fprintf('<strong> > Extracting time resolved diagonal: </strong>');
 
 cfg.classmodel.tempgen = false;

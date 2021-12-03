@@ -1,4 +1,8 @@
 function stats = mvpalab_computepermtest(cfg,performance,permuted_maps)
+
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
 %% Initilization - Generate permutation idx matrix:
 % Here we determine the map of each subject that has to be selected in each
 % permutation.

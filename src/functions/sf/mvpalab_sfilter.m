@@ -1,5 +1,8 @@
 function [cfg,diffMap,stats] = mvpalab_sfilter(cfg)
 
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+
 %% Sliding filter analysis:
 
 % Compute analysis for each frequency band:

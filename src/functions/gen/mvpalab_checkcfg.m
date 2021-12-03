@@ -27,4 +27,8 @@ if isstruct(cfg)
         end
     end
 end
+
+% Save the new cfg structure
+mvpalab_savecfg(cfg_);
+
 end

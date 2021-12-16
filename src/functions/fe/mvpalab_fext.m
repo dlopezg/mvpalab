@@ -36,11 +36,11 @@ for ctxt = 1 : size(fv,1)
     minsize = min(class_size(ctxt,:));
     for class = 1 : size(fv,2)
         if cfg.classsize.match
-            inpvec{1,c} = fv{ctxt,class}(1:minsize,:,:);
+            inpvec{ctxt,class} = fv{ctxt,class}(1:minsize,:,:);
         else
-            inpvec{1,c} = fv{ctxt,class};
+            inpvec{ctxt,class} = fv{ctxt,class};
         end
-        cfg.datalength(sub,c) = size(inpvec{1,c},1);
+        cfg.datalength(sub,c) = size(inpvec{ctxt,class},1);
         c = c + 1;
     end
 end

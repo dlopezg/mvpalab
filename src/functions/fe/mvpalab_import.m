@@ -42,7 +42,7 @@ for sub = 1 : nSubjects
         end
         
         for ctxt = 1 : nCtxt
-            for class = 1 : length(cfg.study.dataFiles);
+            for class = 1 : length(cfg.study.dataFiles)
                 
                 % Load subject data:
                 try

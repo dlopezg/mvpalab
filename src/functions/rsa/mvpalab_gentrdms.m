@@ -16,7 +16,7 @@ function trdms = mvpalab_gentrdms(tmodels,bounds)
 %
 %  OUTPUT:
 %
-%  - trdms : (3D-MATRIX) - Theoretical RDMs [trials x trials x models].
+%  - trdms : (4D-MATRIX) - Theoretical RDMs [trials x trials x 1 x models].
 
 %% Extract boundaries:
 %  This vector includes indexes of the last trial for each condition:
@@ -37,7 +37,7 @@ for i = 1 : size(tmodels,3)
     
     for j = 1 : length(bounds)-1
         for k = 1 : length(bounds)-1
-            trdms(bounds(j):bounds(j+1),bounds(k):bounds(k+1),i) = ...
+            trdms(bounds(j):bounds(j+1),bounds(k):bounds(k+1),1,i) = ...
                 tmodel(j,k);
         end
     end

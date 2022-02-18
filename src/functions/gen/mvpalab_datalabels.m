@@ -21,7 +21,7 @@ function [X,Y,cfg] = mvpalab_datalabels(cfg,fv)
 %         is stored in X.a while data for cross-classification analyses is 
 %         stored in X.b.
 %
-%  - Y  : (STRUCT) Label vector for an individual subject.
+%  - Y  : (ARRAY OF LOGICALS) Label vector for an individual subject.
 %
 %  - cfg: (STRUCT) Label vector for an individual subject.
 

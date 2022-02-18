@@ -31,7 +31,7 @@ end
 
 %% Return boundaries:
 
-bounds.last = last;
+bounds.last = last';
 bounds.middle = middle;
 
 end

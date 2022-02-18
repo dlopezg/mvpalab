@@ -6,12 +6,13 @@ function bounds = mvpalab_findbound(Y)
 %
 %  INPUT:
 %
-%  - Y  : (STRUCT) Label vector for an individual subject.
+%  - Y  : (ARRAY OF LOGICALS) Label vector for an individual subject.
 %
 %  OUTPUT:
 %
-%  - bounds : (STRUCT) 
-
+%  - bounds : (STRUCT) - (ARRAY OF INTEGERS) This vector contains the
+%             indexes of the last and the middle trial of each condition in
+%             the data matrix.
 
 %% Find boundaries:
 %  Find changes in the value of consecutive elements.

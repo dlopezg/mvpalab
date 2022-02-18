@@ -7,12 +7,12 @@ function [X,Y,cfg] = mvpalab_datalabels(cfg,fv)
 %  
 %  INPUT:
 %
+%  - cfg: (STRUCT) Configuration estructure. 
+%
 %  - fv : (CELL ARRAY) Feature vector array. Each position contains the 
 %         data matrix of a single class. [trials x electrodes x timepoint]
 %         The second row of this cell array is reserver for
 %         cross-classification analysis.
-%
-%  - cfg: (STRUCT) Configuration estructure. 
 %
 %  OUTPUT:
 %

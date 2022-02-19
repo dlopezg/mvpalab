@@ -2,7 +2,7 @@ function cfg_ = mvpalab_checkcfg(cfg_,cfg)
 
 % Initialize algorithm:
 if nargin < 2
-    cfg = mvpalab_init();
+    cfg = mvpalab_init(false);
     
     % Change fields names if needed (possible code refactoring)
     cfg_ = mvpalab_backCompatibility(cfg_);

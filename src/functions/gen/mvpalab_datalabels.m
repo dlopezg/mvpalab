@@ -26,7 +26,7 @@ function [X,Y,cfg] = mvpalab_datalabels(cfg,fv)
 %  - cfg: (STRUCT) Label vector for an individual subject.
 
 %%  Initialization:
-X.a = []; Y.a = []; nctxt = 1;
+X.a = []; Y.a = logical([]); nctxt = 1;
 
 %%  Check MVPA or MVCC:
 %   Data fields X.b and Y.b are reserved for cross-classification purposes.
@@ -36,7 +36,7 @@ X.a = []; Y.a = []; nctxt = 1;
 
 if (size(fv,1) > 1) && ~sum(cellfun(@isempty,fv{2,:}))
     nctxt = 2;
-    X.b = []; Y.b = [];
+    X.b = []; Y.b = logical([]);
 end
 
 %% Generate data structure and labels:

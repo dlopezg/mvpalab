@@ -16,6 +16,8 @@ function rdm = mvpalab_rdm(cfg,X)
 %  - rdm : (3D-MATRIX) Representational Dissimilarity Matrices for each
 %          timepoint [trials x trials x timepoints]
 
+fprintf('     <strong>- Computing empirical RDMs...</strong> ');
+
 %% Construct RDMs using Pearson correlation:
 if strcmp(cfg.rsa.method,'pearson')
     parfor tp = 1 : cfg.tm.ntp
@@ -31,6 +33,8 @@ if strcmp(cfg.rsa.method,'euclidean')
         rdm(:,:,tp) = pdist2(X_tp,X_tp,'euclidean');
     end
 end
+
+fprintf('- Done.\n\n');
 
 end
 

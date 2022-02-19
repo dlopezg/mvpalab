@@ -1,4 +1,4 @@
-function trdms = mvpalab_gentrdms(tmodels,bounds)
+function trdms = mvpalab_gentrdms(cfg,mdls,bounds)
 %% MVPALAB_GENTRDMS
 %
 %  This function returns theoretical RDMs according to the previously
@@ -6,17 +6,27 @@ function trdms = mvpalab_gentrdms(tmodels,bounds)
 %  condition included in the boundaries vector to construct the final
 %  theoretical RDM.
 %
-%  INPUT:
+
+fprintf('     <strong>- Computing theoretical RDMs:</strong>\n');
+
+%%  INPUT:
 %
-%  - cfg: (STRUCT) Configuration estructure. 
+%  - {cellarray} mdls
+%    Description: Cells contain a data structure for each theoretical model 
+%    including the following fields:
 %
-%  - bounds : (STRUCT) - (ARRAY OF INTEGERS) This vector contains the
-%             indexes of the last and the middle trial of each condition in
-%             the data matrix.
+%       - {string} id : Identifier of the model.
+%       - {matrix} mdl: Data matrix of the model. - [ncond x ncond]
 %
-%  OUTPUT:
+%  - {array} bounds
+%    Description: This vector contains the indexes of the last trial of 
+%    each condition in the data matrix. - [trials x trials]
 %
-%  - trdms : (4D-MATRIX) - Theoretical RDMs [trials x trials x 1 x models].
+%
+%%  OUTPUT:
+%
+%  - {4D-matrix} trdms
+%    Description: Theoretical RDMs [trials x trials x 1 x models].
 
 %% Extract boundaries:
 %  This vector includes indexes of the last trial for each condition:
@@ -24,23 +34,25 @@ function trdms = mvpalab_gentrdms(tmodels,bounds)
 bounds = [1 bounds.last];
 
 %% Theoretical models loop
-%  We generate diferent RDMs for each theoretical model:
+%  Generate different RDMs for each theoretical model:
 
-for i = 1 : size(tmodels,3)
-    
-    tmodel = tmodels(:,:,i);
-    
+for i = 1 : length(mdls)
     %% Generate RDM:
     %  For each cell in the neural RDM we need to asign a one or zero
     %  value according to the theoretical model. The size of the condition
     %  is extracted from the boundaries vector.
     
+    fprintf(['        # Model: ' cfg.rsa.tmodels{i}.id '... ']);
+    
     for j = 1 : length(bounds)-1
         for k = 1 : length(bounds)-1
             trdms(bounds(j):bounds(j+1),bounds(k):bounds(k+1),1,i) = ...
-                tmodel(j,k);
+                mdls{i}.mdl(j,k);
         end
     end
     
+    fprintf('- Done.\n');
 end
+
+
 

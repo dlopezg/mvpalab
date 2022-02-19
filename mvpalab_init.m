@@ -1,11 +1,17 @@
-function [ cfg ] = mvpalab_init()
-%INITIALIZE Summary of this function goes here
-%   Detailed explanation goes here
-cfg = [];
-fprintf('<strong> > Initializing MVPAlab toolbox: </strong>\n');
+function [ cfg ] = mvpalab_init(verbose)
+%% MVPALAB_INIT 
+%
+%  This function initializes the default configuration structure for
+%  MVPAlab.
 
+cfg = [];
+
+if nargin < 1
+    fprintf('<strong> > Initializing MVPAlab toolbox: </strong>\n');
+end
 
 %% UPDATE MATLAB PATH:
+
 loc = which('mvpalab');
 addpath(genpath_exclude(loc(1:end-9),{'\.git','demos'}));
 
@@ -191,11 +197,16 @@ cfg.study.conditionIdentifier = {
     };
 
 %% SOFTWARE VERSION:
+
 cfg.version = mvpalab_getversion();
-fprintf('<strong> > MVPAlab is ready! </strong>\n');
 
 %% PCA rank warning disabled. 
+
 warning('off','stats:pca:ColRankDefX');
+
+if nargin < 1
+    fprintf('<strong> > MVPAlab is ready! </strong>\n');
+end
 
 end
 

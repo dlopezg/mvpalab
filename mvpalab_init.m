@@ -162,6 +162,7 @@ cfg.stats.shownulldis = 0;
 cfg.rsa.flag = 0;
 cfg.rsa.nclass = 0;
 cfg.rsa.method = 'pearson';
+cfg.rsa.trialwise = true;
 
 %% SLIDING FILTER ANALYSIS CONFIGURATION:
 

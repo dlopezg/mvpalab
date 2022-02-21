@@ -12,14 +12,14 @@ fprintf('     <strong>- Computing theoretical RDMs:</strong>\n');
 %%  INPUT:
 %
 %  - {cellarray} mdls
-%    Description: Cells contain a data structure for each theoretical model 
+%    Description: Cells contain a data structure for each theoretical model
 %    including the following fields:
 %
 %       - {string} id : Identifier of the model.
 %       - {matrix} mdl: Data matrix of the model. - [ncond x ncond]
 %
 %  - {array} bounds
-%    Description: This vector contains the indexes of the last trial of 
+%    Description: This vector contains the indexes of the last trial of
 %    each condition in the data matrix. - [trials x trials]
 %
 %
@@ -27,6 +27,17 @@ fprintf('     <strong>- Computing theoretical RDMs:</strong>\n');
 %
 %  - {4D-matrix} trdms
 %    Description: Theoretical RDMs [trials x trials x 1 x models].
+
+%% Analysis type:
+%  If the analysis is computed condition-by-condition is not necessary to
+%  generate the theoretical models because they are already specified:
+
+if ~cfg.rsa.trialwise
+    for i = 1 : length(mdls)
+        trdms(:,:,1,i) = cfg.rsa.tmodels{i}.mdl;
+    end
+    return
+end
 
 %% Extract boundaries:
 %  This vector includes indexes of the last trial for each condition:

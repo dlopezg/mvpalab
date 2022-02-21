@@ -13,9 +13,8 @@ function bounds = mvpalab_findbound(Y)
 %%  OUTPUT:
 %
 %  - {struct.array} bounds
-%    Description: This vector contains the
-%    indexes of the last and the middle trial of each condition in the data
-%    matrix.
+%    Description: This vector contains the indexes of the last and the 
+%    middle trial of each condition in the data matrix.
 
 %% Find boundaries:
 %  Find changes in the value of consecutive elements.

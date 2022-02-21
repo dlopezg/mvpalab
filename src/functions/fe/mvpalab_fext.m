@@ -17,7 +17,8 @@ for ctxt = 1 : size(data,2)
     
     %% Classes loop:
     for class = 1 : length(class_names)
-        fprintf('\n    <strong> - Generating feature vectors:</strong>\n');
+        fprintf('\n    <strong> - Generating feature vectors:</strong> ');
+        fprintf([class_names{class} '\n']);
         data_ = classes.(class_names{class});
         
         % Power envelope as a feature if needed:

@@ -19,7 +19,7 @@ function res = mvpalab_rsarestruct(cfg,data)
 %%  OUTPUT:
 %
 %  - {struct} res
-%    Description:Data matrices [1 x timepoints x subject] are rearranged
+%    Description: Data matrices [1 x timepoints x subject] are rearranged
 %    in individual fields for each theoretical model.
 
 

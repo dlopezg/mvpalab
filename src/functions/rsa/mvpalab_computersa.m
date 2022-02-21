@@ -6,27 +6,29 @@ function corrseries = mvpalab_computersa(cfg,mtx,mtx_,permute)
 % theoretical models are defined this functions compute the correlation
 % series for each one.
 
-%  INPUT:
+
+%%  INPUT:
 %
-%  - mtx  : (2D - MATRIX) Data matrix including the empirical vectoriced
-%           RDMs for each timepoint: [timepoint x vectorized]
+%  - {2D-matrix} mtx
+%    Description: Data matrix including the empirical vectoriced RDMs for 
+%    each timepoint: [timepoint x vectorized]
 %
-%  - mtx_ : (3D - MATRIX) Data matrix including the vectorized RDMs for
-%           each theoretical model and timepoint:
-%           [timepoint x vectorized x model]
+%  - {3D-matrix} mtx_
+%    Description: Data matrix including the vectorized RDMs for each 
+%    theoretical model and timepoint: [timepoint x vectorized x model]
 %
-%  OUTPUT:
+%%  OUTPUT:
 %
-%  - corrseries : (5D-MATRIX) - Time series including correlation values
-%           for each timepoint and model. For data structure consistency:
-%           [1 x timepoints x 1 x permutetions x model]
+%  - {5D-matrix} corrseries
+%    Description: Time series including correlation values for each 
+%    timepoint and model. For data structure consistency:
+%    [1 x timepoints x 1 x permutetions x model]
 
 if permute
     fprintf('\n     <strong>- Computing permuted maps:</strong>\n');
 else
     fprintf('\n     <strong>- Computing second order RSA:</strong>\n');
 end
-
 
 %% Permute or not.
 %  Calculate the number of permutations
@@ -50,29 +52,42 @@ for mdl = 1 : size(mtx_,3)
         
         r = [];
         
-        parfor tp = 1 : size(mtx,1)
+        if cfg.classmodel.parcomp
             
-            trdm = mtx_(tp,:,mdl);
-            rdm = mtx(tp,:);
-            if permute, rdm = rdm(randperm(length(rdm))); end
-            r(tp) = corr(rdm',trdm','Type','Spearman');
+            parfor tp = 1 : size(mtx,1)
+                
+                trdm = mtx_(tp,:,mdl);
+                rdm = mtx(tp,:);
+                if permute, rdm = rdm(randperm(length(rdm))); end
+                r(tp) = corr(rdm',trdm','Type','Spearman');
+                
+            end
+            
+        else
+            
+            for tp = 1 : size(mtx,1)
+                
+                trdm = mtx_(tp,:,mdl);
+                rdm = mtx(tp,:);
+                if permute, rdm = rdm(randperm(length(rdm))); end
+                r(tp) = corr(rdm',trdm','Type','Spearman');
+                
+            end
             
         end
-        
         %% Search and correct extreme correlations:
-        %  Force finite values for later z-transformation: +1/-1 correlation
-        %  values should be corrected to +/-.999999 to avoid infinity for
-        %  z-transformed correlations.
-        %  EPS corrects for rounding errors in r. EPS returns the distance from
-        %  1.0 to the next larger double-precision number.
+        %  Force finite values for later z-transformation: +1/-1
+        %  correlation values should be corrected to +/-.999999 to avoid
+        %  infinity for z-transformed correlations.
+        %  EPS corrects for rounding errors in r. EPS returns the distance
+        %  from 1.0 to the next larger double-precision number.
         
         r_ = (abs(r) + eps) >= 1;
         
         if any(r_(:))
-            
-            warning('Correlations of +1 or -1 found. Correcting to +/-0.9999');
+            warning(...
+                'Correlations of +1 or -1 found. Correcting to +/-0.9999');
             r(r_) = 0.99999*r(r_);
-            
         end
         
         %% Fisher transformation:
@@ -80,11 +95,12 @@ for mdl = 1 : size(mtx_,3)
         %  transformation is applied the sampling distribution of the
         %  resulting variable is approximately normal, with a variance
         %  that is stable over different values of the underlying true
-        % correlation.
+        %  correlation.
         
         corrseries(1,:,1,perm,mdl) = atanh(r);
         
         if permute, mvpalab_pcounter(perm,nperm); end
+        
     end
     
     fprintf('- Done.\n');

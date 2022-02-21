@@ -1,42 +1,57 @@
 function [ stats ] = mvpalab_permtest( cfg, performance, permuted_maps )
-%% Loop over different performance metrics:
-fields = fieldnames(performance);
-validfields = {'acc' 'auc' 'precision' 'recall' 'f1score'};
+%% Extract valid field:
+%  Not all fields contained in the result structure are compatible with a
+%  permutation test (e.g weight verctors, theoretical RDMs, etc).
 
-% Enable statistics:
+fields = fieldnames(performance);
+validfields = {'acc' 'auc' 'precision' 'recall' 'f1score' 'pearson' 'euclidean'};
+
+%% Enable statistics:
+%  Just to be sure that it is enabled.
+
 cfg.stats.flag = 1;
 
-% For each field:
+%% Fields loop:
+%  A field is ommited if it is not contained in the valid list.
+
 for i = 1 : numel(fields)
+    
     if find(strcmp(validfields, fields{i}))
+        %% Extract performance metric and the associated permuted maps:
         
-        % Extract performance metric and the associated permuted maps:
         performance_ = performance.(fields{i});
         permuted_maps_ = permuted_maps.(fields{i});
         
-        % If metric is precision, recall or f1 score, loop over classes:
+        %% Multilevel fields:
+        
         if find(strcmp(validfields(3:end), fields{i}))
+            
             temp = performance_;
             temp_ = permuted_maps_;
             subfields = fieldnames(temp);
             
+            %% Loop over subfields:
+            
             for j = 1 : numel(subfields)
+                
                 performance_ = performance_.(subfields{j});
                 permuted_maps_ = permuted_maps_.(subfields{j});
                 
-                fprintf(['<strong> > Permutation test (' fields{i} ...
+                fprintf(['\n<strong> > Permutation test (' fields{i} ...
                     ' > ' subfields{j} '): </strong>\n']);
                 
-                % MVCC
+                
                 if isstruct(performance_)
+                    %% MVCC
                     fprintf('<strong>   - Direction: A-B </strong>\n');
                     stats.(fields{i}).(subfields{j}).ab = mvpalab_computepermtest(...
                         cfg,performance_.ab,permuted_maps_.ab);
                     fprintf('<strong>   - Direction: B-A </strong>\n');
                     stats.(fields{i}).(subfields{j}).ba = mvpalab_computepermtest(...
                         cfg,performance_.ba,permuted_maps_.ba);
-                    % MVPA
+                 
                 else
+                    %% MVPA or RSA
                     stats.(fields{i}).(subfields{j}) = mvpalab_computepermtest(...
                         cfg,performance_,permuted_maps_);
                 end
@@ -49,9 +64,9 @@ for i = 1 : numel(fields)
             fprintf(['<strong> > Permutation test (' fields{i} ...
                 '): </strong>\n']);
             
-            % MVCC
+            
             if isstruct(performance_)
-                
+                %% MVCC
                 fprintf('<strong>   - Direction: A-B </strong>\n');
                 stats.(fields{i}).ab = mvpalab_computepermtest(...
                     cfg,performance_.ab,permuted_maps_.ab);
@@ -59,8 +74,9 @@ for i = 1 : numel(fields)
                 fprintf('<strong>   - Direction: B-A </strong>\n');
                 stats.(fields{i}).ba = mvpalab_computepermtest(...
                     cfg,performance_.ba,permuted_maps_.ba);
-                % MVPA
+                
             else
+                %% MVPA or RSA
                 stats.(fields{i}) = mvpalab_computepermtest(...
                     cfg,performance_,permuted_maps_);
             end
@@ -68,7 +84,7 @@ for i = 1 : numel(fields)
     end
 end
 
-fprintf('<strong> > Permutation test finished!</strong>\n\n');
+fprintf('\n<strong> > Permutation test finished!</strong>\n\n');
 
 if ~cfg.sf.flag
     mvpalab_savestats(cfg,stats);

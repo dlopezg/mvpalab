@@ -1,5 +1,5 @@
 function corrseries = mvpalab_computecorr(cfg,mtx,mtx_,permute)
-%% MVPALAB_COMPUTERSA
+%% MVPALAB_COMPUTECORR
 %
 % This function computes the second order representational similarity
 % analysis between two RDMs in a time-resolverd way. If different
@@ -34,7 +34,6 @@ end
 %  Calculate the number of permutations
 
 if permute, nperm = cfg.stats.nper; else, nperm = 1; end
-
 
 %% Model loop:
 %  Description:

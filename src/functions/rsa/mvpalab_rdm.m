@@ -34,7 +34,7 @@ ntrial = size(X,1);
 rdm = NaN(ntrial,ntrial,cfg.tm.ntp);
 
 %% Construct RDMs using Pearson correlation:
-if strcmp(cfg.rsa.method,'pearson')
+if strcmp(cfg.rsa.distance,'pearson')
     if cfg.classmodel.parcomp
         parfor tp = 1 : cfg.tm.ntp
             X_tp = X(:,:,tp);
@@ -49,7 +49,7 @@ if strcmp(cfg.rsa.method,'pearson')
 end
 
 %% Construct RDMs using the euclidean distance:
-if strcmp(cfg.rsa.method,'euclidean')
+if strcmp(cfg.rsa.distance,'euclidean')
     if cfg.classmodel.parcomp
         parfor tp = 1 : cfg.tm.ntp
             X_tp = X(:,:,tp);

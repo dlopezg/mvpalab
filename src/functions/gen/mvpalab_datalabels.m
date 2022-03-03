@@ -34,7 +34,7 @@ X.a = []; Y.a = logical([]); nctxt = 1;
 %   these cells are not empty we initialize X.b and Y.b fields and set the
 %   number of context to two.
 
-if (size(fv,1) > 1) && ~sum(cellfun(@isempty,fv{2,:}))
+if (size(fv,1) > 1) && ~sum(cellfun(@isempty,fv(2,:)))
     nctxt = 2;
     X.b = []; Y.b = logical([]);
 end

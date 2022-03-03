@@ -59,10 +59,7 @@ end
 
 if nargin < 4
     fprintf('\n<strong> > Permutation test finished!</strong>\n\n');
-    
-    if ~cfg.sf.flag
-          mvpalab_save(cfg,stats,'stats');
-    end
+    if ~cfg.sf.flag, mvpalab_save(cfg,stats,'stats'); end
 end
 
 end

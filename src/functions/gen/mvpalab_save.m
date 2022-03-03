@@ -79,8 +79,9 @@ else
         save([save_folder filesep 'permaps.mat'], 'permaps','cfg','-v7.3');
     end
     
-    
 end
+
+if nargin < 4, fprintf(' - Done! \n\n'); end
 
 end
 

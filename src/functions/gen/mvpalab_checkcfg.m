@@ -29,6 +29,6 @@ if isstruct(cfg)
 end
 
 % Save the new cfg structure
-mvpalab_savecfg(cfg_);
+if nargin < 2, mvpalab_savecfg(cfg_); end
 
 end

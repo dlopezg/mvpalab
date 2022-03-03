@@ -7,7 +7,7 @@ function [rdm, bounds] = mvpalab_rdm(cfg,X,Y)
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Configuration estructure.
+%    Configuration structure.
 %
 %  - {3D-matrix} X
 %    Data matrix for an individual subject containing all thevtrials and 

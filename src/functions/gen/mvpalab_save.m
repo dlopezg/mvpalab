@@ -11,7 +11,7 @@ function mvpalab_save(cfg,data,mode,folder)
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Description: Configuration estructure.
+%    Description: Configuration structure.
 %
 %  - {struct} data
 %    Description: Data structure containing the data to save for each 

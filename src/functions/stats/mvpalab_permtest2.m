@@ -9,7 +9,7 @@ function stats = mvpalab_permtest2(cfg,results,permuted_maps,fname)
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Description: Configuration estructure.
+%    Description: Configuration structure.
 %
 %  - {struct} results
 %    Description: Data structure containing the results for each measure.

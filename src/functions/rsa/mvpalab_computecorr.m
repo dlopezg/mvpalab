@@ -9,6 +9,9 @@ function corrseries = mvpalab_computecorr(cfg,mtx,mtx_,permute)
 
 %%  INPUT:
 %
+%  - {struct} - cfg:
+%    Description: Configuration structure.
+%
 %  - {2D-matrix} mtx
 %    Description: Data matrix including the empirical vectoriced RDMs for 
 %    each timepoint: [timepoint x vectorized]
@@ -16,6 +19,9 @@ function corrseries = mvpalab_computecorr(cfg,mtx,mtx_,permute)
 %  - {3D-matrix} mtx_
 %    Description: Data matrix including the vectorized RDMs for each 
 %    theoretical model and timepoint: [timepoint x vectorized x model]
+%
+%  - {flag} permute
+%    Description: This flag indicates if the data should be permuted. 
 %
 %%  OUTPUT:
 %

@@ -6,10 +6,10 @@ function trdms = mvpalab_gentrdms(cfg,mdls,bounds)
 %  condition included in the boundaries vector to construct the final
 %  theoretical RDM.
 %
-
-fprintf('     <strong>- Computing theoretical RDMs:</strong>\n');
-
 %%  INPUT:
+%
+%  - {struct} - cfg:
+%    Description: Configuration structure.
 %
 %  - {cellarray} mdls
 %    Description: Cells contain a data structure for each theoretical model
@@ -22,11 +22,12 @@ fprintf('     <strong>- Computing theoretical RDMs:</strong>\n');
 %    Description: This vector contains the indexes of the last trial of
 %    each condition in the data matrix. - [trials x trials]
 %
-%
 %%  OUTPUT:
 %
 %  - {4D-matrix} trdms
 %    Description: Theoretical RDMs [trials x trials x 1 x models].
+
+fprintf('     <strong>- Computing theoretical RDMs:</strong>\n');
 
 %% Analysis type:
 %  If the analysis is computed condition-by-condition is not necessary to

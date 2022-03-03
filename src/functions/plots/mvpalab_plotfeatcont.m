@@ -16,7 +16,6 @@ else
     
     % Select subject, type and temporal window:
     subject = graph.weights.sub;
-    type = graph.weights.type;
     start_time = graph.weights.start;
     end_time = graph.weights.end;
     
@@ -26,12 +25,12 @@ else
     
     %% Select weights to plot:
     if ~subject
-        for i = 1 : length(weights.(type))
-            weights_to_plot(:,:,i) = weights.(type){i,1}(:,startidx:endidx);
+        for i = 1 : length(weights)
+            weights_to_plot(:,:,i) = weights{i,1}(:,startidx:endidx);
         end
         weights_to_plot = mean(weights_to_plot,3);
     else
-        weights_to_plot = weights.(type){subject,1}(:,startidx:endidx);
+        weights_to_plot = weights{subject,1}(:,startidx:endidx);
     end
     
     %% Check if plot performance:

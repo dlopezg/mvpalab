@@ -1,4 +1,4 @@
-%% MVPAlab TOOLBOX - (mvpa_demo.m)
+%% MVPAlab TOOLBOX - (rsa_demo.m)
 % -------------------------------------------------------------------------
 % Brain, Mind and Behavioral Research Center - University of Granada.
 % Contact: dlopez@ugr.es (David Lopez-Garcia)
@@ -7,7 +7,7 @@
 %% Initialize project and run configuration file:
 
 cfg = mvpalab_init();
-run cfg_file_advanced;
+run cfg_file;
 
 %% Load data, generate conditions and feature extraction:
 
@@ -15,13 +15,12 @@ run cfg_file_advanced;
 
 %% Compute RSA analysis:
 
-% [result,cfg] = mvpalab_rsa(cfg,fv);
+[result,stats,cfg] = mvpalab_rsa(cfg,fv);
 
-%% Compute permutation maps and run statistical analysis:
+%% Plot the results:
 
-% [permaps,cfg] = mvpalab_permaps(cfg,fv);
-% stats = mvpalab_permtest(cfg,result,permaps);
+% run rsa_plot;
 
 %% Save cfg file:
 
-% mvpalab_savecfg(cfg);
+mvpalab_savecfg(cfg);

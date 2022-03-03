@@ -1,4 +1,4 @@
-function corrseries = mvpalab_computersa(cfg,mtx,mtx_,permute)
+function corrseries = mvpalab_computecorr(cfg,mtx,mtx_,permute)
 %% MVPALAB_COMPUTERSA
 %
 % This function computes the second order representational similarity

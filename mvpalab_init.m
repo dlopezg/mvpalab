@@ -159,8 +159,12 @@ cfg.stats.shownulldis = 0;
 
 %% REPRESENTATIONAL SIMILARITY ANALYSIS:
 
+% cfg.rsa.analysis   = 'regress';   - Fit GLM using theoRDMs as regressors. 
+% cfg.rsa.analysis   = 'corr';      - Correlate theoRDMs with neural RDMs.
+
 cfg.rsa.flag = 0;
 cfg.rsa.nclass = 0;
+cfg.rsa.analysis = 'regress'; 
 cfg.rsa.method = 'pearson';
 cfg.rsa.trialwise = true;
 

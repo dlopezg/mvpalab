@@ -4,7 +4,6 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 
 %% Initialization
 nSubjects = length(cfg.study.dataFiles{1,1});
-nClasses = 2;
 nCtxt = 1;
 
 if ~cfg.sf.flag
@@ -43,7 +42,7 @@ for sub = 1 : nSubjects
         end
         
         for ctxt = 1 : nCtxt
-            for class = 1 : nClasses
+            for class = 1 : length(cfg.study.dataFiles)
                 
                 % Load subject data:
                 try

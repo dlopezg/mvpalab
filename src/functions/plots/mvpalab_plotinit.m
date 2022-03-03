@@ -10,6 +10,7 @@ graph.colorSch = sch.mvpalab;       % Default color scheme.
 %% General:
 graph.fontsize = 14;
 graph.subject = 0;
+graph.chanlvl = .5;
 
 %% Axes configuration:
 % Title and labels:

@@ -53,12 +53,16 @@ end
 %  Special case: In the stats structure we don't need to iterate over the
 %  last level. (This level includes fields such as 'sigmask')
 
+ommited_fields = {'roc'};
+
 if isstruct(data) && ~any(find(strcmp(fieldnames(data),'sigmask')))
     field_names = fieldnames(data);
     for i = 1 : length(field_names)
         fname = field_names{i};
         stats = data.(fname);
-        mvpalab_save(cfg,stats,mode,[folder filesep fname]);
+        if ~any(find(strcmp(ommited_fields, fname)))
+            mvpalab_save(cfg,stats,mode,[folder filesep fname]);
+        end
     end
 else
     %% Save the content of the current input:

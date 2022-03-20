@@ -133,9 +133,7 @@ end
 
 cfg.classmodel.permlab = false;
 
-if ~cfg.sf.flag
-    mvpalab_savepermaps(cfg,permaps);
-end
+if ~cfg.sf.flag, mvpalab_save(cfg,permaps,'permaps'); end
 
 end
 

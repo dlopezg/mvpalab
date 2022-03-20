@@ -167,9 +167,7 @@ if cfg.classmodel.wvector
     res.wvector.ba = mvpalab_reorganize_weights(w_ba);
 end
 
-if ~cfg.sf.flag
-    mvpalab_saveresults(cfg,res);
-end
+if ~cfg.sf.flag, mvpalab_save(cfg,res,'res'); end
 
 end
 

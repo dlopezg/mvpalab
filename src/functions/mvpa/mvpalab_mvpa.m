@@ -129,9 +129,7 @@ if cfg.classmodel.wvector
 end
 
 % Save result
-if ~cfg.sf.flag
-    mvpalab_saveresults(cfg,res);
-end
+if ~cfg.sf.flag, mvpalab_save(cfg,res,'res'); end
 
 end
 

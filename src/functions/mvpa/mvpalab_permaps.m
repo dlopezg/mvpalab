@@ -1,5 +1,6 @@
 function [permaps,cfg] = mvpalab_permaps(cfg,fv )
-%CORRECT_RATE Summary of this function goes here
+%% MVPALAB_PERMAPS 
+% Summary of this function goes here
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
@@ -112,9 +113,7 @@ end
 
 cfg.classmodel.permlab = false;
 
-if ~cfg.sf.flag
-    mvpalab_savepermaps(cfg,permaps);
-end
+if ~cfg.sf.flag, mvpalab_save(cfg,permaps,'permaps'); end
 
 end
 

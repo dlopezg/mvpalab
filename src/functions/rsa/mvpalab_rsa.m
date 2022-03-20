@@ -106,6 +106,6 @@ end
 %% Compute permutation test:
 %  If needed:
 
-if cfg.stats.flag, stats = mvpalab_permtest2(cfg,res,permaps); end
+if cfg.stats.flag, stats = mvpalab_permtest(cfg,res,permaps); end
 
 end

@@ -1,83 +1,66 @@
-function [ stats ] = mvpalab_permtest( cfg, performance, permuted_maps )
+function stats = mvpalab_permtest(cfg,results,permuted_maps,fname)
+%% MVPALAB_PERMTEST
+%
+% This function recursively iterates over the fields contained in the 
+% results and permuted_maps structures. If the selected field is not in the 
+% ommited list we make a recursive call and the permutation test is 
+% computed.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Description: Configuration structure.
+%
+%  - {struct} results
+%    Description: Data structure containing the results for each measure.
+%
+%  - {struct} permuted_maps
+%    Description: Data structure containing the permuted maps for each
+%    measure.
+%
+%  - {string} fname
+%    Description: Current field name used for the recursive call. 
+%
+%% Ommited fields:
+%  Description: This list contains the field names that are not commpatible
+%  with a permutation analysis:
 
-% Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+ommited_fields = {'confmat';'wvector';'roc';'rdms';'theo'};
 
-%% Loop over different performance metrics:
-fields = fieldnames(performance);
-validfields = {'acc' 'auc' 'precision' 'recall' 'f1score'};
+%% Check if the current input is a struct:
+%  Description: If the current input is a struct, extract field names and
+%  iterate over fields.
 
-% Enable statistics:
-cfg.stats.flag = 1;
-
-% For each field:
-for i = 1 : numel(fields)
-    if find(strcmp(validfields, fields{i}))
+if isstruct(results)
+    field_names = fieldnames(results);
+    
+    for i = 1 : length(field_names)
+        fname = field_names{i};
         
-        % Extract performance metric and the associated permuted maps:
-        performance_ = performance.(fields{i});
-        permuted_maps_ = permuted_maps.(fields{i});
-        
-        % If metric is precision, recall or f1 score, loop over classes:
-        if find(strcmp(validfields(3:end), fields{i}))
-            temp = performance_;
-            temp_ = permuted_maps_;
-            subfields = fieldnames(temp);
-            
-            for j = 1 : numel(subfields)
-                performance_ = performance_.(subfields{j});
-                permuted_maps_ = permuted_maps_.(subfields{j});
-                
-                fprintf(['<strong> > Permutation test (' fields{i} ...
-                    ' > ' subfields{j} '): </strong>\n']);
-                
-                % MVCC
-                if isstruct(performance_)
-                    fprintf('<strong>   - Direction: A-B </strong>\n');
-                    stats.(fields{i}).(subfields{j}).ab = mvpalab_computepermtest(...
-                        cfg,performance_.ab,permuted_maps_.ab);
-                    fprintf('<strong>   - Direction: B-A </strong>\n');
-                    stats.(fields{i}).(subfields{j}).ba = mvpalab_computepermtest(...
-                        cfg,performance_.ba,permuted_maps_.ba);
-                    % MVPA
-                else
-                    stats.(fields{i}).(subfields{j}) = mvpalab_computepermtest(...
-                        cfg,performance_,permuted_maps_);
-                end
-                
-                
-                performance_ = temp;
-                permuted_maps_ = temp_;
-            end
-        else
-            fprintf(['<strong> > Permutation test (' fields{i} ...
-                '): </strong>\n']);
-            
-            % MVCC
-            if isstruct(performance_)
-                
-                fprintf('<strong>   - Direction: A-B </strong>\n');
-                stats.(fields{i}).ab = mvpalab_computepermtest(...
-                    cfg,performance_.ab,permuted_maps_.ab);
-                
-                fprintf('<strong>   - Direction: B-A </strong>\n');
-                stats.(fields{i}).ba = mvpalab_computepermtest(...
-                    cfg,performance_.ba,permuted_maps_.ba);
-                % MVPA
-            else
-                stats.(fields{i}) = mvpalab_computepermtest(...
-                    cfg,performance_,permuted_maps_);
-            end
+        if ~any(find(strcmp(ommited_fields, fname)))
+            res = results.(fname);
+            pmap = permuted_maps.(fname);
+            stats.(fname) = mvpalab_permtest(cfg,res,pmap,fname);
         end
     end
+    
+else
+    %% Compute the permutation test:
+    %  Description: If the current input is a data matrix the permutation 
+    %  test is computed.
+    
+    fprintf(['\n<strong> > Permutation test (' fname '): </strong>\n']);
+    stats = mvpalab_computepermtest(cfg,results,permuted_maps);
+    
 end
 
-fprintf('<strong> > Permutation test finished!</strong>\n\n');
+%% Exit:
+%  And save the statistics.
 
-if ~cfg.sf.flag
-    mvpalab_savestats(cfg,stats);
+if nargin < 4
+    fprintf('\n<strong> > Permutation test finished!</strong>\n\n');
+    if ~cfg.sf.flag, mvpalab_save(cfg,stats,'stats'); end
 end
-
 
 end
 

@@ -1,27 +1,5 @@
-if exist('result','var')
-    if strcmp(cfg.analysis,'MVCC')
-        if strcmp(graph.mvccDirection,'ab')
-            performance = result.ab;
-        elseif strcmp(graph.mvccDirection,'ba')
-            performance = result.ba;
-        end
-    else
-        performance = result;
-    end
-else
-    performance = [];
-end
+if ~exist('result','var'); result = []; end
 
-if strcmp(cfg.analysis,'MVCC')
-    if isstruct(wvector)
-        if strcmp(graph.mvccDirection,'ab')
-            mvpalab_plotfeatcont(graph,cfg,wvector.ab,performance);
-        elseif strcmp(graph.mvccDirection,'ba')
-            mvpalab_plotfeatcont(graph,cfg,wvector.ba,performance);
-        end
-    end
-else
-    mvpalab_plotfeatcont(graph,cfg,wvector,performance);
-end
+mvpalab_plotfeatcont(graph,cfg,wvector,result);
 
 

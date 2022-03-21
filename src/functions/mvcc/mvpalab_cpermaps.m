@@ -95,16 +95,20 @@ for sub = 1 : nSubjects
             if cfg.classmodel.tempgen
                 permaps.acc.ab(:,:,sub,per,freq) = acc_ab;
                 permaps.acc.ba(:,:,sub,per,freq) = acc_ba;
+                permaps.acc.mean(:,:,sub,per,freq) = mean(cat(3,acc_ab,acc_ba),3);
                 if cfg.classmodel.auc
                     permaps.auc.ab(:,:,sub,per,freq) = auc_ab;
                     permaps.auc.ba(:,:,sub,per,freq) = auc_ba;
+                    permaps.auc.mean(:,:,sub,per,freq) = mean(cat(3,auc_ab,auc_ba),3);
                 end
             else
                 permaps.acc.ab(:,:,sub,per,freq) = acc_ab';
                 permaps.acc.ba(:,:,sub,per,freq) = acc_ba';
+                permaps.acc.mean(:,:,sub,per,freq) = mean([acc_ab,acc_ba],2)';
                 if cfg.classmodel.auc
                     permaps.auc.ab(:,:,sub,per,freq) = auc_ab';
                     permaps.auc.ba(:,:,sub,per,freq) = auc_ba';
+                    permaps.auc.mean(:,:,sub,per,freq) = mean([auc_ab,auc_ba],2)';
                 end
             end
         end

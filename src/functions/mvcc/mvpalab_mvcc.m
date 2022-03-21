@@ -112,20 +112,23 @@ for sub = 1 : nSubjects
         end
         
         %% Generate data structure for the results:
-        
         if cfg.classmodel.tempgen
             res.acc.ab(:,:,sub,freq) = acc_ab;
             res.acc.ba(:,:,sub,freq) = acc_ba;
+            res.acc.mean(:,:,sub,freq) = mean(cat(3,acc_ab,acc_ba),3);
             if cfg.classmodel.auc
                 res.auc.ab(:,:,sub,freq) = auc_ab;
                 res.auc.ba(:,:,sub,freq) = auc_ba;
+                res.auc.mean(:,:,sub,freq) = mean(cat(3,auc_ab,auc_ba),3);
             end
         else
             res.acc.ab(:,:,sub,freq) = acc_ab';
             res.acc.ba(:,:,sub,freq) = acc_ba';
+            res.acc.mean(:,:,sub,freq) = mean([acc_ab,acc_ba],2)';
             if cfg.classmodel.auc
                 res.auc.ab(:,:,sub,freq) = auc_ab';
                 res.auc.ba(:,:,sub,freq) = auc_ba';
+                res.auc.mean(:,:,sub,freq) = mean([auc_ab,auc_ba],2)';
             end
         end
     end

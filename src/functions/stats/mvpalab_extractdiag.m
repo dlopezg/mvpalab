@@ -82,6 +82,7 @@ for i = 1 : numel(fields)
                 for k = 1 : size(performance_.ab,3)
                     per.(fields{i}).ab(1,:,k) = diag(performance_.ab(:,:,k));
                     per.(fields{i}).ba(1,:,k) = diag(performance_.ba(:,:,k));
+                    per.(fields{i}).mean(1,:,k) = diag(performance_.mean(:,:,k));
                 end
                 % Extract diagonal (permuted maps) - Both directions:
                 if nargin > 2
@@ -89,6 +90,7 @@ for i = 1 : numel(fields)
                         for l = 1 : size(permuted_maps_.ab,3)
                             permaps.(fields{i}).ab(1,:,l,k) = diag(permuted_maps_.ab(:,:,l,k));
                             permaps.(fields{i}).ba(1,:,l,k) = diag(permuted_maps_.ba(:,:,l,k));
+                            permaps.(fields{i}).mean(1,:,l,k) = diag(permuted_maps_.mean(:,:,l,k));
                         end
                     end
                 end
@@ -115,9 +117,9 @@ fprintf(' > Done! ');
 fprintf('\n\n');
 
 %% Permutations tests and save result:
-mvpalab_saveresults(cfg,per);
+mvpalab_save(cfg,per,'res');
 if nargin > 2
-    mvpalab_savepermaps(cfg,permaps);
+    mvpalab_save(cfg,permaps,'permaps');
     stats = mvpalab_permtest(cfg,per,permaps);
 end
 end

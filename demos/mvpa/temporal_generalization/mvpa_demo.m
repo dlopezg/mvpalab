@@ -30,4 +30,4 @@ mvpalab_savecfg(cfg);
 
 %% Plot the results:
 
-run1 mvpa_plot;
+run mvpa_plot;

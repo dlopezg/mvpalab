@@ -9,8 +9,8 @@ cfg.study.conditionIdentifier{1,1} = 'condition_a';
 cfg.study.conditionIdentifier{1,2} = 'condition_b';
 
 % Data paths:
-cfg.study.dataPaths{1,1} = 'C:\Users\Cimcyc\Desktop\data\condition_a\';
-cfg.study.dataPaths{1,2} = 'C:\Users\Cimcyc\Desktop\data\condition_b\';
+cfg.study.dataPaths{1,1} = '/Users/David/Desktop/data/condition_a/';
+cfg.study.dataPaths{1,2} = '/Users/David/Desktop/data/condition_b/';
 
 % Data files:
 cfg.study.dataFiles{1,1} = {'1.mat','2.mat','3.mat'};

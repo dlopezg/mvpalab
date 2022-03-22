@@ -8,14 +8,13 @@ clear; clc;
 %% Initialize project and run configuration file:
 
 cfg = mvpalab_init();
-run cfg_file; % cfg_file_advanced for advanced configuration.
+run cfg_file;
 
 %% Load data, generate conditions and feature extraction:
 
 [cfg,data,fv] = mvpalab_import(cfg);
 
 %% Compute MVCC analysis:
-
 [result,cfg] = mvpalab_mvcc(cfg,fv);
 
 %% Compute permutation maps and run statistical analysis:

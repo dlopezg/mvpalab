@@ -1,4 +1,4 @@
-%% MVPAlab TOOLBOX - (mvpa_demo.m)
+%% MVPAlab TOOLBOX - (mvcc_demo.m)
 % -------------------------------------------------------------------------
 % Brain, Mind and Behavioral Research Center - University of Granada.
 % Contact: dlopez@ugr.es (David Lopez-Garcia)

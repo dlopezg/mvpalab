@@ -2,10 +2,6 @@
 
 graph = mvpalab_plotinit();
 
-%% Load results if needed: 
-
-load results/temporal_generalization/acc/result.mat
-
 %% Mean accuracy plot (no statistical significance)
 
 % Colors:
@@ -25,22 +21,26 @@ graph.title = 'Demo plot A - B';
 
 
 % Plot TG:
-figure;
-subplot(2,2,1);
-hold on;
-mvpalab_plottempogen(graph,cfg,result.ab);
 
-subplot(2,2,2);
+load results/temporal_generalization/acc/ab/result.mat
+figure;
+subplot(2,3,1);
 hold on;
-mvpalab_plottempogen(graph,cfg,result.ba);
+mvpalab_plottempogen(graph,cfg,result);
+
+load results/temporal_generalization/acc/ba/result.mat
+subplot(2,3,2);
+hold on;
+mvpalab_plottempogen(graph,cfg,result);
 graph.title = 'Demo plot B - A';
 
+load results/temporal_generalization/acc/mean/result.mat
+subplot(2,3,3);
+hold on;
+mvpalab_plottempogen(graph,cfg,result);
+graph.title = 'Demo plot mean';
 
 %% Mean accuracy plot (statistical significance)
-
-% Load results and and statistics if needed:
-load results/temporal_generalization/acc/result.mat
-load results/temporal_generalization/acc/stats.mat
 
 % Plot significant clusters (above and below chance):
 graph.stats.above = true;
@@ -50,11 +50,22 @@ graph.stats.below = true;
 graph.title = 'Demo plot  A- B (significant clusters)';
 
 % Plot results:
-subplot(2,2,3);
+load results/temporal_generalization/acc/ab/result.mat
+load results/temporal_generalization/acc/ab/stats.mat
+subplot(2,3,4);
 hold on;
-mvpalab_plottempogen(graph,cfg,result.ab,stats.ab);
+mvpalab_plottempogen(graph,cfg,result,stats);
 
-subplot(2,2,4);
+load results/temporal_generalization/acc/ba/result.mat
+load results/temporal_generalization/acc/ba/stats.mat
+subplot(2,3,5);
 hold on;
-mvpalab_plottempogen(graph,cfg,result.ba,stats.ba);
+mvpalab_plottempogen(graph,cfg,result,stats);
 graph.title = 'Demo plot  B - A (significant clusters)';
+
+load results/temporal_generalization/acc/mean/result.mat
+load results/temporal_generalization/acc/mean/stats.mat
+subplot(2,3,6);
+hold on;
+mvpalab_plottempogen(graph,cfg,result,stats);
+graph.title = 'Demo plot mean (significant clusters)';

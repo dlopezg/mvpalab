@@ -2,10 +2,6 @@
 
 graph = mvpalab_plotinit();
 
-%% Load results if needed: 
-
-load results/time_resolved/acc/result.mat
-
 %% Mean accuracy plot (no statistical significance)
 
 % Axis limits:
@@ -24,19 +20,23 @@ graph.smoothdata = 5; % (1 => no smoothing)
 figure;
 subplot(1,2,1);
 hold on
+
 % Colors A - B:
+load results/time_resolved/acc/ab/result.mat
 graph.shadecolor = graph.colors.mvpalab{10};
-mvpalab_plotdecoding(graph,cfg,result.ab);
+mvpalab_plotdecoding(graph,cfg,result);
 
 % Colors B - A:
+load results/time_resolved/acc/ba/result.mat
+graph.shadecolor = graph.colors.mvpalab{6};
+mvpalab_plotdecoding(graph,cfg,result);
+
+% Colors mean:
+load results/time_resolved/acc/mean/result.mat
 graph.shadecolor = graph.colors.mvpalab{1};
-mvpalab_plotdecoding(graph,cfg,result.ba);
+mvpalab_plotdecoding(graph,cfg,result);
 
 %% Mean accuracy plot (statistical significance)
-
-% Load results and and statistics if needed:
-load results/time_resolved/acc/result.mat
-load results/time_resolved/acc/stats.mat
 
 % Plot significant clusters (above and below chance):
 graph.stats.above = true;
@@ -53,12 +53,24 @@ subplot(1,2,2);
 hold on
 
 % Colors A - B:
+load results/time_resolved/acc/ab/result.mat
+load results/time_resolved/acc/ab/stats.mat
 graph.shadecolor = graph.colors.mvpalab{10};
 graph.sigc = graph.colors.mvpalab{10};
-mvpalab_plotdecoding(graph,cfg,result.ab,stats.ab);
+mvpalab_plotdecoding(graph,cfg,result,stats);
 
 % Colors B - A:
-graph.sigh = .45;
+load results/time_resolved/acc/ba/result.mat
+load results/time_resolved/acc/ba/stats.mat
+graph.sigh = .42;
+graph.shadecolor = graph.colors.mvpalab{6};
+graph.sigc = graph.colors.mvpalab{6};
+mvpalab_plotdecoding(graph,cfg,result,stats);
+
+% Colors mean:
+load results/time_resolved/acc/mean/result.mat
+load results/time_resolved/acc/mean/stats.mat
+graph.sigh = .44;
 graph.shadecolor = graph.colors.mvpalab{1};
 graph.sigc = graph.colors.mvpalab{1};
-mvpalab_plotdecoding(graph,cfg,result.ba,stats.ba);
+mvpalab_plotdecoding(graph,cfg,result,stats);

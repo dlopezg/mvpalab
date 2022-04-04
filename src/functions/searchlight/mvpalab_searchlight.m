@@ -29,11 +29,15 @@ for voxel = 1 : length(mask_.coor)
     end
 
     %% Extract RDMS:
-    rdm(:,:,voxel) = corrcoef(data_to_coor');
+    rdms(:,:,voxel) = corrcoef(data_to_coor');
     clear data_to_coor
 end
 %% Timestamp
 toc
+
+result = rdms;
+stats = [];
+
 end
 
 function sphere = mvpalab_checkboundaries(sphere,mask_dim)

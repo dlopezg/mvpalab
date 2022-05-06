@@ -49,6 +49,7 @@ else
     %  Description: If the current input is a data matrix the permutation 
     %  test is computed.
     
+    if ~exist('fname','var'); fname = 'acc'; end
     fprintf(['\n<strong> > Permutation test (' fname '): </strong>\n']);
     stats = mvpalab_computepermtest(cfg,results,permuted_maps);
     

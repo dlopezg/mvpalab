@@ -36,7 +36,7 @@ for roi = 1 : length(cfg.rsa.roi)
         
     end
     
-    result.rdms.(roi_id).(cfg.rsa.distance) = rdm;
+    result.rdms.(cfg.rsa.distance).(roi_id) = rdm;
     result.rois.(roi_id) = mask;
     
 end

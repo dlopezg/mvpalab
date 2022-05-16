@@ -39,10 +39,14 @@ if nargin < 4
     end
     
     % Initialize the saving folder:
-    if cfg.classmodel.tempgen
-        folder = 'temporal_generalization';
+    if strcmp(cfg.analysis,'MVPA') || strcmp(cfg.analysis,'MVCC')
+        if cfg.classmodel.tempgen
+            folder = 'temporal_generalization';
+        else
+            folder = 'time_resolved';
+        end
     else
-        folder = 'time_resolved';
+        folder = cfg.analysis;
     end
     
 end

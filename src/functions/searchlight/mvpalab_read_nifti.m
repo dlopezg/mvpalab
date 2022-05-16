@@ -1,4 +1,4 @@
-function volume = mvpalab_readnifti(file)
+function volume = mvpalab_read_nifti(file)
 %% MVPALAB_READNIFTI
 %
 %  This function load the specified NIFTI file using the matlab function

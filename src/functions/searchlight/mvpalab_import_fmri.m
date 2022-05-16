@@ -1,4 +1,4 @@
-function [cfg,mask,data] = mvpalab_importfmri(cfg)
+function [cfg,data,mask] = mvpalab_import_fmri(cfg)
 %% MVPALAB_IMPORTFMRI
 %
 %  This function import the required fmri data for the searchligth
@@ -13,10 +13,13 @@ function [cfg,mask,data] = mvpalab_importfmri(cfg)
 %
 
 %% Load nifti mask:
-mask = mvpalab_loadmask(cfg);
+if isfield(cfg.study,'maskFile')
+    mask = mvpalab_load_volumes(cfg.study.maskFile);
+end
 
 %% Load condition data:
-data = mvpalab_loadbetas(cfg);
+
+data = mvpalab_load_betas(cfg);
 
 %% Masked data:
 % masked_data = mvpalab_maskbetas(mask,data);

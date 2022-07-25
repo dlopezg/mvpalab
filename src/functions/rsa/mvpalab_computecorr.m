@@ -13,27 +13,27 @@ function corrseries = mvpalab_computecorr(cfg,mtx,mtx_,permute)
 %    Description: Configuration structure.
 %
 %  - {2D-matrix} mtx
-%    Description: Data matrix including the empirical vectoriced RDMs for 
+%    Description: Data matrix including the empirical vectoriced RDMs for
 %    each timepoint: [timepoint x vectorized]
 %
 %  - {3D-matrix} mtx_
-%    Description: Data matrix including the vectorized RDMs for each 
-%    theoretical model and timepoint: [timepoint x vectorized x model]
+%    Description: Data matrix including the vectorized RDMs for each
+%    theoretical model and timepoint: [timepoint x vectorized]
 %
 %  - {flag} permute
-%    Description: This flag indicates if the data should be permuted. 
+%    Description: This flag indicates if the data should be permuted.
 %
 %%  OUTPUT:
 %
-%  - {5D-matrix} corrseries
-%    Description: Time series including correlation values for each 
+%  - {4D-matrix} corrseries
+%    Description: Time series including correlation values for each
 %    timepoint and model. For data structure consistency:
-%    [1 x timepoints x 1 x permutetions x model]
+%    [1 x timepoints x 1 x permutetions]
 
 if permute
-    fprintf('\n     <strong>- Computing permuted maps:</strong>\n');
+    fprintf('\n        - Computing permuted maps:');
 else
-    fprintf('\n     <strong>- Computing second order RSA:</strong>\n');
+    fprintf('\n        - Computing second order RSA:');
 end
 
 %% Permute or not.
@@ -43,73 +43,69 @@ if permute, nperm = cfg.stats.nper; else, nperm = 1; end
 
 %% Model loop:
 %  Description:
-for mdl = 1 : size(mtx_,3)
+if permute,fprintf('- Permutation: '); end
+
+%% Permutation loop:
+%  Description:
+for perm = 1 : nperm
+    %% Compute correlation:
+    %  The Spearman correlation is computed for each timepoint and the
+    %  time series is stored in r.
     
-    fprintf(['        # Model: ' cfg.rsa.tmodels{mdl}.id '... ']);
-    if permute,fprintf('- Permutation: '); end
+    r = [];
     
-    %% Permutation loop:
-    %  Description:
-    for perm = 1 : nperm
-        %% Compute correlation:
-        %  The Spearman correlation is computed for each timepoint and the
-        %  time series is stored in r.
+    if cfg.classmodel.parcomp
         
-        r = [];
-        
-        if cfg.classmodel.parcomp
+        parfor tp = 1 : size(mtx,1)
             
-            parfor tp = 1 : size(mtx,1)
-                
-                trdm = mtx_(tp,:,mdl);
-                rdm = mtx(tp,:);
-                if permute, rdm = rdm(randperm(length(rdm))); end
-                r(tp) = corr(rdm',trdm','Type','Spearman');
-                
-            end
-            
-        else
-            
-            for tp = 1 : size(mtx,1)
-                
-                trdm = mtx_(tp,:,mdl);
-                rdm = mtx(tp,:);
-                if permute, rdm = rdm(randperm(length(rdm))); end
-                r(tp) = corr(rdm',trdm','Type','Spearman');
-                
-            end
+            trdm = mtx_(tp,:);
+            rdm = mtx(tp,:);
+            if permute, rdm = rdm(randperm(length(rdm))); end
+            r(tp) = corr(rdm',trdm','Type','Spearman');
             
         end
-        %% Search and correct extreme correlations:
-        %  Force finite values for later z-transformation: +1/-1
-        %  correlation values should be corrected to +/-.999999 to avoid
-        %  infinity for z-transformed correlations.
-        %  EPS corrects for rounding errors in r. EPS returns the distance
-        %  from 1.0 to the next larger double-precision number.
         
-        r_ = (abs(r) + eps) >= 1;
+    else
         
-        if any(r_(:))
-            warning(...
-                'Correlations of +1 or -1 found. Correcting to +/-0.9999');
-            r(r_) = 0.99999*r(r_);
+        for tp = 1 : size(mtx,1)
+            
+            trdm = mtx_(tp,:);
+            rdm = mtx(tp,:);
+            if permute, rdm = rdm(randperm(length(rdm))); end
+            r(tp) = corr(rdm',trdm','Type','Spearman');
+            
         end
-        
-        %% Fisher transformation:
-        %  Translate to Fisher's z transformed values. When this
-        %  transformation is applied the sampling distribution of the
-        %  resulting variable is approximately normal, with a variance
-        %  that is stable over different values of the underlying true
-        %  correlation.
-        
-        corrseries(1,:,1,perm,mdl) = atanh(r);
-        
-        if permute, mvpalab_pcounter(perm,nperm); end
         
     end
     
-    fprintf('- Done.\n');
+    %% Search and correct extreme correlations:
+    %  Force finite values for later z-transformation: +1/-1
+    %  correlation values should be corrected to +/-.999999 to avoid
+    %  infinity for z-transformed correlations.
+    %  EPS corrects for rounding errors in r. EPS returns the distance
+    %  from 1.0 to the next larger double-precision number.
+    
+    r_ = (abs(r) + eps) >= 1;
+    
+    if any(r_(:))
+        warning(...
+            'Correlations of +1 or -1 found. Correcting to +/-0.9999');
+        r(r_) = 0.99999*r(r_);
+    end
+    
+    %% Fisher transformation:
+    %  Translate to Fisher's z transformed values. When this
+    %  transformation is applied the sampling distribution of the
+    %  resulting variable is approximately normal, with a variance
+    %  that is stable over different values of the underlying true
+    %  correlation.
+    
+    corrseries(1,:,1,perm) = atanh(r);
+    
+    if permute, mvpalab_pcounter(perm,nperm); end
     
 end
+
+fprintf(' - Done.\n');
 
 end

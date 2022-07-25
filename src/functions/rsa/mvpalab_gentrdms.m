@@ -2,7 +2,7 @@ function trdms = mvpalab_gentrdms(cfg,mdls,bounds)
 %% MVPALAB_GENTRDMS
 %
 %  This function returns theoretical RDMs according to the previously
-%  constructed model. To do so, this functions uses the size of each
+%  constructed model. To do so, this function uses the size of each
 %  condition included in the boundaries vector to construct the final
 %  theoretical RDM.
 %
@@ -27,7 +27,7 @@ function trdms = mvpalab_gentrdms(cfg,mdls,bounds)
 %  - {4D-matrix} trdms
 %    Description: Theoretical RDMs [trials x trials x 1 x models].
 
-fprintf('     <strong>- Computing theoretical RDMs:</strong>\n');
+fprintf('     - Computing theoretical RDMs:\n');
 
 %% Analysis type:
 %  If the analysis is computed condition-by-condition is not necessary to
@@ -40,13 +40,9 @@ if ~cfg.rsa.trialwise
     return
 end
 
-%% Extract boundaries:
-%  This vector includes indexes of the last trial for each condition:
-
-bounds = [1 bounds.last];
-
 %% Theoretical models loop
 %  Generate different RDMs for each theoretical model:
+bounds = [1 bounds.last];
 
 for i = 1 : length(mdls)
     %% Generate RDM:

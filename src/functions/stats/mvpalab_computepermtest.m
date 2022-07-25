@@ -6,7 +6,7 @@ cfg = mvpalab_checkcfg(cfg);
 %% Initilization - Generate permutation idx matrix:
 % Here we determine the map of each subject that has to be selected in each
 % permutation.
-nSubjects = length(cfg.study.dataFiles{1,1});
+nSubjects = size(performance,3);
 cfg.stats.sub = nSubjects;
 perm_idxs = randi(cfg.stats.nper,cfg.stats.sub,cfg.stats.nperg,'single');
 

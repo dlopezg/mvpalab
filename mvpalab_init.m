@@ -164,7 +164,7 @@ cfg.stats.shownulldis = 0;
 
 cfg.rsa.flag = 0;
 cfg.rsa.nclass = 0;
-cfg.rsa.analysis = 'regress'; 
+cfg.rsa.modality = 'corr'; 
 cfg.rsa.distance = 'pearson';
 cfg.rsa.trialwise = true;
 

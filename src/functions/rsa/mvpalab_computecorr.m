@@ -31,9 +31,9 @@ function corrseries = mvpalab_computecorr(cfg,mtx,mtx_,permute)
 %    [1 x timepoints x 1 x permutetions]
 
 if permute
-    fprintf('\n        - Computing permuted maps:');
+    fprintf('\n      - Computing permuted maps:');
 else
-    fprintf('\n        - Computing second order RSA:');
+    fprintf('\n      - Computing second order RSA:');
 end
 
 %% Permute or not.

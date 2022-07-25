@@ -27,7 +27,7 @@ function trdms = mvpalab_gentrdms(cfg,mdls,bounds)
 %  - {4D-matrix} trdms
 %    Description: Theoretical RDMs [trials x trials x 1 x models].
 
-fprintf('     - Computing theoretical RDMs:\n');
+fprintf('   - Computing theoretical RDMs:\n');
 
 %% Analysis type:
 %  If the analysis is computed condition-by-condition is not necessary to
@@ -50,7 +50,7 @@ for i = 1 : length(mdls)
     %  value according to the theoretical model. The size of the condition
     %  is extracted from the boundaries vector.
     
-    fprintf(['        # Model: ' cfg.rsa.tmodels{i}.id '... ']);
+    fprintf(['      # Model: ' cfg.rsa.tmodels{i}.id '... ']);
     
     for j = 1 : length(bounds)-1
         for k = 1 : length(bounds)-1

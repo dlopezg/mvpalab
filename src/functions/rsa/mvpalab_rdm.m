@@ -20,7 +20,7 @@ function rdms = mvpalab_rdm(cfg,X)
 %    [trials x trials x timepoints]
 %
 
-fprintf('     - Computing neural RDMs:');
+fprintf('   - Computing neural RDMs:');
 
 %% Preallocate the RDM matrices:
 ntrial = size(X,1);

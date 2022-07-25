@@ -68,7 +68,7 @@ for sub = 1 : nsub
     
     for mdl = 1 : size(vtheo{sub},3)
         
-        fprintf(['\n<strong>     >> Model: '...
+        fprintf(['\n<strong>   >> Model: '...
             cfg.rsa.tmodels{mdl}.id '</strong>\n']);
         
         vtheo_mdl = vtheo{sub}(:,:,mdl);

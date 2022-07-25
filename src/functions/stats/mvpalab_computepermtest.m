@@ -15,16 +15,14 @@ perm_idxs = randi(cfg.stats.nper,cfg.stats.sub,cfg.stats.nperg,'single');
 % averaged. Here we are using the previously determined permutation
 % indexes for each subject and permutation.
 
-fprintf('   - Generating permuted maps at group level: \n\n');
-fprintf('      # Permuted maps >> ');
+fprintf('   - Generating permuted maps at group level: ');
 for i = 1 : cfg.stats.nperg
     for j = 1 : cfg.stats.sub
         permaps(:,:,j) = squeeze(permuted_maps(:,:,j,perm_idxs(j,i)));
     end
     gpermaps(:,:,i) = mean(permaps,3);
-    mvpalab_pcounter(i,cfg.stats.nperg);
 end
-fprintf(' - Done!\n\n');
+fprintf(' - Done!\n');
 
 %% Generate the null distribution and p-value thresholds:
 % Generate the null distribution for each timepoint using the permuted

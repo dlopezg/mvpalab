@@ -18,8 +18,7 @@ if isfield(cfg.study,'maskFile')
 end
 
 %% Load condition data:
-
-data = mvpalab_load_betas(cfg);
+data = mvpalab_load_betas(cfg.study.SPMFolder,cfg.rsa.conditions);
 
 %% Masked data:
 % masked_data = mvpalab_maskbetas(mask,data);

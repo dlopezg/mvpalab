@@ -1,4 +1,4 @@
-function [res,stats,cfg] = mvpalab_rsa(cfg,fv)
+function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 %% Initialize
 stats = struct();
 nsub = length(cfg.study.dataFiles{1,1});

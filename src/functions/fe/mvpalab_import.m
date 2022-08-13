@@ -4,7 +4,6 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 
 %% Initialization
 nSubjects = length(cfg.study.dataFiles{1,1});
-nClasses = 2;
 nCtxt = 1;
 
 if ~cfg.sf.flag
@@ -43,12 +42,18 @@ for sub = 1 : nSubjects
         end
         
         for ctxt = 1 : nCtxt
-            for class = 1 : nClasses
+            for class = 1 : length(cfg.study.dataFiles)
                 
                 % Load subject data:
                 try
-                    temp = load([cfg.study.dataPaths{ctxt,class} ...
-                        cfg.study.dataFiles{ctxt,class}{sub}]);
+                    if strcmp(cfg.study.dataFiles{ctxt,class}{sub}(end-3:end),'.mat')
+                        temp = load([cfg.study.dataPaths{ctxt,class} ...
+                            cfg.study.dataFiles{ctxt,class}{sub}]);
+                    elseif strcmp(cfg.study.dataFiles{ctxt,class}{sub}(end-3:end),'.set')
+                        mvpalab_checkeeglab();
+                        temp.data = pop_loadset(cfg.study.dataFiles{ctxt,class}{sub},cfg.study.dataPaths{ctxt,class});
+                    end
+                    
                 catch
                     error(['Data files not found. '...
                         'Directory: ' cfg.study.dataPaths{ctxt,class}]);
@@ -62,7 +67,7 @@ for sub = 1 : nSubjects
                     EEG.data = mvpalab_filterdata(EEG,freq,cfg);
                 end
                 
-                % Remove spaces to avoid errors: 
+                % Remove spaces to avoid errors:
                 id = cfg.study.conditionIdentifier{ctxt,class};
                 id = id(~isspace(id));
                 

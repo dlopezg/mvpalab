@@ -2,7 +2,7 @@
 
 if ~cfg.sf.flag
     if cfg.classmodel.tempgen
-        if (graph.stats.above || graph.stats.below)
+        if (graph.stats.above || graph.stats.below) && exist('stats','var')
             if ~graph.add, figure; end
             hold on;
             mvpalab_plottempogen(graph,cfg,result,stats);
@@ -12,7 +12,7 @@ if ~cfg.sf.flag
             mvpalab_plottempogen(graph,cfg,result);
         end
     else
-        if (graph.stats.above || graph.stats.below)
+        if (graph.stats.above || graph.stats.below) && exist('stats','var')
             if ~graph.add, figure; end
             hold on;
             mvpalab_plotdecoding(graph,cfg,result,stats);
@@ -23,7 +23,7 @@ if ~cfg.sf.flag
         end
     end
 else
-    if (graph.stats.above || graph.stats.below)    
+    if (graph.stats.above || graph.stats.below) && exist('stats','var')    
         if ~graph.add, figure; end
         hold on;
         mvpalab_plotfreqcont(graph,cfg,result,stats);

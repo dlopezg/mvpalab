@@ -35,7 +35,7 @@ else
     
     %% Check if plot performance:
     resultToPlot = [];
-    if ~isempty(result)
+    if ~isempty(result) && ~isstruct(result)
         if size(result,1) > 1
             if ~subject
                 for i = 1 : size(result,3)

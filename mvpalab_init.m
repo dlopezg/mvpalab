@@ -73,8 +73,9 @@ cfg.normdata = 0;
 
 %% DATA SMOOTHING:
 
-% cfg.smoothdata.method = 'none'   - Data smooth disabled.
-% cfg.smoothdata.method = 'moving' - Moving average method.
+% cfg.smoothdata.method = 'none'     - Data smooth disabled.
+% cfg.smoothdata.method = 'moving'   - Moving average method.
+% cfg.smoothdata.method = 'gaussian' - Gaussian kernel.
 
 cfg.smoothdata.method   = 'none';
 cfg.smoothdata.window   = 1;

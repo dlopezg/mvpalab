@@ -88,6 +88,11 @@ cfg.tm.tpstart_  = 0;
 cfg.tm.tpend_    = 0;
 cfg.tm.tpsteps   = 1;
 
+%% ELECTRODE SELECTION:
+cfg.channels.selected = [];
+cfg.channels.chanloc = [];
+cfg.channels.selectedchanloc = [];
+
 %% CLASSIFICATION ALGORITHM:
 
 % cfg.classmodel.method = 'svm' - Support Vector Machine.

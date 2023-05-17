@@ -45,6 +45,9 @@ for sub = 1 : nSubjects
         
         strpar = cvpartition(Y,'KFold',cfg.cv.nfolds);
         
+        %% Electrode selection:
+        [X,cfg] = mvpalab_chanselection(X,cfg);
+        
         %% Timepoints loop
         if cfg.classmodel.parcomp
             parfor tp = 1 : cfg.tm.ntp

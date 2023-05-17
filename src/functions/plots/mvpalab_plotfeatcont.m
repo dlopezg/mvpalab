@@ -3,7 +3,7 @@ function mvpalab_plotfeatcont(graph,cfg,weights,result)
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
 
-if isempty(cfg.chanloc)
+if isempty(cfg.channels.selectedchanloc)
     
 else
     
@@ -94,7 +94,7 @@ else
             end
             
             title(['Decoding time: ' int2str(cfg.tm.times(startidx+i)) ' ms'])
-            topoplot(weights_to_plot(:,i),cfg.chanloc,...
+            topoplot(weights_to_plot(:,i),cfg.channels.selectedchanloc,...
                 'colormap', graph.colorMap,...
                 'whitebk','on',...
                 'electrodes','labels');
@@ -128,7 +128,7 @@ else
             subplot(1,2,2);
         end
         
-        topoplot(weights_to_plot,cfg.chanloc,...
+        topoplot(weights_to_plot,cfg.channels.selectedchanloc,...
             'colormap', graph.colorMap,...
             'whitebk','on',...
             'electrodes','labels');
@@ -139,7 +139,7 @@ else
         figure;
         hold on;
         [sorted,idx] = sort(weights_to_plot);
-        labels = extractfield(cfg.chanloc,'labels');
+        labels = extractfield(cfg.channels.selectedchanloc,'labels');
         sortedLabels = labels(idx);
         features = categorical(sortedLabels);
         features = reordercats(features,sortedLabels);

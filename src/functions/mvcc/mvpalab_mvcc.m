@@ -44,6 +44,10 @@ for sub = 1 : nSubjects
             cfg.cv.nfolds = cfg.cv.loo(sub);
         end
         
+        %% Electrode selection:
+        [train_X,cfg] = mvpalab_chanselection(train_X,cfg);
+        [test_X,cfg] = mvpalab_chanselection(test_X,cfg);
+        
         %% Timepoints loop
         if cfg.classmodel.parcomp
             parfor tp = 1 : cfg.tm.ntp

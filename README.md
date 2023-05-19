@@ -30,6 +30,7 @@
 * [Data normalization](https://github.com/dlopezg/mvpalab/wiki/Analysis-Configuration#data-normalization)
 * [Data smoothing](https://github.com/dlopezg/mvpalab/wiki/Analysis-Configuration#data-smoothing)
 * [Analysis timing](https://github.com/dlopezg/mvpalab/wiki/Analysis-Configuration#analysis-timing)
+*  [Channel selection](https://github.com/dlopezg/mvpalab/wiki/Analysis-Configuration#channel-selection)
 * [Dimensionality reduction](https://github.com/dlopezg/mvpalab/wiki/Analysis-Configuration#dimensionality-reduction)
 * [Classification model](https://github.com/dlopezg/mvpalab/wiki/Analysis-Configuration#classification-model)
 * [Cross-validation](https://github.com/dlopezg/mvpalab/wiki/Analysis-Configuration#cross-validation)

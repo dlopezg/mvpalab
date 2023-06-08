@@ -6,7 +6,7 @@ cfg.sf.freqvec = [];
 if strcmp(cfg.sf.fspac,'log')
     cfg.sf.freqvec = logspace(log10(cfg.sf.lfreq + cfg.sf.hbw),log10(cfg.sf.hfreq - cfg.sf.hbw), cfg.sf.nfreq);
 else
-    cfg.sf.freqvec = linspace(cfg.sf.lfreq + cfg.sf.hbw, cfg.sf.hfreq - cfg.sf.hbw, cfg.sf.nfreq-1);
+    cfg.sf.freqvec = linspace(cfg.sf.lfreq + cfg.sf.hbw, cfg.sf.hfreq - cfg.sf.hbw, cfg.sf.nfreq);
     cfg.sf.nfreq = length(cfg.sf.freqvec);
 end
 

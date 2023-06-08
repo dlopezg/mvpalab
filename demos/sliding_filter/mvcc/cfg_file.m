@@ -11,10 +11,10 @@ cfg.study.conditionIdentifier{2,1} = 'condition_3';
 cfg.study.conditionIdentifier{2,2} = 'condition_4';
 
 % Data paths:
-cfg.study.dataPaths{1,1} = 'C:\Users\Cimcyc\Desktop\data\condition_1\';
-cfg.study.dataPaths{1,2} = 'C:\Users\Cimcyc\Desktop\data\condition_2\';
-cfg.study.dataPaths{2,1} = 'C:\Users\Cimcyc\Desktop\data\condition_3\';
-cfg.study.dataPaths{2,2} = 'C:\Users\Cimcyc\Desktop\data\condition_4\';
+cfg.study.dataPaths{1,1} = '/Users/David/Desktop/data/condition_1/';
+cfg.study.dataPaths{1,2} = '/Users/David/Desktop/data/condition_2/';
+cfg.study.dataPaths{2,1} = '/Users/David/Desktop/data/condition_3/';
+cfg.study.dataPaths{2,2} = '/Users/David/Desktop/data/condition_4/';
 
 % Data files:
 cfg.study.dataFiles{1,1} = {'1.mat','2.mat','3.mat'};

@@ -29,6 +29,28 @@ for freq = 1 : length(cfg.sf.freqvec)
     end
 end
 
+% Bug fix: dimensionality problem for single subject analysis:
+% When only one subject is selected for the analysis the singleton
+% dimension is automatically squeezed by MATLAB causing dimensionality
+% problems. This problems are solved here.
+
+if strcmp(cfg.analysis,'MVPA')
+    diffMap.(cfg.sf.metric) = squeeze(diffMap.(cfg.sf.metric));
+else
+    diffMap.(cfg.sf.metric).ab = squeeze(diffMap.(cfg.sf.metric).ab);
+    diffMap.(cfg.sf.metric).ba = squeeze(diffMap.(cfg.sf.metric).ba);
+end
+
+if nargin > 3 && size(perdiffMap.(cfg.sf.metric).ab,2) == 1
+    if strcmp(cfg.analysis,'MVPA')
+        perdiffMap.(cfg.sf.metric) = permute(perdiffMap.(cfg.sf.metric),[1 3 2 4]);
+    else
+        perdiffMap.(cfg.sf.metric).ab = permute(perdiffMap.(cfg.sf.metric).ab,[1 3 2 4]);
+        perdiffMap.(cfg.sf.metric).ba = permute(perdiffMap.(cfg.sf.metric).ba,[1 3 2 4]);
+    end
+end
+
+
 fprintf('Done.\n');
 
 end

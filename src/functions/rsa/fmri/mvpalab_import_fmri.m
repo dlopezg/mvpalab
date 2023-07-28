@@ -1,4 +1,4 @@
-function [cfg,data,mask] = mvpalab_import_fmri(cfg)
+function [volumes,masks,cfg] = mvpalab_import_fmri(cfg)
 %% MVPALAB_IMPORTFMRI
 %
 %  This function import the required fmri data for the searchligth
@@ -12,18 +12,27 @@ function [cfg,data,mask] = mvpalab_import_fmri(cfg)
 %%  OUTPUT:
 %
 
-%% Load nifti mask:
-if isfield(cfg.study,'maskFile')
-    mask = mvpalab_load_volumes(cfg.study.maskFile);
+%% Subjects loop:
+%  Iterate along subjects:
+for sub = 1 : length(cfg.rsa.subjects)
+    %% 1. Load beta files:
+    %  Load beta files for each condition and subject:
+    
+    sub_folder = fullfile(cfg.rsa.subjects{sub},cfg.rsa.betafolder);
+    conditions = cfg.rsa.conditions;
+    volumes{sub} = mvpalab_load_betas(sub_folder,conditions);
+    
+    %% ROIs loop:
+    %  Iterate along brain regions:
+    for roi = 1 : length(cfg.rsa.roi)
+        %% 2. Load ROI masks:
+        %  Load the mask file for each brain region:
+        
+        [~,roi_id,~] = fileparts(cfg.rsa.roi{roi});
+        roi_file = fullfile(cfg.rsa.subjects{sub},cfg.rsa.roi_folder,...
+            cfg.rsa.roi{roi});
+        masks{sub}.(roi_id) = mvpalab_load_volumes(roi_file);
+    end
 end
-
-%% Load condition data:
-data = mvpalab_load_betas(cfg.study.SPMFolder,cfg.rsa.conditions);
-
-%% Masked data:
-% masked_data = mvpalab_maskbetas(mask,data);
-
-%% Normaliza data:
-
 end
 

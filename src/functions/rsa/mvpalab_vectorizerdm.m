@@ -2,7 +2,7 @@ function vrdm = mvpalab_vectorizerdm(cfg,rdm)
 %% MVPALAB_VECTORIZERDM
 %
 %  This function returns the vectorized version of a temporal series of
-%  RDMs in the form: [timepoints x vectorizedrdm]
+%  RDMs in the form: [timepoints x vectorizedrdm x models]
 
 %%  INPUT:
 %

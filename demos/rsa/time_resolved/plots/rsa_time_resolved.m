@@ -1,6 +1,6 @@
 %% Initialize and configure plots:
 
-loaddir = 'results/time_resolved/regress/euclidean/tvalues';
+loaddir = 'results/PRUEBA-NEW-RSA/corr/pearson';
 
 graph = mvpalab_plotinit();
  
@@ -55,33 +55,23 @@ figure(1);
 hold on
 mvpalab_plotonscreen(graph)
 
-plot(cfg.tm.times,result(:,:,1),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,2),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,3),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,4),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,5),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,6),'-.','Color',[.8 .8 .8])
+for sub = 1 : size(result,3)
+    plot(cfg.tm.times,result(:,:,sub),'-.','Color',[.8 .8 .8])
+end
 
 load ([loaddir '/block_model/result.mat']);
 load ([loaddir '/block_model/stats.mat']);
 
-plot(cfg.tm.times,result(:,:,1),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,2),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,3),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,4),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,5),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,6),'-.','Color',[.8 .8 .8])
+for sub = 1 : size(result,3)
+    plot(cfg.tm.times,result(:,:,sub),'-.','Color',[.8 .8 .8])
+end
 
 load ([loaddir '/validity_model/result.mat']);
 load ([loaddir '/validity_model/stats.mat']);
 
-plot(cfg.tm.times,result(:,:,1),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,2),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,3),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,4),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,5),'-.','Color',[.8 .8 .8])
-plot(cfg.tm.times,result(:,:,6),'-.','Color',[.8 .8 .8])
-
+for sub = 1 : size(result,3)
+    plot(cfg.tm.times,result(:,:,sub),'-.','Color',[.8 .8 .8])
+end
 
 load ([loaddir '/stimuli_model/result.mat']);
 load ([loaddir '/stimuli_model/stats.mat']);
@@ -127,48 +117,7 @@ graph.ylim = [-.03 .08];
 mvpalab_plotdecoding(graph,cfg,result,stats);
 
 
-%% Plot some DRMs
 
-load results/nomatch/euclidean/rdms/result.mat
-
-% Subject and timepoint:
-graph.sub = 6;
-
-graph.xlim = [cfg.tm.tpstart_ cfg.tm.tpend_];
-graph.ylim = [cfg.tm.tpstart cfg.tm.tpend];
-graph.caxis = [25 80];
-
-
-% Colors:
-
-graph.tmp = 10;
-figure(3);
-mvpalab_plotrdm(graph,cfg,result{graph.sub}(:,:,graph.tmp));
-
-
-graph.tmp = 90;
-figure(4);
-mvpalab_plotrdm(graph,cfg,result{graph.sub}(:,:,graph.tmp));
-
-
-graph.tmp = 109;
-figure(5);
-mvpalab_plotrdm(graph,cfg,result{graph.sub}(:,:,graph.tmp));
-
-
-graph.tmp = 148;
-figure(6);
-mvpalab_plotrdm(graph,cfg,result{graph.sub}(:,:,graph.tmp));
-colorbar
-% figure(1);
-% for i = 1 : size(rsa{3},1)
-%     imagesc(squeeze(rsa{3}(i,:,:)),[-1 1]);
-%     title(['T = ' num2str(cfg.tm.times(i)) 's'])
-%     hline(bounds,'-k')
-%     vline(bounds,'-k')
-%
-%     pause(0.00001);
-% end
 
 %%
 

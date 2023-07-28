@@ -1,12 +1,20 @@
 clear all
 clc
 %% Initialization:
-speed = 500;
+graph = mvpalab_plotinit();
+
+% Colors:
+colormap = 'mvpalab';
+graph.colorSch = graph.colors.(colormap);
+graph.colorMap = graph.grads.(colormap);
+sphereColor = graph.colorSch{11};
+
+speed = 1;
+start = 190000;
 hist = [];
-cfg.study.maskFile = 'mask.nii';
 cfg.sl.radius = 4;
-mask = mvpalab_loadmask(cfg);
-ploting_points = (1:speed:length(mask.coor));
+mask = mvpalab_load_volumes('mask.nii');
+ploting_points = (start:speed:length(mask.coor));
 
 %% Pad volumes:
 mask_ = mvpalab_padvolumes(cfg,mask);
@@ -35,20 +43,20 @@ for voxel = 1 : length(mask_.coor)
     %% Searchlight representation:
     hist = [hist; voxel_coordinates];
     if any(voxel == ploting_points) || voxel == length(mask_.coor)
-        s = plot3(sphere_(:,1),sphere_(:,2),sphere_(:,3),'o','Color','#A2142F','MarkerSize',5,'MarkerFaceColor','#A2142F');
+        s = plot3(sphere_(:,1),sphere_(:,2),sphere_(:,3),'o','Color',sphereColor,'MarkerSize',5,'MarkerFaceColor',sphereColor);
         
         % Plot 3D mask_ and projections:
         d = plot3(hist(:,1),hist(:,2),hist(:,3),'o','Color','k','MarkerSize',.5,'MarkerFaceColor','k');
         
         % Completed projections
-        px = plot3(mask_.dim(1)*ones(length(hist),1),hist(:,2),hist(:,3),'o','Color','#4DBEEE','MarkerSize',3,'MarkerFaceColor','#4DBEEE');
-        py = plot3(hist(:,1),mask_.dim(2)*ones(length(hist),1),hist(:,3),'o','Color','#4DBEEE','MarkerSize',3,'MarkerFaceColor','#4DBEEE');
-        pz = plot3(hist(:,1),hist(:,2),0*ones(length(hist),1),'o','Color','#4DBEEE','MarkerSize',3,'MarkerFaceColor','#4DBEEE');
+        px = plot3(mask_.dim(1)*ones(length(hist),1),hist(:,2),hist(:,3),'o','Color','#BBBBBB','MarkerSize',3,'MarkerFaceColor','#BBBBBB');
+        py = plot3(hist(:,1),mask_.dim(2)*ones(length(hist),1),hist(:,3),'o','Color','#BBBBBB','MarkerSize',3,'MarkerFaceColor','#BBBBBB');
+        pz = plot3(hist(:,1),hist(:,2),0*ones(length(hist),1),'o','Color','#BBBBBB','MarkerSize',3,'MarkerFaceColor','#BBBBBB');
         
         % Sphere projections:
-        spx = plot3(mask_.dim(1)*ones(length(sphere_),1),sphere_(:,2),sphere_(:,3),'o','Color','#EDB120','MarkerSize',3,'MarkerFaceColor','#EDB120');
-        spy = plot3(sphere_(:,1),mask_.dim(2)*ones(length(sphere_),1),sphere_(:,3),'o','Color','#EDB120','MarkerSize',3,'MarkerFaceColor','#EDB120');
-        spz = plot3(sphere_(:,1),sphere_(:,2),0*ones(length(sphere_),1),'o','Color','#EDB120','MarkerSize',3,'MarkerFaceColor','#EDB120');
+        spx = plot3(mask_.dim(1)*ones(length(sphere_),1),sphere_(:,2),sphere_(:,3),'o','Color',sphereColor,'MarkerSize',3,'MarkerFaceColor',sphereColor);
+        spy = plot3(sphere_(:,1),mask_.dim(2)*ones(length(sphere_),1),sphere_(:,3),'o','Color',sphereColor,'MarkerSize',3,'MarkerFaceColor',sphereColor);
+        spz = plot3(sphere_(:,1),sphere_(:,2),0*ones(length(sphere_),1),'o','Color',sphereColor,'MarkerSize',3,'MarkerFaceColor',sphereColor);
         
         drawnow
         

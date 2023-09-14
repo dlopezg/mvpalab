@@ -7,9 +7,9 @@
 %% Initialize project and run configuration file:
 
 cfg = mvpalab_init();
-run cfg_file;
+run cfg_file_int_sel;
 
-cfg.classmodel.parcomp = 0;
+cfg.classmodel.parcomp = 1;
 
 %% Load data, generate conditions and feature extraction:
 

@@ -24,6 +24,7 @@ for roi = 1 : length(cfg.rsa.roi)
         subject_rois_names = fieldnames(subject_rois);
         subject_betas = volumes{sub};
     
+        dims = size(subject_betas);
 
         
         subject_roi_name = subject_rois_names{roi};
@@ -40,7 +41,7 @@ for roi = 1 : length(cfg.rsa.roi)
         %  to the following structure:
         %  rdm - [n_conditions (per run) x voxels]
         
-        rdm{sub} = mvpalab_computerdm(cfg,masked{sub});
+        rdm{sub} = mvpalab_computerdm(cfg,masked{sub}, dims);
         
         %% Merge conditions if needed:
         %  Combine conditions of different runs in a global condition if

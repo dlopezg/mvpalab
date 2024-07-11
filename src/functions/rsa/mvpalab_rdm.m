@@ -29,13 +29,36 @@ rdms = NaN(ntrial,ntrial,ntp);
 
 %% Construct RDMs using the specified distance measure:
 
+% print the location of cfg_file.m
+fprintf('cfg_file.m is located at: %s\n', cfg.location);
+
+% check whether parallel computing is enabled:
+if cfg.classmodel.parcomp
+    fprintf('   - Parallel computing enabled.\n');
+else
+    fprintf('   - Parallel computing disabled.\n');
+end
+
+% check dimensionality of the data:
+fprintf('   - Data dimensions: ');
+fprintf([int2str(size(X,1)) ' trials x ' int2str(size(X,2)) ' channels x ' int2str(size(X,3)) ' timepoints.\n']);
+
+% print ntp:
+fprintf('   - Number of timepoints: %d\n', ntp);
+
+% print the distance measure:
+fprintf('   - Distance measure: %s\n', cfg.rsa.distance);
+
+% print cfg.classmodel.parcomp:
+fprintf('   - Parallel computing: %d\n', cfg.classmodel.parcomp);
+
 if cfg.classmodel.parcomp && ntp > 1
     parfor tp = 1 : ntp
-        rdms(:,:,tp) = mvpalab_computerdm(cfg,X(:,:,tp));
+        rdms(:,:,tp) = mvpalab_computerdm(cfg,X(:,:,tp), []);
     end
 else
     for tp = 1 : ntp
-        rdms(:,:,tp) = mvpalab_computerdm(cfg,X(:,:,tp));
+        rdms(:,:,tp) = mvpalab_computerdm(cfg,X(:,:,tp), []);
     end
 end
 

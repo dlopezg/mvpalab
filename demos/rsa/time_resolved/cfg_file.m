@@ -1,4 +1,4 @@
-%% Advacned configuration file for RSA analysis - Folder and data files:
+%% Advanced configuration file for RSA analysis - Folder and data files:
 
 cfg.analysis = 'rsa-time-resolved';
 cfg.location = pwd;
@@ -40,6 +40,7 @@ cfg.rsa.modality = 'corr';
 cfg.rsa.distance = 'pearson';
 cfg.rsa.trialwise = false;
 cfg.rsa.normrdm = true;
+cfg.rsa.cvFolds = 2;
 
 %% VECTORIZED THEORETHICAL MODELS:
                      %|          %|        %|      %|    %|  %| %| 

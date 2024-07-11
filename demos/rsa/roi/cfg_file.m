@@ -1,4 +1,4 @@
-%% Advacned configuration file for RSA analysis - Folder and data files:
+%% Advanced configuration file for RSA analysis - Folder and data files:
 
 cfg.analysis = 'rsa-roi';
 cfg.location = pwd;
@@ -67,8 +67,9 @@ cfg.rsa.roi_folder = fullfile('anat','rois');
 cfg.rsa.modality = 'corr';
 cfg.rsa.distance = 'euclidean';
 cfg.rsa.normrdm = true;
+cfg.rsa.cvFolds = 4;
 
-%% VECTORIZED THEORETHICAL MODELS:
+%% VECTORIZED THEORETICAL MODELS:
                      %|          %|        %|      %|    %|  %| %| 
 stimu = [ 0 1 1 0 0 1 1 1 1 0 0 1 1 0 1 1 0 0 1 1 0 0 0 1 1 1 1 0];
 block = [ 1 0 1 0 1 0 1 1 0 1 0 1 0 1 0 1 0 1 1 0 1 0 1 0 1 1 0 1];

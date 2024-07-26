@@ -1,14 +1,16 @@
-function stats = mvpalab_computepermtest(cfg,performance,permuted_maps)
+function stats = mvpalab_computepermtest(cfg, performance, permuted_maps)
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
 
-%% Initilization - Generate permutation idx matrix:
+%% Initialization - Generate permutation idx matrix:
 % Here we determine the map of each subject that has to be selected in each
 % permutation.
-nSubjects = size(performance,3);
+nSubjects = size(performance, 3);
 cfg.stats.sub = nSubjects;
-perm_idxs = randi(cfg.stats.nper,cfg.stats.sub,cfg.stats.nperg,'single');
+% Seed to remove randomness for debugging
+rng(1);
+perm_idxs = randi(cfg.stats.nper, cfg.stats.sub, cfg.stats.nperg, 'single');
 
 %% Generate permuted maps at group level:
 % One permuted map of each subject has to be randomly selected and group
@@ -16,12 +18,30 @@ perm_idxs = randi(cfg.stats.nper,cfg.stats.sub,cfg.stats.nperg,'single');
 % indexes for each subject and permutation.
 
 fprintf('   - Generating permuted maps at group level: ');
-for i = 1 : cfg.stats.nperg
-    for j = 1 : cfg.stats.sub
-        permaps(:,:,j) = squeeze(permuted_maps(:,:,j,perm_idxs(j,i)));
+
+% Preallocate memory for gpermaps
+gpermaps = zeros(size(permuted_maps, 1), size(permuted_maps, 2), cfg.stats.nperg);
+
+% Vectorized approach to generate permuted maps at group level
+if cfg.classmodel.parcomp
+    parfor i = 1:cfg.stats.nperg
+        % Create a 3D array of indices for the permuted maps
+        permaps = permuted_maps(:, :, sub2ind(size(permuted_maps, 3:4), (1:nSubjects)', perm_idxs(:, i)));
+        
+        % Group average the selected maps
+        gpermaps(:, :, i) = mean(permaps, 3);
     end
-    gpermaps(:,:,i) = mean(permaps,3);
+else
+    for i = 1:cfg.stats.nperg
+        % Create a 3D array of indices for the permuted maps
+        permaps = permuted_maps(:, :, sub2ind(size(permuted_maps, 3:4), (1:nSubjects)', perm_idxs(:, i)));
+        
+        % Group average the selected maps
+        gpermaps(:, :, i) = mean(permaps, 3);
+    end
 end
+
+
 fprintf(' - Done!\n');
 
 %% Generate the null distribution and p-value thresholds:

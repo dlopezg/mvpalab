@@ -9,13 +9,20 @@
 cfg = mvpalab_init();
 run cfg_file;
 
+[volumes,masks,cfg] = mvpalab_import_sl(cfg);
+
+%sub_folder = cfg.study.SPMFolder;
+%conditions = cfg.rsa.conditions;
+%data = mvpalab_load_betas(sub_folder,conditions);
+%mask = mvpalab_load_volumes(cfg.study.maskFile);
+
 %% Load mask and data:
 
-[cfg,data,mask] = mvpalab_import_fmri(cfg);
+% [cfg,data,mask] = mvpalab_import_fmri(cfg);
 
 %% Compute searchlight analysis:
 
-[result,stats,cfg] = mvpalab_searchlight(cfg,mask,data);
+[results,stats,cfg] = mvpalab_searchlight(cfg,masks,volumes);
 
 %% Plot the results:
 
@@ -23,4 +30,6 @@ run cfg_file;
 
 %% Save cfg file:
 
-% mvpalab_savecfg(cfg);
+mvpalab_savecfg(cfg);
+
+fprintf('Done')

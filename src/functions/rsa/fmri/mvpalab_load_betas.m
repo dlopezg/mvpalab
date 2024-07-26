@@ -16,9 +16,9 @@ for cond = 1 : length(conditions_to_extract)
     regressor_name = conditions_to_extract{cond};
     idxs = contains(betas_descrip,regressor_name);
     
-    % Generate files to losad:
-    files_to_load = fullfile(folder,betas_fname(idxs))';
-    
+    % Generate files to load:
+    files_to_load = fullfile(folder,betas_fname(idxs));
+
     for file = 1 : length(files_to_load)
         betas{cond,file} = mvpalab_read_nifti(files_to_load{file});
         betas{cond,file}.regressor = regressor_name;

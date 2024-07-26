@@ -1,4 +1,4 @@
-function [cfg,res,permaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
+function [cfg,res,permaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms, searchlight_rdms)
 
 %% Initialization;
 
@@ -16,7 +16,9 @@ elseif strcmp(cfg.fusion.mode,'mean-eeg')
     
 elseif strcmp(cfg.fusion.mode,'no-mean')
     [cfg,result] = mvpalab_fusion_nomean(cfg,fmri_rdms,eeg_rdms);
-    
+
+elseif strcmp(cfg.fusion.mode,'searchlight')
+    [cfg,result] = mvpalab_fusion_meaneeg_sl(cfg,searchlight_rdms,eeg_rdms);
 end
 
 %% Save results:

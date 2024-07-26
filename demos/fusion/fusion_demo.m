@@ -12,8 +12,11 @@ run cfg_file;
 
 %% Compute fusion
 
-[cfg,res,permaps,stats] = mvpalab_fusion(cfg,meeg_rdms,fmri_rdms);
+[cfg,res,permaps,stats] = mvpalab_fusion(cfg,meeg_rdms,fmri_rdms, searchlight_rdms);
 
 %% Plot the results:
-
-run fusion_plot; 
+if strcmp(cfg.fusion.mode,'searchlight')
+    run fusion_plot_sl; 
+else
+    run fusion_plot; 
+end

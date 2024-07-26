@@ -4,26 +4,50 @@ cfg.analysis = 'RSA';
 cfg.location = pwd;
 
 cfg.rsa.conditions = {
-    'cue_Att_CueFace1';
-    'cue_Att_CueFace2';
-    'cue_Att_CueName1';
-    'cue_Att_CueName2';
-    'cue_Exp_CueFace1';
-    'cue_Exp_CueFace2';
-    'cue_Exp_CueName1';
-    'cue_Exp_CueName2';
+        'target_Exp_Val_Word';
+        'target_Att_Val_Word';
+        'target_Exp_Val_Face';
+        'target_Att_Val_Face';
+        'target_Exp_Inval_Word';
+        'target_Att_Inval_Word';
+        'target_Exp_Inval_Face';
+        'target_Att_Inval_Face';
     };
 
-cfg.study.SPMFolder = '/Volumes/DATA/att-exp-fmri/derivatives/sub-004/GLM_models_decoding';
-cfg.study.maskFile = '/Volumes/DATA/att-exp-fmri/derivatives/sub-004/GLM_models_decoding/mask.nii';
-%% REPRESENTATIONAL SIMILARITY ANALYSIS:
+% Subjects:
+cfg.rsa.subjects = {
+    %'/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-001';
+    %'/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-002';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-003';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-004';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-005';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-006';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-007';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-008';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-009';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-010';
+    %'/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-011';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-012';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-013';
+    %'/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-014';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-015';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-016';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-017';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-018';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-019';
+    '/Volumes/DATA/att-exp/data/att-exp-fmri/derivatives/sub-020';
+    };
+
+cfg.study.SPMFolder = 'GLM_models/univariate';
+cfg.study.maskFile = 'GLM_models/univariate/mask.nii';
+%% REPRESENTATIONAL SIMILARITY ANALYSIS
 
 cfg.rsa.distance = 'pearson';
 cfg.rsa.analysis = 'corr';
 cfg.rsa.trialwise = true;
 
 %% SEARCHLIGHT CONFIGURATION:
-cfg.sl.radius = 4;
+cfg.sl.radius = 2;
 
 %% BALANCED DATASETS:
 

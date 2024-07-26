@@ -45,6 +45,16 @@ if permute, nperm = cfg.stats.nper; else, nperm = 1; end
 %  Description:
 if permute,fprintf('- Permutation: '); end
 
+if strcmp(cfg.fusion.distance,'Spearman')
+    warning("Spearman correlation may be very slow")
+    d = 1;
+elseif strcmp(cfg.fusion.distance,'Pearson')
+    d = 0;
+else
+    d = 0;
+    warning("Distance measure not recognised, using Pearson instead")
+end
+
 %% Permutation loop:
 %  Description:
 for perm = 1 : nperm
@@ -61,8 +71,11 @@ for perm = 1 : nperm
             trdm = mtx_(tp,:);
             rdm = mtx(tp,:);
             if permute, rdm = rdm(randperm(length(rdm))); end
-            r(tp) = corr(rdm',trdm','Type','Spearman');
-            
+            if d == 1
+                r(tp) = corr(rdm',trdm','Type','Spearman');
+            else
+                r(tp) = fast_corr(rdm', trdm');
+            end
         end
         
     else
@@ -72,8 +85,11 @@ for perm = 1 : nperm
             trdm = mtx_(tp,:);
             rdm = mtx(tp,:);
             if permute, rdm = rdm(randperm(length(rdm))); end
-            r(tp) = corr(rdm',trdm','Type','Spearman');
-            
+            if d == 1
+                r(tp) = corr(rdm',trdm','Type','Spearman');
+            else
+                r(tp) = fast_corr(rdm', trdm');
+            end
         end
         
     end

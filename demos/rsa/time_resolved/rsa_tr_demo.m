@@ -9,7 +9,7 @@
 cfg = mvpalab_init();
 run cfg_file;
 
-cfg.classmodel.parcomp = 1;
+cfg.classmodel.parcomp = 0;
 
 %% Load data, generate conditions and feature extraction:
 

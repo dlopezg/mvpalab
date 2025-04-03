@@ -13,10 +13,10 @@ for sub = 1 : nsub
     fprintf('\n<strong> > Computing RSA analysis: </strong>');
     fprintf(['- Subject: ' int2str(sub) '/' int2str(nsub) '\n\n']);
     tic;
-    
+
     %%  Select datamatrix:
     %   Select data, labels and timepoints.
-    
+
     X = fv{sub}.X.a; Y = fv{sub}.Y.a;
     X = X(:,:,cfg.tm.tpoints);
     
@@ -24,16 +24,16 @@ for sub = 1 : nsub
     %  This function returns 3D matrices containing the RDMs in a time
     %  resolved way:
     %  rdms - [trials x trials x timepoints]
-    
+
     rdms{sub} = mvpalab_rdm(cfg,X);
-    
+
     %%  Find condition's boundaries for each subject:
     %   This functions returns the indexes of the last trials for each
     %   condition. This indexes can be used to plot conditions boundaries
     %   or to split the data.
-    
+
     cfg.rsa.bounds{sub} = mvpalab_findbound(Y);
-    
+
     %% Transform the trial-wise RDM to condition-wise RDM
     %  Representational dissimilarity matrices can be computed trial or
     %  condition-wise.

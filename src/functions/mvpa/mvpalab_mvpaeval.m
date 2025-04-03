@@ -16,11 +16,11 @@ w = [];
 
 %% Cross validation loop:
 if ~cfg.classmodel.tempgen
-    predicted_labels = true(strpar.NumObservations,1);
+    predicted_labels = NaN(strpar.NumObservations,1);
     predicted_scores = ones(strpar.NumObservations,2);
 else
     for i = 1 : cfg.tm.ntp_
-        predicted_labels{i} = true(strpar.NumObservations,1);
+        predicted_labels{i} = NaN(strpar.NumObservations,1);
         predicted_scores{i} = ones(strpar.NumObservations,2);
     end
 end

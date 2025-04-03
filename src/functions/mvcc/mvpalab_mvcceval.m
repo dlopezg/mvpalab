@@ -18,12 +18,14 @@ else
     strpart = cvpartition(Yt,'KFold',cfg.cv.nfolds); % Test
 end
 
-if ~cfg.classmodel.tempgen
-    predicted_labels = true(strpart.NumObservations,1);
+if ~cfg.classmodel.tempgen 
+
+    
+    predicted_labels = NaN(strpart.NumObservations,1);
     predicted_scores = ones(strpart.NumObservations,2);
 else
     for i = 1 : cfg.tm.ntp_
-        predicted_labels{i} = true(strpart.NumObservations,1);
+        predicted_labels{i} = NaN(strpart.NumObservations,1);
         predicted_scores{i} = ones(strpart.NumObservations,2);
     end
 end

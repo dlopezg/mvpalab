@@ -14,14 +14,14 @@ cfg.study.conditionIdentifier{1,7} = 'inv_face_exp';
 cfg.study.conditionIdentifier{1,8} = 'inv_face_att';
 
 % Condition folders:
-cfg.study.dataPaths{1,1} = '/Volumes/DATA/att-exp/data/att-exp-eeg/conditions/target_val_name_exp/';
-cfg.study.dataPaths{1,2} = '/Volumes/DATA/att-exp/data/att-exp-eeg/conditions/target_val_name_att/';
-cfg.study.dataPaths{1,3} = '/Volumes/DATA/att-exp/data/att-exp-eeg/conditions/target_val_face_exp/';
-cfg.study.dataPaths{1,4} = '/Volumes/DATA/att-exp/data/att-exp-eeg/conditions/target_val_face_att/';
-cfg.study.dataPaths{1,5} = '/Volumes/DATA/att-exp/data/att-exp-eeg/conditions/target_inv_name_exp/';
-cfg.study.dataPaths{1,6} = '/Volumes/DATA/att-exp/data/att-exp-eeg/conditions/target_inv_name_att/';
-cfg.study.dataPaths{1,7} = '/Volumes/DATA/att-exp/data/att-exp-eeg/conditions/target_inv_face_exp/';
-cfg.study.dataPaths{1,8} = '/Volumes/DATA/att-exp/data/att-exp-eeg/conditions/target_inv_face_att/';
+cfg.study.dataPaths{1,1} = 'E:\dataset/target_val_name_exp/';
+cfg.study.dataPaths{1,2} = 'E:\dataset/target_val_name_att/';
+cfg.study.dataPaths{1,3} = 'E:\dataset/target_val_face_exp/';
+cfg.study.dataPaths{1,4} = 'E:\dataset/target_val_face_att/';
+cfg.study.dataPaths{1,5} = 'E:\dataset/target_inv_name_exp/';
+cfg.study.dataPaths{1,6} = 'E:\dataset/target_inv_name_att/';
+cfg.study.dataPaths{1,7} = 'E:\dataset/target_inv_face_exp/';
+cfg.study.dataPaths{1,8} = 'E:\dataset/target_inv_face_att/';
 
 % Subject files:
 cfg.study.dataFiles{1,1} = {'1.mat','2.mat','3.mat','4.mat','5.mat'};
@@ -37,7 +37,7 @@ cfg.study.dataFiles{1,8} = {'1.mat','2.mat','3.mat','4.mat','5.mat'};
 %% REPRESENTATIONAL SIMILARITY ANALYSIS:
 
 cfg.rsa.modality = 'corr';
-cfg.rsa.distance = 'pearson';
+cfg.rsa.distance = 'cvmahalanobis';
 cfg.rsa.trialwise = false;
 cfg.rsa.normrdm = true;
 cfg.rsa.cvFolds = 2;

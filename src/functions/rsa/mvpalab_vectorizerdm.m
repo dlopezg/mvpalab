@@ -21,6 +21,7 @@ function vrdm = mvpalab_vectorizerdm(cfg,rdm)
 %
 
 %% Remove diagonal and upper triangle:
+%  If cross validation is not enabled:
 %  RDMs are square and symmetrical matrices along its diagonal. For
 %  computational efficiency both the diagonal and the upper triangle can be
 %  removed for each timepoint.
@@ -30,14 +31,23 @@ for mdl = 1 : size(rdm,4)
     if cfg.classmodel.parcomp
         parfor tp = 1 : size(rdm,3)
             rdm_ = rdm(:,:,tp,mdl);
-            rdm_(logical(eye(size(rdm_)))) = 0;
-            vrdm(tp,:,mdl) = squareform(rdm_);
+            if cfg.cv.nfolds < 2
+                rdm_(logical(eye(size(rdm_)))) = 0;
+                vrdm(tp,:,mdl) = squareform(rdm_);
+            else
+                vrdm(tp,:,mdl) = rdm_(:);
+            end
+            
         end
     else
         for tp = 1 : size(rdm,3)
             rdm_ = rdm(:,:,tp,mdl);
-            rdm_(logical(eye(size(rdm_)))) = 0;
-            vrdm(tp,:,mdl) = squareform(rdm_);
+            if cfg.cv.nfolds < 2
+                rdm_(logical(eye(size(rdm_)))) = 0;
+                vrdm(tp,:,mdl) = squareform(rdm_);
+            else
+                vrdm(tp,:,mdl) = rdm_(:);
+            end
         end
     end
     

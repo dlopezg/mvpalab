@@ -37,10 +37,10 @@ cfg.study.dataFiles{1,8} = {'1.mat','2.mat','3.mat','4.mat','5.mat'};
 %% REPRESENTATIONAL SIMILARITY ANALYSIS:
 
 cfg.rsa.modality = 'corr';
-cfg.rsa.distance = 'cvmahalanobis';
+cfg.rsa.distance = 'pearson';
 cfg.rsa.trialwise = false;
-cfg.rsa.normrdm = true;
-cfg.rsa.cvFolds = 2;
+cfg.normdata = 1;
+cfg.cv.nfolds  = 3;
 
 %% VECTORIZED THEORETHICAL MODELS:
                      %|          %|        %|      %|    %|  %| %| 
@@ -64,12 +64,13 @@ clear stimu block valid
 % cfg.trialaver.order = 'rand' - Random order.
 % cfg.trialaver.order = 'seq'  - Secuential order.
 cfg.trialaver.flag     = true;
-cfg.trialaver.ntrials  = 5;
+cfg.trialaver.ntrials  = 3;
 cfg.trialaver.order    = 'rand';
 
 %% BALANCED DATASETS:
 
 cfg.classsize.match = false;
+cfg.classsize.matchkfold = true; % Required true if CV!
 
 %% DATA SMOOTHING:
 

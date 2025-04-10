@@ -1,6 +1,6 @@
 %% Initialize and configure plots:
 
-loaddir = '/Users/David/Sourcecode/mvpalab/demos/rsa/time_resolved/results/rsa-time-resolved/corr/pearson';
+loaddir = '..\results\rsa-time-resolved\corr\pearson';
 
 graph = mvpalab_plotinit();
  
@@ -8,11 +8,11 @@ color = 'aguamarine';
 
 % Axis limits:
 graph.xlim = [-100 1200];
-graph.ylim = [-.3 1];
+graph.ylim = [-.3 1.5];
 
 % Axes labels and titles:
 graph.xlabel = 'Time (ms)';
-graph.ylabel = 'Dissimilarity value';
+graph.ylabel = 'Fisher z';
 
 % Plot significant clusters (above and below chance):
 graph.stats.above = true;

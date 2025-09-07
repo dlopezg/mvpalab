@@ -6,7 +6,7 @@ mode = cfg.rsa.modality;
 dist = cfg.rsa.distance;
 
 %% CV check:
-% If CV is enabled the number of trials per fold 
+% If CV is enabled the number of trials per fold
 
 %% Subjects loop:
 %  Iterate along subjects:
@@ -64,53 +64,78 @@ for sub = 1 : nsub
     %  Empirical and theoretical models are correlated to obtain the time
     %  resolved correlation coefficient.
 
-    for mdl = 1 : size(vtheo{sub},3)
+    if strcmp(mode,'multiple_regress')
 
-        fprintf(['\n<strong>   >> Model: '...
-            cfg.rsa.tmodels{mdl}.id '</strong>\n']);
-
-        % Select theoretical model:
-        vtheo_mdl = vtheo{sub}(:,:,mdl);
-        mname = cfg.rsa.tmodels{mdl}.id;
-
-        % Analysis: Correlation or regression.
-        if strcmp(mode,'corr')
-
-            corr= mvpalab_computecorr(cfg,vrdms{sub},vtheo_mdl,false);
-            res.(mode).(dist).(mname)(1,:,sub) = corr;
-
-            %  A general linear model is fitted using the theoretical RDMs as
-            %  regressors.
-
-        elseif strcmp(mode,'regress')
-
-            [bval, tval] = mvpalab_fitglm(cfg,vrdms{sub},vtheo_mdl,false);
-            res.(mode).(dist).(mname).bvalues(1,:,sub) = bval;
-            res.(mode).(dist).(mname).tvalues(1,:,sub) = tval;
-
-        end
+        [bval, tval] = mvpalab_fitglm(cfg,vrdms{sub},vtheo{sub},false);
+         for mdl = 1:size(vtheo{sub},3)
+             mname = cfg.rsa.tmodels{mdl}.id;
+             res.(mode).(dist).(mname).bvalues(1,:,sub) = bval(1,:,1,1,mdl);
+             res.(mode).(dist).(mname).tvalues(1,:,sub) = tval(1,:,1,1,mdl);
+         end
 
         %% Compute permuted maps:
         %  Repeat the representational similarity analysis but permuting
         %  the empirical RDM if needed.
 
         if cfg.stats.flag
+            [pbv,ptv] = mvpalab_fitglm(cfg,vrdms{sub},vtheo{sub},true);
+
+             for mdl = 1:size(vtheo{sub},3)
+                mname = cfg.rsa.tmodels{mdl}.id;
+                permaps.(mode).(dist).(mname).bvalues(1,:,sub,:) = pbv(1,:,1,:,mdl);
+                permaps.(mode).(dist).(mname).tvalues(1,:,sub,:) = ptv(1,:,1,:,mdl);
+             end
+        end
+    else
+
+        for mdl = 1 : size(vtheo{sub},3)
+
+            fprintf(['\n<strong>   >> Model: '...
+                cfg.rsa.tmodels{mdl}.id '</strong>\n']);
+
+            % Select theoretical model:
+            vtheo_mdl = vtheo{sub}(:,:,mdl);
+            mname = cfg.rsa.tmodels{mdl}.id;
+
+            % Analysis: Correlation or regression.
             if strcmp(mode,'corr')
 
-                pmaps = mvpalab_computecorr(cfg,vrdms{sub},vtheo_mdl,true);
-                permaps.(mode).(dist).(mname)(1,:,sub,:) = pmaps;
+                corr= mvpalab_computecorr(cfg,vrdms{sub},vtheo_mdl,false);
+                res.(mode).(dist).(mname)(1,:,sub) = corr;
+
+                %  A general linear model is fitted using the theoretical RDMs as
+                %  regressors.
 
             elseif strcmp(mode,'regress')
 
-                [pbv,ptv] = mvpalab_fitglm(cfg,vrdms{sub},vtheo_mdl,true);
-
-                permaps.(mode).(dist).(mname).bvalues(1,:,sub,:) = pbv;
-                permaps.(mode).(dist).(mname).tvalues(1,:,sub,:) = ptv;
+                [bval, tval] = mvpalab_fitglm(cfg,vrdms{sub},vtheo_mdl,false);
+                res.(mode).(dist).(mname).bvalues(1,:,sub) = bval;
+                res.(mode).(dist).(mname).tvalues(1,:,sub) = tval;
 
             end
-        end
 
-        fprintf('        >> '); toc;
+            %% Compute permuted maps:
+            %  Repeat the representational similarity analysis but permuting
+            %  the empirical RDM if needed.
+
+            if cfg.stats.flag
+                if strcmp(mode,'corr')
+
+                    pmaps = mvpalab_computecorr(cfg,vrdms{sub},vtheo_mdl,true);
+                    permaps.(mode).(dist).(mname)(1,:,sub,:) = pmaps;
+
+                elseif strcmp(mode,'regress')
+
+                    [pbv,ptv] = mvpalab_fitglm(cfg,vrdms{sub},vtheo_mdl,true);
+
+                    permaps.(mode).(dist).(mname).bvalues(1,:,sub,:) = pbv;
+                    permaps.(mode).(dist).(mname).tvalues(1,:,sub,:) = ptv;
+
+                end
+            end
+
+            fprintf('        >> '); toc;
+        end
     end
 end
 

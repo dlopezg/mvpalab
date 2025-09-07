@@ -1,6 +1,6 @@
 %% Initialize and configure plots:
 
-loaddir = '..\results\rsa-time-resolved\corr\pearson';
+loaddir = '..\results\rsa-time-resolved\multiple_regress\pearson';
 
 graph = mvpalab_plotinit();
  
@@ -41,8 +41,8 @@ hold on
 
 
 % Load results model 1: 
-load ([loaddir '/block_model/result.mat']);
-load ([loaddir '/block_model/stats.mat']);
+load ([loaddir '/block_model/bvalues/result.mat']);
+load ([loaddir '/block_model/bvalues/stats.mat']);
 
 % Significant indicator:
 graph.sigh = -0.1;
@@ -53,8 +53,8 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 
 
 % Load results model 2: 
-load ([loaddir '/stimuli_model/result.mat']);
-load ([loaddir '/stimuli_model/stats.mat']);
+load ([loaddir '/stimuli_model/bvalues/result.mat']);
+load ([loaddir '/stimuli_model/bvalues/stats.mat']);
 
 graph.sigh = -0.15;
 graph.shadecolor = graph.colorSch{5};
@@ -67,8 +67,8 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 % end
 
 % Load results model 3:
-load ([loaddir '/validity_model/result.mat']);
-load ([loaddir '/validity_model/stats.mat']);
+load ([loaddir '/validity_model/bvalues/result.mat']);
+load ([loaddir '/validity_model/bvalues/stats.mat']);
 
 % Significant indicator:
 graph.sigh = -0.2;

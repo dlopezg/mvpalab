@@ -1,4 +1,4 @@
-function r = mvpalab_pearson(train,test)
+function r = mvpalab_pearson(train,test,cfg)
 
     [s_cond(1),s_train] = size(train);
     mean_train = sum(train,1)/s_cond(1); % mean X
@@ -8,7 +8,7 @@ function r = mvpalab_pearson(train,test)
     mean_test = sum(test,1)/s_cond(1);
     
 
-    if 0
+    if cfg.rsa.meancenter
         % Center around 0
         train_centered = train - repmat(mean_train,s_cond(1),1); 
         test_centered = test - repmat(mean_test,s_cond(1),1);

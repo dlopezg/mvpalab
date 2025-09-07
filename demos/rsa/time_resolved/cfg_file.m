@@ -36,9 +36,11 @@ cfg.study.dataFiles{1,8} = {'1.mat','2.mat','3.mat','4.mat','5.mat'};
 
 %% REPRESENTATIONAL SIMILARITY ANALYSIS:
 
-cfg.rsa.modality = 'corr';
+cfg.rsa.modality = 'multiple_regress';
+% cfg.rsa.modality = 'regress';
 cfg.rsa.distance = 'pearson';
 cfg.rsa.trialwise = false;
+cfg.rsa.meancenter = 1;
 cfg.normdata = 1;
 cfg.cv.nfolds  = 3;
 
@@ -88,7 +90,7 @@ cfg.tm.tpsteps   = 1;
 
 %% EXTRA CONFIGURATION:
 
-cfg.classmodel.parcomp = true;
+cfg.classmodel.parcomp = false;
 
 %% PERMUTATION TEST
 

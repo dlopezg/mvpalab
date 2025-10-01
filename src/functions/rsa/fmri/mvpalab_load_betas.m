@@ -21,6 +21,7 @@ for cond = 1 : length(conditions_to_extract)
     
     for file = 1 : length(files_to_load)
         betas{cond,file} = mvpalab_read_nifti(files_to_load{file});
+        betas{cond,file}.regressor = regressor_name;
     end
     
 end

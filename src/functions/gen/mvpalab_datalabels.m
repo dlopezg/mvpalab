@@ -21,13 +21,13 @@ function [X,Y,cfg] = mvpalab_datalabels(cfg,fv)
 %         is stored in X.a while data for cross-classification analyses is 
 %         stored in X.b.
 %
-%  - Y  : (ARRAY OF LOGICALS) Label vector for an individual subject.
+%  - Y  : (CATEGORICAL) Label vector for an individual subject.
 %
 %  - cfg: (STRUCT) Label vector for an individual subject.
 
 %%  Initialization:
-X.a = []; Y.a = logical([]); nctxt = 1;
-
+X.a = []; Y.a = []; nctxt = 1;
+  
 %%  Check MVPA or MVCC:
 %   Data fields X.b and Y.b are reserved for cross-classification purposes.
 %   Only if the size of the feature vector matrix is larger than two and
@@ -36,7 +36,7 @@ X.a = []; Y.a = logical([]); nctxt = 1;
 
 if (size(fv,1) > 1) && ~sum(cellfun(@isempty,fv(2,:)))
     nctxt = 2;
-    X.b = []; Y.b = logical([]);
+    X.b = []; Y.b = [];
 end
 
 %% Generate data structure and labels:
@@ -47,11 +47,9 @@ end
 
 for ctxt = 1 : nctxt
     for class = 1 : size(fv,2)
-        if mod(class,2) == 1
-            labels = false(size(fv{ctxt,class},1),1);
-        else
-            labels = true(size(fv{ctxt,class},1),1);
-        end
+
+        labels = class*ones(size(fv{ctxt,class},1),1);
+
         if ctxt < 2
             X.a = [X.a; fv{ctxt,class}];
             Y.a = [Y.a; labels];
@@ -60,4 +58,12 @@ for ctxt = 1 : nctxt
             Y.b = [Y.b; labels];
         end
     end
+end
+
+% Transform labels to categorical:
+if nctxt < 2
+    Y.a = categorical(Y.a);
+else
+    Y.a = categorical(Y.a);
+    Y.b = categorical(Y.b);
 end

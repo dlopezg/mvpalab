@@ -33,7 +33,7 @@ fprintf('   - Computing theoretical RDMs:\n');
 %  If the analysis is computed condition-by-condition is not necessary to
 %  generate the theoretical models because they are already specified:
 
-if ~cfg.rsa.trialwise
+if ~cfg.rsa.trialwise || nargin < 3
     for i = 1 : length(mdls)
         trdms(:,:,1,i) = cfg.rsa.tmodels{i}.mdl;
     end

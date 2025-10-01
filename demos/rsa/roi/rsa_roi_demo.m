@@ -1,21 +1,24 @@
-%% MVPAlab TOOLBOX - (searchlight_demo.m)
+%% MVPAlab TOOLBOX - (roi_demo.m)
 % -------------------------------------------------------------------------
 % Brain, Mind and Behavioral Research Center - University of Granada.
 % Contact: dlopez@ugr.es (David Lopez-Garcia)
 % -------------------------------------------------------------------------
+
+clear all
+clc
 
 %% Initialize project and run configuration file:
 
 cfg = mvpalab_init();
 run cfg_file;
 
-%% Load mask and data:
+%% Import volumes:
 
-[cfg,data,mask] = mvpalab_import_fmri(cfg);
+[volumes,masks,cfg] = mvpalab_import_fmri(cfg);
 
-%% Compute searchlight analysis:
+%% Compute the Representational similarity analysis:
 
-[result,stats,cfg] = mvpalab_searchlight(cfg,mask,data);
+[res,stats,cfg] = mvpalab_rsa_roi(cfg,volumes,masks);
 
 %% Plot the results:
 
@@ -23,4 +26,4 @@ run cfg_file;
 
 %% Save cfg file:
 
-% mvpalab_savecfg(cfg);
+mvpalab_savecfg(cfg);

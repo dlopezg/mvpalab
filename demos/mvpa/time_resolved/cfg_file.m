@@ -8,8 +8,8 @@ cfg.study.conditionIdentifier{1,1} = 'condition_a';
 cfg.study.conditionIdentifier{1,2} = 'condition_b';
 
 % Data paths:
-cfg.study.dataPaths{1,1} = '/Users/David/Desktop/data/condition_a/';
-cfg.study.dataPaths{1,2} = '/Users/David/Desktop/data/condition_b/';
+cfg.study.dataPaths{1,1} = 'E:\data\condition_a\';
+cfg.study.dataPaths{1,2} = 'E:\data\condition_b\';
 
 % Data files:
 cfg.study.dataFiles{1,1} = {'1.mat','2.mat','3.mat'};
@@ -129,7 +129,7 @@ cfg.cv.nfolds  = 5;
 
 %% PERMUTATION TEST
 
-cfg.stats.flag   = true;
+cfg.stats.flag   = false;
 cfg.stats.nper   = 100;
 cfg.stats.nperg  = 1e5;
 cfg.stats.pgroup = 95;

@@ -1,4 +1,4 @@
-%% MVPAlab TOOLBOX - (searchlight_demo.m)
+%% MVPAlab TOOLBOX - (rsa_tr_demo.m)
 % -------------------------------------------------------------------------
 % Brain, Mind and Behavioral Research Center - University of Granada.
 % Contact: dlopez@ugr.es (David Lopez-Garcia)
@@ -9,18 +9,21 @@
 cfg = mvpalab_init();
 run cfg_file;
 
-%% Load mask and data:
+cfg.classmodel.parcomp = 0;
 
-[cfg,data,mask] = mvpalab_import_fmri(cfg);
+%% Load data, generate conditions and feature extraction:
 
-%% Compute searchlight analysis:
+[cfg,~,data] = mvpalab_import(cfg);
 
-[result,stats,cfg] = mvpalab_searchlight(cfg,mask,data);
+%% Compute the time-resolved representational similarity analysis:
 
-%% Plot the results:
-
-% run rsa_plot;
+[res,stats,cfg] = mvpalab_rsa_time(cfg,data);
 
 %% Save cfg file:
 
-% mvpalab_savecfg(cfg);
+mvpalab_savecfg(cfg);
+
+%% Plot the results:
+
+run plots/rsa_time_resolved.m;
+run plots/rdm_time_resolved.m;

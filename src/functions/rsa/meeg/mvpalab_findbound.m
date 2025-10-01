@@ -17,19 +17,12 @@ function bounds = mvpalab_findbound(Y)
 %    middle trial of each condition in the data matrix.
 
 %% Find boundaries:
-%  Find changes in the value of consecutive elements.
-%  (from 0 to 1 or viceversa).
+%  Find first and last element of each condition:
 
-last = find(diff(Y)~=0);
-last(end+1) = length(Y);
-
-%% Find middle trials:
-
-last_ = [0; last];
-
-for i = 2 : length(last_)
-    middle(i-1) = ceil((last_(i) - last_(i-1)) / 2) + last_(i-1);
-end
+changes = find(Y(1:end-1) ~= Y(2:end));
+last = [changes; length(Y)];
+first = [1; changes + 1];
+middle = round((first + last) / 2);
 
 %% Return boundaries:
 

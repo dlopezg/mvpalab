@@ -15,10 +15,10 @@ function volume = mvpalab_read_nifti(file)
 %%  OUTPUT:
 %
 %  - {struct} - data:
-%    Mask file containing the following fields:
-%       mask.data:  [3D-matrix] containing the mask voxels.
-%       mask.dim:   [vector]    containing the size of the mask.
-%       mask.fname: [string]    containing the path to the mask file.
+%    NIFTI file containing the following fields:
+%       mask.data:  [3D-matrix] containing the value for each voxel.
+%       mask.dim:   [vector]    containing the size of the volume.
+%       mask.fname: [string]    containing the path to the volume file.
 %%
 
 if exist('niftiread','file')
@@ -30,7 +30,6 @@ if exist('niftiread','file')
     
     % Read volume data:
     volume.data = niftiread(file);
-    
     
 elseif exist('spm_vol','file')
     

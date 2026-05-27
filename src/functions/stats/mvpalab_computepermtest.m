@@ -34,7 +34,7 @@ fprintf(' - Done!\n');
 mvpalab_checkcfg(cfg); 
 
 % Define the distribution threshold
-threshold = cfg.stats.pgroup; 
+threshold = cfg.stats.pgroup;
 
 % Update de distribution threshold for two tail test.
 if (cfg.stats.tails == 2)
@@ -190,100 +190,116 @@ else
     title('Cluster size null distribution (below chance)')
 end
 
-%% Uncorrected cluster size threshold:
-% stats.uncorrcsize = prctile(sizedist,cfg.stats.pclust);
-% stats.uncorrcsize_ = prctile(sizedist_,cfg.stats.pclust);
-
-%% False Discovery Rate (FDR) correction at cluster level:
-
-% Initialization:
-pval = (100 - cfg.stats.pclust) / 100;
-pv = num2str(pval);
-corrcsize  = 0;
-corrcsize_ = 0;
-
-if (cfg.stats.tails == 1)
-    fdr = mafdr(hnorm,'bhfdr','true');
-    corrcsize = find((fdr < pval) & (fdr ~= 0),1);
-    if isempty(corrcsize); corrcsize = length(fdr); end
-    subplot(2,2,3);
-    vl = vline(corrcsize,'r-',['Cluster size threshold (p<' pv ')']);
-elseif (cfg.stats.tails == -1)
-    fdr_ = mafdr(hnorm_,'bhfdr','true');
-    corrcsize_ = find((fdr_ < pval) & (fdr_ ~= 0),1);
-    if isempty(corrcsize_); corrcsize_ = length(fdr_); end
-    subplot(2,2,4);
-    vl = vline(corrcsize_,'r-',['Cluster size threshold (p<' pv ')']);
-else
-    fdr = mafdr(hnorm,'bhfdr','true');
-    corrcsize = find((fdr < pval) & (fdr ~= 0),1);
-    if isempty(corrcsize); corrcsize = length(fdr); end
-    fdr_ = mafdr(hnorm_,'bhfdr','true');
-    corrcsize_ = find((fdr_ < pval) & (fdr_ ~= 0),1);
-    if isempty(corrcsize_); corrcsize_ = length(fdr_); end
-    subplot(2,2,3);
-    vl = vline(corrcsize,'r-',['Cluster size threshold (p<' pv ')']);
-    subplot(2,2,4);
-    vl = vline(corrcsize_,'r-',['Cluster size threshold (p<' pv ')']);
-end
-
 %% Search clusters in real data:
+%  Clusters are detected in the group-mean performance map using the
+%  primary (voxel-/timepoint-wise) threshold pctval / pctval_, exactly the
+%  same threshold used for the permuted maps.
+
 fprintf('   - Searching clusters in real data:');
 
-% Initialization:
-thresdata = [];
+thresdata  = [];
 thresdata_ = [];
+clusters   = struct('Connectivity',[],'ImageSize',[],'NumObjects',0,'PixelIdxList',{{}});
+clusters_  = struct('Connectivity',[],'ImageSize',[],'NumObjects',0,'PixelIdxList',{{}});
 
-% Thresholded performance map - above chance level:
 if (cfg.stats.tails == 1)
-    
-    thresdata = mean(performance,3) > pctval;
-    clusters = bwconncomp(thresdata);
-    clusters.sig = [];
-    clusters_.sig = [];
-    
-    % Significant clusters - above chance level.
-    for i = 1 : clusters.NumObjects
-        if numel(clusters.PixelIdxList{i}) > corrcsize
-            clusters.sig = [clusters.sig; clusters.PixelIdxList{i}];
-        end
-    end
-    
+    thresdata  = mean(performance,3) > pctval;
+    clusters   = bwconncomp(thresdata);
 elseif (cfg.stats.tails == -1)
-    
     thresdata_ = mean(performance,3) < pctval_;
-    clusters_ = bwconncomp(thresdata_);
-    clusters.sig = [];
-    clusters_.sig = [];
-    
-    % Significant clusters - below chance level.
-    for i = 1 : clusters_.NumObjects
-        if numel(clusters_.PixelIdxList{i}) > corrcsize_
-            clusters_.sig = [clusters_.sig; clusters_.PixelIdxList{i}];
-        end
-    end
-    
+    clusters_  = bwconncomp(thresdata_);
 else
-    
-    thresdata = mean(performance,3) > pctval;
-    clusters = bwconncomp(thresdata);
-    
+    thresdata  = mean(performance,3) > pctval;
+    clusters   = bwconncomp(thresdata);
     thresdata_ = mean(performance,3) < pctval_;
-    clusters_ = bwconncomp(thresdata_);
-    
-    clusters.sig = [];
-    clusters_.sig = [];
-    
-    for i = 1 : clusters.NumObjects
-        if numel(clusters.PixelIdxList{i}) > corrcsize
+    clusters_  = bwconncomp(thresdata_);
+end
+
+fprintf(' - Done!\n');
+
+%% Cluster-level p-values and FDR correction (Stelzer et al., 2013):
+%  For each observed cluster, the p-value is the empirical right-tail
+%  probability of obtaining a cluster of equal or greater size under the
+%  null distribution of cluster sizes (sizedist / sizedist_), with the
+%  standard (count+1)/(N+1) smoothing to avoid p = 0 with a finite number
+%  of permutations. Benjamini-Hochberg FDR is then applied to the vector
+%  of cluster p-values, and each cluster is accepted or rejected
+%  individually based on its adjusted p-value.
+
+alpha = (100 - cfg.stats.pclust) / 100;
+
+clusters.sig      = [];
+clusters.sizes    = [];
+clusters.pvals    = [];
+clusters.fdr      = [];
+clusters.sig_idx  = [];
+
+clusters_.sig     = [];
+clusters_.sizes   = [];
+clusters_.pvals   = [];
+clusters_.fdr     = [];
+clusters_.sig_idx = [];
+
+% corrcsize / corrcsize_: minimum cluster size that survives FDR
+% correction in the above-chance / below-chance tail (Inf if none).
+corrcsize  = Inf;
+corrcsize_ = Inf;
+
+% Above-chance tail:
+if (cfg.stats.tails == 1) || (cfg.stats.tails == 2)
+    nC     = clusters.NumObjects;
+    csizes = zeros(nC,1);
+    cpvals = ones(nC,1);
+    for i = 1 : nC
+        csizes(i) = numel(clusters.PixelIdxList{i});
+        cpvals(i) = (sum(sizedist >= csizes(i)) + 1) / (numel(sizedist) + 1);
+    end
+    if nC > 0
+        cfdr = mafdr(cpvals,'bhfdr','true');
+    else
+        cfdr = [];
+    end
+    sig_idx = cfdr < alpha;
+    for i = 1 : nC
+        if sig_idx(i)
             clusters.sig = [clusters.sig; clusters.PixelIdxList{i}];
         end
     end
-    
-    for i = 1 : clusters_.NumObjects
-        if numel(clusters_.PixelIdxList{i}) > corrcsize_
+    clusters.sizes   = csizes;
+    clusters.pvals   = cpvals;
+    clusters.fdr     = cfdr;
+    clusters.sig_idx = sig_idx;
+    if any(sig_idx)
+        corrcsize = min(csizes(sig_idx));
+    end
+end
+
+% Below-chance tail:
+if (cfg.stats.tails == -1) || (cfg.stats.tails == 2)
+    nC     = clusters_.NumObjects;
+    csizes = zeros(nC,1);
+    cpvals = ones(nC,1);
+    for i = 1 : nC
+        csizes(i) = numel(clusters_.PixelIdxList{i});
+        cpvals(i) = (sum(sizedist_ >= csizes(i)) + 1) / (numel(sizedist_) + 1);
+    end
+    if nC > 0
+        cfdr = mafdr(cpvals,'bhfdr','true');
+    else
+        cfdr = [];
+    end
+    sig_idx = cfdr < alpha;
+    for i = 1 : nC
+        if sig_idx(i)
             clusters_.sig = [clusters_.sig; clusters_.PixelIdxList{i}];
         end
+    end
+    clusters_.sizes   = csizes;
+    clusters_.pvals   = cpvals;
+    clusters_.fdr     = cfdr;
+    clusters_.sig_idx = sig_idx;
+    if any(sig_idx)
+        corrcsize_ = min(csizes(sig_idx));
     end
 end
 
@@ -295,9 +311,6 @@ sigmask_ = ones(size(gpermaps,1),size(gpermaps,2));
 sigmask_(clusters_.sig) = 0;
 
 % Store results:
-stats.corrcsize = corrcsize;
-stats.corrcsize_ = corrcsize_;
-
 stats.thresdata = thresdata;
 stats.thresdata_ = thresdata_;
 
@@ -307,11 +320,12 @@ stats.clusters_ = clusters_;
 stats.sigmask = sigmask;
 stats.sigmask_ = sigmask_;
 
+stats.corrcsize  = corrcsize;
+stats.corrcsize_ = corrcsize_;
+
 if ~cfg.stats.shownulldis
     close(f1);
 end
-
-fprintf(' - Done!\n');
 
 end
 

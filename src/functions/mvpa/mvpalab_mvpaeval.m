@@ -16,11 +16,11 @@ w = [];
 
 %% Cross validation loop:
 if ~cfg.classmodel.tempgen
-    predicted_labels = NaN(strpar.NumObservations,1);
+    predicted_labels = Y; predicted_labels(:) = missing;
     predicted_scores = ones(strpar.NumObservations,2);
 else
     for i = 1 : cfg.tm.ntp_
-        predicted_labels{i} = NaN(strpar.NumObservations,1);
+        predicted_labels{i} = Y; predicted_labels{i}(:) = missing;
         predicted_scores{i} = ones(strpar.NumObservations,2);
     end
 end
@@ -113,7 +113,7 @@ if cfg.classmodel.tempgen
         % Receiver operating characteristic (ROC curve) if needed:
         if cfg.classmodel.auc || cfg.classmodel.roc
             [x{tp_},y{tp_},t{tp_},auc(tp_)] = ...
-                perfcurve(Y,predicted_scores{tp_}(:,mdl.ClassNames),1);
+                perfcurve(Y,predicted_scores{tp_}(:,1),mdl.ClassNames(1));
         end
     end
     
@@ -147,7 +147,7 @@ else
     end
     % Receiver operating characteristic (ROC curve):
     if cfg.classmodel.auc || cfg.classmodel.roc
-        [x,y,t,auc] = perfcurve(Y,predicted_scores(:,mdl.ClassNames),1);
+        [x,y,t,auc] = perfcurve(Y,predicted_scores(:,1),mdl.ClassNames(1));
     end
     % Feature weights:
     if cfg.classmodel.wvector

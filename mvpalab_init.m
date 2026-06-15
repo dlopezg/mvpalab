@@ -145,8 +145,14 @@ end
 % cfg.cv.method = 'kfold' - K-Fold cross-validation.
 % cfg.cv.method = 'loo'   - Leave-one-out cross-validation.
 
+% cfg.cv.nreps - Number of repeated cross-validations (k-fold only). Each
+% repetition draws a new random assignment of trials to folds and the final
+% result is the mean across repetitions. nreps = 1 reproduces the classic
+% single cross-validation. Note: running time scales ~linearly with nreps.
+
 cfg.cv.method  = 'kfold';
 cfg.cv.nfolds  = 5;
+cfg.cv.nreps   = 1;
 cfg.cv.loo     = [];
 
 %% PERMUTATION TEST

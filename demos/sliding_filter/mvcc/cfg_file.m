@@ -134,6 +134,7 @@ end
 
 cfg.cv.method  = 'kfold';
 cfg.cv.nfolds  = 5;
+cfg.cv.nreps   = 1;     % Repeated k-fold CV: set > 1 to average several random fold assignments.
 
 %% SLIDING FILTER CONFIGURATION:
 

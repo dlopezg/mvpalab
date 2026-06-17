@@ -39,44 +39,82 @@ for sub = 1 : nSubjects
             X = fv{sub}.X.a; Y = fv{sub}.Y.a;
         end
         
-        %% Stratified partition for cross validation:
-        strpar = cvpartition(Y,'KFold',cfg.cv.nfolds);
+        %% Number of cross-validation repetitions (k-fold only):
         cfg.classmodel.permlab = true;
+        nreps = 1;
+        if strcmp(cfg.cv.method,'kfold')
+            nreps = cfg.cv.nreps;
+        end
+        wper = numel(num2str(cfg.stats.nper));
+        wrep = numel(num2str(nreps));
+        msglen = 0;
+
         for per = 1 : cfg.stats.nper
-            %% Stratified partition for cross validation:
-            if strcmp(cfg.cv.method,'loo')
-                cfg.cv.nfolds = cfg.cv.loo(sub);
-            end
-            strpar = cvpartition(Y,'KFold',cfg.cv.nfolds);
-            
-            %% Timepoints loop
-            if cfg.classmodel.parcomp
-                parfor tp = 1 : cfg.tm.ntp
-                    [~,~,~,...
-                    auc(tp,:),...
-                    acc(tp,:),...
-                    ~,...
-                    precision{sub,tp,freq,per},...
-                    recall{sub,tp,freq,per},...
-                    f1score{sub,tp,freq,per},...
-                    ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
+
+            %% Repeated cross-validation accumulators:
+            acc_r = []; auc_r = [];
+            pr_r = cell(cfg.tm.ntp,nreps);
+            re_r = cell(cfg.tm.ntp,nreps);
+            f1_r = cell(cfg.tm.ntp,nreps);
+
+            %% Repeated cross-validation loop:
+            for rep = 1 : nreps
+
+                %% Stratified partition for cross validation:
+                if strcmp(cfg.cv.method,'loo')
+                    cfg.cv.nfolds = cfg.cv.loo(sub);
                 end
-                mvpalab_pcounter(per,cfg.stats.nper);
-            else
-                for tp = 1 : cfg.tm.ntp
-                    [~,~,~,...
-                    auc(tp,:),...
-                    acc(tp,:),...
-                    ~,...
-                    precision{sub,tp,freq,per},...
-                    recall{sub,tp,freq,per},...
-                    f1score{sub,tp,freq,per},...
-                    ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
+                strpar = cvpartition(Y,'KFold',cfg.cv.nfolds);
+
+                %% Timepoints loop
+                if cfg.classmodel.parcomp
+                    parfor tp = 1 : cfg.tm.ntp
+                        [~,~,~,...
+                        auc(tp,:),...
+                        acc(tp,:),...
+                        ~,...
+                        pr_r{tp,rep},...
+                        re_r{tp,rep},...
+                        f1_r{tp,rep},...
+                        ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
+                    end
+                else
+                    for tp = 1 : cfg.tm.ntp
+                        [~,~,~,...
+                        auc(tp,:),...
+                        acc(tp,:),...
+                        ~,...
+                        pr_r{tp,rep},...
+                        re_r{tp,rep},...
+                        f1_r{tp,rep},...
+                        ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
+                    end
                 end
-                
-                mvpalab_pcounter(per,cfg.stats.nper);
+
+                %% Accumulate numeric metrics across repetitions:
+                acc_r(:,:,rep) = acc;
+                auc_r(:,:,rep) = auc;
+
+                %% Live progress (permutation + repetition):
+                if nreps > 1
+                    msg = sprintf('%*d/%d - Repetition: %*d/%d',...
+                        wper,per,cfg.stats.nper,wrep,rep,nreps);
+                    fprintf('%s%s',repmat(char(8),1,msglen),msg);
+                    msglen = numel(msg);
+                end
             end
-            
+
+            %% Average metrics across repetitions:
+            acc = mean(acc_r,3);
+            auc = mean(auc_r,3);
+            for tp = 1 : cfg.tm.ntp
+                precision{sub,tp,freq,per} = mvpalab_meanreps(pr_r(tp,:));
+                recall{sub,tp,freq,per}    = mvpalab_meanreps(re_r(tp,:));
+                f1score{sub,tp,freq,per}   = mvpalab_meanreps(f1_r(tp,:));
+            end
+
+            if nreps == 1, mvpalab_pcounter(per,cfg.stats.nper); end
+
             if cfg.classmodel.tempgen
                 permaps.acc(:,:,sub,per,freq) = acc;
                 if cfg.classmodel.auc

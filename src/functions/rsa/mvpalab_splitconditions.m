@@ -23,7 +23,9 @@ function [X_,Y_,idx] = mvpalab_splitconditions(X,bounds)
 
 %% Initialize:
 
-idxs  = [1 bounds.last];
+%  idxs(i)+1 is the first trial of condition i. The leading zero ensures
+%  that the first trial of the dataset is included in the first set.
+idxs  = [0 bounds.last];
 idxs_ = bounds.middle;
 
 trialset  = [];

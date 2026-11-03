@@ -41,8 +41,10 @@ if ~cfg.rsa.trialwise || nargin < 3
 end
 
 %% Theoretical models loop
-%  Generate different RDMs for each theoretical model:
-bounds = [1 bounds.last];
+%  Generate different RDMs for each theoretical model. Trials of condition
+%  j are bounds(j)+1 : bounds(j+1), so boundary trials are not shared
+%  between consecutive conditions:
+bounds = [0 bounds.last];
 
 for i = 1 : length(mdls)
     %% Generate RDM:
@@ -54,7 +56,7 @@ for i = 1 : length(mdls)
     
     for j = 1 : length(bounds)-1
         for k = 1 : length(bounds)-1
-            trdms(bounds(j):bounds(j+1),bounds(k):bounds(k+1),1,i) = ...
+            trdms(bounds(j)+1:bounds(j+1),bounds(k)+1:bounds(k+1),1,i) = ...
                 mdls{i}.mdl(j,k);
         end
     end

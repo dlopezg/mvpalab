@@ -53,8 +53,24 @@ if cfg.rsa.nfolds > 1
             'condition-wise RDMs (cfg.rsa.trialwise = false). Set ' ...
             'cfg.rsa.nfolds = 1 to compute trial-wise RDMs.']);
     end
-    %  Fold of each trial: predefined or stratified random partition.
+    %  Every condition needs at least one trial in each fold. Otherwise its
+    %  test (or training) pattern is the mean of an empty set (NaN), which
+    %  turns its row and column of the RDM into NaN (Euclidean and
+    %  crossnobis) or into wrong finite values (cross-validated Pearson).
+    conds = unique(Y);
+    %  Fold of each trial: predefined or stratified random partition. The
+    %  stratified partition only places one trial of a condition in every
+    %  fold if the condition has at least cfg.rsa.nfolds trials.
     if nargin < 4 || isempty(folds)
+        ntrials = arrayfun(@(c) sum(Y == c), conds);
+        few = ntrials < cfg.rsa.nfolds;
+        if any(few)
+            error(['Cross-validated RDMs need at least cfg.rsa.nfolds ' ...
+                '= %d trials per condition. Conditions with fewer ' ...
+                'trials: %s. Set cfg.rsa.nfolds to at most %d.'], ...
+                cfg.rsa.nfolds,strjoin(compose('%s (%d trials)', ...
+                string(conds(few)),ntrials(few)),', '),min(ntrials));
+        end
         strpar = cvpartition(Y,"KFold",cfg.rsa.nfolds);
         folds = zeros(numel(Y),1);
         for k = 1 : cfg.rsa.nfolds
@@ -63,6 +79,21 @@ if cfg.rsa.nfolds > 1
     end
     folds = folds(:);
     foldids = unique(folds)';
+    %  Predefined folds (e.g. the runs of an fMRI experiment): at least two
+    %  folds, each of them including all the conditions.
+    if numel(foldids) < 2
+        error(['Cross-validated RDMs need at least 2 folds (e.g. 2 ' ...
+            'runs) and only %d was found.'],numel(foldids));
+    end
+    for k = 1 : numel(foldids)
+        missing = ~ismember(conds,Y(folds == foldids(k)));
+        if any(missing)
+            error(['Every cross-validation fold must include all the ' ...
+                'conditions. Fold %s has no trials of the conditions: ' ...
+                '%s.'],string(foldids(k)), ...
+                strjoin(string(conds(missing)),', '));
+        end
+    end
 else
     if strcmp(cfg.rsa.distance,'crossnobis')
         error(['The crossnobis distance is cross-validated and requires ' ...

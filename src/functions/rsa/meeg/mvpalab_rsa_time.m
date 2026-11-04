@@ -59,7 +59,7 @@ for sub = 1 : nsub
     %  theo - [n_conditions x n_conditions x 1 x models]
     %  theo - [n_trials x n_trials x 1 x models]
 
-    theo{sub} = mvpalab_gentrdms(cfg,cfg.rsa.tmodels,cfg.rsa.bounds{sub});
+    theo{sub} = mvpalab_gentrdms(cfg,cfg.rsa.tmodels,rdms{sub}.labels);
 
     %% Vectorize RDMs:
     %  Both theoretical and empirical DRMs are vectorized in order to

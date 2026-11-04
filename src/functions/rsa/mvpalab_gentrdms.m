@@ -1,10 +1,12 @@
-function trdms = mvpalab_gentrdms(cfg,mdls,bounds)
+function trdms = mvpalab_gentrdms(cfg,mdls,labels)
 %% MVPALAB_GENTRDMS
 %
 %  This function returns theoretical RDMs according to the previously
-%  constructed model. To do so, this function uses the size of each
-%  condition included in the boundaries vector to construct the final
-%  theoretical RDM.
+%  constructed model. For condition-wise RDMs the models are already
+%  specified. For trial-wise RDMs each model is expanded from conditions
+%  to trials using the condition of each trial, so the trials can be in
+%  any order. Row i of a model is the i-th condition of unique(labels), the
+%  same order as the condition-wise RDMs (see mvpalab_averagetrials).
 %
 %%  INPUT:
 %
@@ -18,14 +20,15 @@ function trdms = mvpalab_gentrdms(cfg,mdls,bounds)
 %       - {string} id : Identifier of the model.
 %       - {matrix} mdl: Data matrix of the model. - [ncond x ncond]
 %
-%  - {array} bounds
-%    Description: This vector contains the indexes of the last trial of
-%    each condition in the data matrix. - [trials x trials]
+%  - {1D-categorical} labels (only for trial-wise RDMs)
+%    Description: Condition label of each trial, in the order of the rows
+%    of the neural RDM. - [trials x 1]
 %
 %%  OUTPUT:
 %
 %  - {4D-matrix} trdms
-%    Description: Theoretical RDMs [trials x trials x 1 x models].
+%    Description: Theoretical RDMs [trials x trials x 1 x models] or
+%    [conditions x conditions x 1 x models].
 
 fprintf('   - Computing theoretical RDMs:\n');
 
@@ -40,29 +43,24 @@ if ~cfg.rsa.trialwise || nargin < 3
     return
 end
 
+%% Condition of each trial:
+%  Index of the condition of each trial in unique(labels).
+
+[~,~,cond] = unique(labels);
+
 %% Theoretical models loop
-%  Generate different RDMs for each theoretical model. Trials of condition
-%  j are bounds(j)+1 : bounds(j+1), so boundary trials are not shared
-%  between consecutive conditions:
-bounds = [0 bounds.last];
+%  Generate different RDMs for each theoretical model:
 
 for i = 1 : length(mdls)
     %% Generate RDM:
-    %  For each cell in the neural RDM we need to asign a one or zero
-    %  value according to the theoretical model. The size of the condition
-    %  is extracted from the boundaries vector.
-    
+    %  Each cell of the neural RDM is a pair of trials, and takes the value
+    %  of the model for the conditions of these trials.
+
     fprintf(['      # Model: ' cfg.rsa.tmodels{i}.id '... ']);
-    
-    for j = 1 : length(bounds)-1
-        for k = 1 : length(bounds)-1
-            trdms(bounds(j)+1:bounds(j+1),bounds(k)+1:bounds(k+1),1,i) = ...
-                mdls{i}.mdl(j,k);
-        end
-    end
-    
+
+    trdms(:,:,1,i) = mdls{i}.mdl(cond,cond);
+
     fprintf('- Done.\n');
 end
 
-
-
+end

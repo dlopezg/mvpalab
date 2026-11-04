@@ -5,8 +5,24 @@ nsub = length(cfg.study.dataFiles{1,1});
 mode = cfg.rsa.modality;
 dist = cfg.rsa.distance;
 
-%% CV check:
-% If CV is enabled the number of trials per fold
+%% Check the configuration:
+%  Second-order analysis (see cfg.rsa.modality in mvpalab_init):
+
+if ~any(strcmp(mode,{'corr','regress','multiple_regress'}))
+    error(['RSA modality not recognized: ''%s''. Use ''corr'', ' ...
+        '''regress'' or ''multiple_regress''.'],mode);
+end
+
+%  Data normalization: values 3 and 4 of cfg.normdata are applied within
+%  the cross-validation folds of the classifiers (mvpalab_datanorm) and
+%  have no effect in RSA. Values 1 and 2 are applied when the data is
+%  imported (mvpalab_preproc).
+
+if cfg.normdata >= 3
+    warning(['cfg.normdata = %d is only applied by the classifiers ' ...
+        '(MVPA and MVCC) and has no effect in RSA. Use cfg.normdata = 1 ' ...
+        'or 2 (applied when the data is imported) or 0.'],cfg.normdata);
+end
 
 %% Subjects loop:
 %  Iterate along subjects:

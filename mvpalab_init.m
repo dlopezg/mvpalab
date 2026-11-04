@@ -68,6 +68,13 @@ cfg.dimred.ncomp  = 0;
 % cfg.normdata = 2 - z-score (across time)
 % cfg.normdata = 3 - z-score (across trials)
 % cfg.normdata = 4 - std_nor (across trials)
+%
+% Values 1 and 2 are applied to each trial when the data is imported
+% (mvpalab_preproc), so they affect all the analyses, including RSA.
+% Values 3 and 4 are computed in the training set of each cross-validation
+% fold and applied to the test set (mvpalab_datanorm), so they are only
+% used by the classifiers (MVPA and MVCC); RSA ignores them. fMRI data
+% imported with mvpalab_import_fmri is not normalized.
 
 cfg.normdata = 0; 
 
@@ -171,8 +178,18 @@ cfg.stats.shownulldis = 0;
 
 %% REPRESENTATIONAL SIMILARITY ANALYSIS:
 
-% cfg.rsa.analysis   = 'regress';   - Fit GLM using theoRDMs as regressors. 
-% cfg.rsa.analysis   = 'corr';      - Correlate theoRDMs with neural RDMs.
+% cfg.rsa.modality   - Second-order analysis between the neural RDMs and
+%                      the theoretical RDMs (see mvpalab_rsa_time):
+%                      'corr'             - Spearman correlation with each
+%                                           theoretical model separately.
+%                      'regress'          - Linear regression with each
+%                                           theoretical model separately
+%                                           (one GLM per model).
+%                      'multiple_regress' - Multiple linear regression with
+%                                           all the theoretical models as
+%                                           regressors in the same GLM.
+%                      Results: correlation (Fisher z) or beta and t-values
+%                      of each model.
 
 % cfg.rsa.distance   - Dissimilarity measure (see mvpalab_computerdm):
 %                      'pearson'     - 1 - Pearson correlation

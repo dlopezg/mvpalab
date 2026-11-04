@@ -147,6 +147,9 @@ for rep = 1 : nreps
     end
 
     %% Iterate over folds
+    %  rdms - [conditions x conditions x timepoints x folds] of this
+    %  repetition.
+    rdms = [];
     for k = 1 : numel(foldids)
         %% Split the data in train and test folds:
         %  Fold k is the test set and the trials of the remaining folds are
@@ -187,28 +190,38 @@ for rep = 1 : nreps
 
         if cfg.classmodel.parcomp && ntp > 1
             parfor tp = 1 : ntp
-                rdms(:,:,tp,k,rep) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),[],prec);
+                rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),[],prec);
             end
         else
             for tp = 1 : ntp
-                rdms(:,:,tp,k,rep) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),[],prec);
+                rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),[],prec);
             end
         end
+    end
+
+    %% Compute the mean of each fold:
+    %  Each fold is used once as test set. As in MNE-RSA (compute_rdm_cv),
+    %  the cross-validated RDM is the average of the RDMs of all the folds.
+    if cfg.rsa.nfolds > 1
+        rdms = mean(rdms,4);
+    end
+
+    %% Accumulate the RDMs across repetitions:
+    %  Only the sum is kept, so the memory does not grow with nreps.
+    if rep == 1
+        rdmsum = rdms;
+    else
+        rdmsum = rdmsum + rdms;
     end
 
     if nreps > 1, mvpalab_pcounter(rep,nreps); end
 end
 
-%% Compute the mean of each fold and repetition:
-%  Each fold is used once as test set in each repetition. As in MNE-RSA
-%  (compute_rdm_cv), the cross-validated RDM is the average of the RDMs of
-%  all the folds, here also averaged across repetitions (all of them have
-%  the same number of folds).
-if cfg.rsa.nfolds > 1
-    rdms = mean(rdms,[4 5]);
-end
+%% Mean across repetitions:
+%  All the repetitions have the same number of folds, so this is the mean
+%  across folds and repetitions.
 
-rdm.rdm = rdms;
+rdm.rdm = rdmsum / nreps;
 rdm.labels = dataset.test_y;
 
 fprintf('- Done.\n\n');

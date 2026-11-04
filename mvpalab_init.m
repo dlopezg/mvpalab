@@ -189,7 +189,6 @@ cfg.rsa.nclass = 0;
 cfg.rsa.modality = 'corr';
 cfg.rsa.distance = 'pearson';
 cfg.rsa.trialwise = true;
-cfg.rsa.normrdm = true;
 cfg.rsa.nfolds = 1;
 cfg.rsa.meancenter = true;
 

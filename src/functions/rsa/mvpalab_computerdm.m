@@ -27,12 +27,6 @@ function rdm = mvpalab_computerdm(cfg, train, test, dims)
 %
 
 
-%% Normalización?
-% if cfg.rsa.normrdm
-%     X = zscore(X, [], [1, 2]);
-% end
-
-
 %% Pearson distance:
 %  Without cross-validation train and test are the same data and the
 %  standard Pearson correlation is used. With cross-validation (train and

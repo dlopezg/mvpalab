@@ -156,8 +156,12 @@ for sub = 1 : nsub
 end
 
 %% Save RSA data:
+%  Only the RDM matrices are saved (numeric [conditions x conditions x
+%  timepoints] or [trials x trials x timepoints] for each subject), as in
+%  the fMRI ROI analysis. This is the format read by the fusion analysis
+%  (mvpalab_fusion). The condition boundaries are saved in cfg.rsa.bounds.
 
-res.(mode).(dist).rdms = rdms;
+res.(mode).(dist).rdms = cellfun(@(r) r.rdm,rdms,'UniformOutput',false);
 res.(mode).(dist).theo = theo;
 
 % Save results:

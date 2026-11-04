@@ -10,8 +10,9 @@ function rdm = mvpalab_computerdm(cfg, train, test, dims, prec)
 %  - 'pearson': 1 - Pearson correlation. With cross-validation, the
 %    cross-validated Pearson distance (mvpalab_cvpearson).
 %
-%  - 'euclidean': Euclidean distance. With cross-validation, the
-%    cross-validated squared Euclidean distance (mvpalab_cveuclidean).
+%  - 'euclidean': squared Euclidean distance divided by the number of
+%    features (mvpalab_cveuclidean). With cross-validation, the
+%    cross-validated squared Euclidean distance.
 %
 %  - 'mahalanobis': squared Mahalanobis distance, i.e. the squared
 %    Euclidean distance after multivariate noise normalization with the
@@ -25,6 +26,37 @@ function rdm = mvpalab_computerdm(cfg, train, test, dims, prec)
 %  Multivariate noise normalization (cfg.rsa.mnn): for 'pearson' and
 %  'euclidean' the patterns are whitened by the callers (mvpalab_rdm and
 %  mvpalab_rsa_roi, see mvpalab_whitening) before calling this function.
+%
+%  Scale of the Euclidean family: 'euclidean', 'mahalanobis' and
+%  'crossnobis' always return the SQUARED distance DIVIDED BY THE NUMBER
+%  OF FEATURES (channels or voxels), with and without cross-validation:
+%
+%     d(i,j) = (A_i - A_j) * W * (B_i - B_j)' / nfeatures
+%
+%  with W = identity ('euclidean'), the noise precision ('mahalanobis',
+%  'crossnobis'), A = B without cross-validation and A, B = training and
+%  test patterns with cross-validation. Consequences:
+%    - cfg.rsa.nfolds only changes the noise bias, not the scale or the
+%      form of the distance, so the results with and without
+%      cross-validation can be compared.
+%    - 'euclidean' with cfg.rsa.mnn equals 'mahalanobis' (nfolds = 1) or
+%      'crossnobis' (nfolds > 1).
+%    - The distances do not grow with the number of features, so they can
+%      be compared across ROIs or channel selections of different size.
+%    - The squared distance is linear in the second moment of the
+%      patterns, which is what the regression models assume (as in
+%      rsatoolbox, calc_rdm with 'euclidean' or 'crossnobis').
+%  Before version 1.3.0 the non-cross-validated 'euclidean' distance was
+%  the plain Euclidean distance (pdist2, not squared and not divided by
+%  the number of features). What changes with respect to those versions:
+%    - The RDM values, and the beta and t-values of the 'regress' and
+%      'multiple_regress' modalities.
+%    - Not the Spearman correlation of the M/EEG analyses ('corr' modality),
+%      which only depends on the ranks of the distances.
+%    - Slightly, the fMRI ROI RDMs without cross-validation and the fusion
+%      analyses that use them: these RDMs are the mean across pairs of runs
+%      (mvpalab_mergerunsrdm), and the mean of the squared distances does
+%      not have exactly the same ranks as the mean of the distances.
 %
 %%  INPUT:
 %
@@ -77,18 +109,17 @@ if strcmp(cfg.rsa.distance, 'pearson')
     end
     rdm = 1 - rdm;
 %% Euclidean distance:
-%  Without cross-validation the standard Euclidean distance is used. With
-%  cross-validation the cross-validated squared Euclidean distance of
-%  Guggenmos et al. (2018) is used, which is unbiased, symmetric and has a
-%  zero diagonal by construction. It is a squared distance and can be
-%  negative (see mvpalab_cveuclidean for details and references).
+%  Squared Euclidean distance divided by the number of features, with and
+%  without cross-validation (the same scale as the Mahalanobis and
+%  crossnobis distances). With cross-validation it is the cross-validated
+%  squared Euclidean distance of Guggenmos et al. (2018), unbiased and
+%  possibly negative. Without cross-validation train and test are the
+%  same data and it is the squared Euclidean distance between the
+%  patterns, positively biased by the noise. See mvpalab_cveuclidean for
+%  details and references, and the note on the scale below.
 
 elseif strcmp(cfg.rsa.distance, 'euclidean')
-    if cfg.rsa.nfolds > 1
-        rdm = mvpalab_cveuclidean(train,test);
-    else
-        rdm = pdist2(train, test, 'euclidean');
-    end
+    rdm = mvpalab_cveuclidean(train,test);
 %% Mahalanobis and crossnobis distances:
 %  The same kernel as the cross-validated Euclidean distance, computed
 %  through the noise precision matrix: (A_i - A_j) * prec * (B_i - B_j)'.

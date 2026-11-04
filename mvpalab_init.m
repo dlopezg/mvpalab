@@ -206,14 +206,24 @@ cfg.stats.shownulldis = 0;
 % cfg.rsa.distance   - Dissimilarity measure (see mvpalab_computerdm):
 %                      'pearson'     - 1 - Pearson correlation
 %                                      (cross-validated if nfolds > 1).
-%                      'euclidean'   - Euclidean distance (cross-validated
-%                                      squared distance if nfolds > 1).
+%                      'euclidean'   - Squared Euclidean distance
+%                                      (cross-validated if nfolds > 1).
 %                      'mahalanobis' - Squared Mahalanobis distance with
 %                                      multivariate noise normalization
 %                                      (crossnobis if nfolds > 1).
 %                      'crossnobis'  - Cross-validated squared Mahalanobis
 %                                      distance (requires nfolds > 1).
-% cfg.rsa.nfolds     - Number of folds of the cross-validated RDMs. RSA
+%                      'euclidean', 'mahalanobis' and 'crossnobis' are
+%                      always squared and divided by the number of features
+%                      (channels or voxels), so nfolds only changes the
+%                      noise bias and not the scale of the RDM. Before
+%                      version 1.3.0 'euclidean' without cross-validation
+%                      was not squared or normalized: the RDM values and
+%                      the 'regress' and 'multiple_regress' results change,
+%                      the M/EEG 'corr' (Spearman) results do not, and the
+%                      fMRI ROI RDMs change slightly (see
+%                      mvpalab_computerdm).
+% cfg.rsa.nfolds    - Number of folds of the cross-validated RDMs. RSA
 %                      has its own number of folds, independent of the
 %                      cross-validation of the classifiers (cfg.cv.nfolds).
 %                      1 = no cross-validation. Cross-validated RDMs

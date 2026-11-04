@@ -66,6 +66,12 @@ for sub = 1 : nSubjects
                 end
                 strpar = cvpartition(Y,'KFold',cfg.cv.nfolds);
 
+                %% Label permutation of each fold, fixed across time:
+                %  Drawn before the timepoints loop, so all the timepoints
+                %  (and the whole temporal generalization matrix) use the
+                %  same permutation (see mvpalab_foldperm).
+                pidx = mvpalab_foldperm(strpar);
+
                 %% Timepoints loop
                 if cfg.classmodel.parcomp
                     parfor tp = 1 : cfg.tm.ntp
@@ -76,7 +82,7 @@ for sub = 1 : nSubjects
                         pr_r{tp,rep},...
                         re_r{tp,rep},...
                         f1_r{tp,rep},...
-                        ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
+                        ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar,pidx);
                     end
                 else
                     for tp = 1 : cfg.tm.ntp
@@ -87,7 +93,7 @@ for sub = 1 : nSubjects
                         pr_r{tp,rep},...
                         re_r{tp,rep},...
                         f1_r{tp,rep},...
-                        ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
+                        ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar,pidx);
                     end
                 end
 

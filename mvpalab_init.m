@@ -237,6 +237,10 @@ cfg.stats.shownulldis = 0;
 %                      'euclidean' with mnn is the crossnobis distance.
 %                      'mahalanobis' and 'crossnobis' are always noise
 %                      normalized, so mnn has no effect on them.
+%                      The noise covariance (mnn, 'mahalanobis' and
+%                      'crossnobis') needs more trials than conditions; in
+%                      fMRI ROI analyses at least 2 runs, or 3 runs with
+%                      nfolds > 1 (see mvpalab_noiseprec).
 % cfg.rsa.meancenter - Center each pattern across features before computing
 %                      the Pearson distance (true = Pearson correlation,
 %                      false = cosine similarity).

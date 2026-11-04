@@ -21,6 +21,14 @@ function [res,stats,cfg] = mvpalab_rsa_roi(cfg,volumes,masks)
 %    standard partition for cross-validated distances in fMRI (Walther et
 %    al., 2016; rsatoolbox, calc_rdm with the run as cv_descriptor).
 %
+%  - Noise normalization (Mahalanobis and crossnobis distances,
+%    cfg.rsa.mnn): the noise covariance is estimated from the residuals of
+%    the betas across runs (see mvpalab_noiseprec). It needs at least 2
+%    runs, and at least 3 runs with cross-validation. The recommended
+%    estimate, the residuals of the first-level GLM (Walther et al., 2016;
+%    rsatoolbox, prec_from_residuals), also works with 2 runs but is not
+%    implemented yet.
+%
 %  Walther, A., Nili, H., Ejaz, N., Alink, A., Kriegeskorte, N., &
 %  Diedrichsen, J. (2016). Reliability of dissimilarity measures for
 %  multi-voxel pattern analysis. NeuroImage, 137, 188-200.

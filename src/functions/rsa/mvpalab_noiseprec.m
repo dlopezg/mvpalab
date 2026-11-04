@@ -4,7 +4,8 @@ function [prec,sigma] = mvpalab_noiseprec(X,Y)
 %  This function estimates the noise covariance matrix of the channels
 %  and its inverse (precision matrix), used by the Mahalanobis and
 %  crossnobis distances to normalize the noise (multivariate noise
-%  normalization).
+%  normalization). The covariance is also used to whiten the patterns of
+%  the Pearson and Euclidean distances (cfg.rsa.mnn, mvpalab_whitening).
 %
 %  - Residuals: the noise is what remains after removing the signal of
 %    each condition, i.e. each trial minus the mean of its condition. The
@@ -32,6 +33,26 @@ function [prec,sigma] = mvpalab_noiseprec(X,Y)
 %    called with the training trials only (see mvpalab_rdm), so that the
 %    test data does not influence the noise normalization (as in
 %    Guggenmos et al., 2018).
+%
+%  - Requirements: the residuals need more observations than conditions
+%    (dof >= 1, i.e. at least one condition with two or more observations)
+%    and every channel needs a residual variance greater than zero. An
+%    error is raised otherwise, because the covariance would be undefined
+%    (0/0) and the precision matrix NaN or infinite.
+%
+%  - fMRI: the observations are the betas of each condition and run, so
+%    the residuals are the betas minus the mean of their condition across
+%    runs. This needs at least 2 runs without cross-validation and at
+%    least 3 runs with leave-one-run-out cross-validation (the training
+%    set of each fold must include at least 2 runs). The recommended noise
+%    estimate for fMRI is instead the residuals of the first-level GLM
+%    (the time series minus the fitted model), as in rsatoolbox
+%    (prec_from_residuals) and Walther et al. (2016): they are independent
+%    of the betas and have many degrees of freedom (number of scans), so
+%    the noise normalization is also possible with 2 runs and the
+%    estimate is more stable. This option is not implemented yet: it
+%    requires the residual time series of the first-level model, which
+%    SPM does not save by default.
 %
 %%  REFERENCES:
 %
@@ -79,12 +100,39 @@ function [prec,sigma] = mvpalab_noiseprec(X,Y)
 conds = unique(Y);
 dof = ntrials - numel(conds);
 
+%% Degrees of freedom of the residuals:
+%  With a single observation per condition all the residuals are zero.
+
+if dof < 1
+    error(['The noise covariance (Mahalanobis and crossnobis distances, ' ...
+        'cfg.rsa.mnn) needs more observations than conditions: %d ' ...
+        'observations of %d conditions were found. In fMRI analyses ' ...
+        'this requires at least 2 runs, and at least 3 runs with ' ...
+        'leave-one-run-out cross-validation (cfg.rsa.nfolds > 1). Use ' ...
+        'the Pearson or Euclidean distance without cfg.rsa.mnn ' ...
+        'otherwise.'],ntrials,numel(conds));
+end
+
 %% Residuals: trials minus the mean of their condition
 
 res = X;
 for c = 1 : numel(conds)
     idx = Y == conds(c);
     res(idx,:,:) = X(idx,:,:) - mean(X(idx,:,:),1);
+end
+
+%% Channels without residual variance:
+%  E.g. a reference channel or a constant voxel. Their variance is zero (or
+%  undefined if the data includes NaN) at some timepoint, which makes the
+%  covariance undefined.
+
+novar = find(any(~(reshape(sum(res.^2,1),nchannels,ntp) > 0),2));
+if ~isempty(novar)
+    error(['The noise covariance (Mahalanobis and crossnobis distances, ' ...
+        'cfg.rsa.mnn) needs a residual variance greater than zero in ' ...
+        'every channel. %d channel(s) with zero or undefined (NaN) ' ...
+        'variance: %s. Remove these channels or voxels from the ' ...
+        'analysis.'],numel(novar),mat2str(novar'));
 end
 
 %% Shrinkage covariance at each timepoint, averaged across timepoints

@@ -48,8 +48,19 @@ if strcmp(cfg.rsa.distance, 'pearson')
         rdm = mvpalab_pearson(train',test',cfg);
     end
     rdm = 1 - rdm;
+%% Euclidean distance:
+%  Without cross-validation the standard Euclidean distance is used. With
+%  cross-validation the cross-validated squared Euclidean distance of
+%  Guggenmos et al. (2018) is used, which is unbiased, symmetric and has a
+%  zero diagonal by construction. It is a squared distance and can be
+%  negative (see mvpalab_cveuclidean for details and references).
+
 elseif strcmp(cfg.rsa.distance, 'euclidean')
-    rdm = pdist2(train, test, 'euclidean');
+    if cfg.cv.nfolds > 1
+        rdm = mvpalab_cveuclidean(train,test);
+    else
+        rdm = pdist2(train, test, 'euclidean');
+    end
 elseif strcmp(cfg.rsa.distance, 'mahalanobis')
     % covMatrix = mvpalab_computecovmat(X);
     % rdm = pdist2(X, X, 'mahalanobis', covMatrix);

@@ -21,7 +21,9 @@ function corrseries = mvpalab_computecorr(cfg,mtx,mtx_,permute)
 %    theoretical model and timepoint: [timepoint x vectorized]
 %
 %  - {flag} permute
-%    Description: This flag indicates if the data should be permuted.
+%    Description: This flag indicates if the data should be permuted. If
+%    true, cfg.stats.nper permuted maps are computed permuting the
+%    conditions of the empirical RDM (see mvpalab_permidx).
 %
 %%  OUTPUT:
 %
@@ -41,6 +43,17 @@ end
 
 if permute, nperm = cfg.stats.nper; else, nperm = 1; end
 
+%% Permutation indexes:
+%  The conditions of the empirical RDM are permuted (rows and columns
+%  together) and the same permutation is applied to all the timepoints.
+%  Without permutation the identity index is used.
+
+if permute
+    pidx = mvpalab_permidx(cfg,size(mtx,2),nperm);
+else
+    pidx = 1 : size(mtx,2);
+end
+
 %% Model loop:
 %  Description:
 if permute,fprintf('- Permutation: '); end
@@ -53,14 +66,14 @@ for perm = 1 : nperm
     %  time series is stored in r.
     
     r = [];
-    
+    idx = pidx(perm,:);
+
     if cfg.classmodel.parcomp
         
         parfor tp = 1 : size(mtx,1)
             
             trdm = mtx_(tp,:);
-            rdm = mtx(tp,:);
-            if permute, rdm = rdm(randperm(length(rdm))); end
+            rdm = mtx(tp,idx);
             r(tp) = corr(rdm',trdm','Type','Spearman');
             
         end
@@ -70,8 +83,7 @@ for perm = 1 : nperm
         for tp = 1 : size(mtx,1)
             
             trdm = mtx_(tp,:);
-            rdm = mtx(tp,:);
-            if permute, rdm = rdm(randperm(length(rdm))); end
+            rdm = mtx(tp,idx);
             r(tp) = corr(rdm',trdm','Type','Spearman');
             
         end

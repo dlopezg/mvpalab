@@ -18,7 +18,9 @@ function [bvalues,tvalues] = mvpalab_fitglm(cfg,mtx,mtx_,permute)
 %    theoretical model and timepoint: [timepoint x vectorized x model]
 %
 %  - {flag} permute
-%    Description: This flag indicates if the data should be permuted. 
+%    Description: This flag indicates if the data should be permuted. If
+%    true, cfg.stats.nper permuted maps are computed permuting the
+%    conditions of the empirical RDM (see mvpalab_permidx).
 %
 %%  OUTPUT:
 %
@@ -44,18 +46,30 @@ end
 if permute, nperm = cfg.stats.nper; else, nperm = 1; end
 if permute,fprintf('        - Permutation: '); end
 
+%% Permutation indexes:
+%  The conditions of the empirical RDM (dependent variable) are permuted
+%  (rows and columns together) and the same permutation is applied to all
+%  the timepoints. The theoretical RDMs (regressors) remain fixed. Without
+%  permutation the identity index is used.
+
+if permute
+    pidx = mvpalab_permidx(cfg,size(mtx,2),nperm);
+else
+    pidx = 1 : size(mtx,2);
+end
+
 %% Permutation loop:
 %  Description:
 for perm = 1 : nperm
     %% Fit GLM:
-    % Description: 
+    % Description:
+    idx = pidx(perm,:);
     if cfg.classmodel.parcomp
         
         parfor tp = 1 : size(mtx,1)
             
             trdm = squeeze(mtx_(tp,:,:));
-            rdm = mtx(tp,:);
-            if permute, rdm = rdm(randperm(length(rdm))); end
+            rdm = mtx(tp,idx);
             
             % Fit model and extract coefficients and t-values:
             mdl = fitlm(trdm,rdm);
@@ -69,8 +83,7 @@ for perm = 1 : nperm
         for tp = 1 : size(mtx,1)
             
             trdm = squeeze(mtx_(tp,:,:));
-            rdm = mtx(tp,:);
-            if permute, rdm = rdm(randperm(length(rdm))); end
+            rdm = mtx(tp,idx);
             
             % Fit model and extract coefficients and t-values:
             mdl = fitlm(trdm,rdm);

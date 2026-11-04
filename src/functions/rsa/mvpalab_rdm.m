@@ -81,6 +81,10 @@ if cfg.rsa.nfolds > 1
                 string(conds(few)),ntrials(few)),', '),min(ntrials));
         end
         nreps = cfg.rsa.nreps;
+        if ~(isscalar(nreps) && nreps >= 1 && nreps == round(nreps))
+            error(['cfg.rsa.nreps must be a positive integer (number of ' ...
+                'repeated cross-validations).']);
+        end
     else
         %  Predefined folds (e.g. the runs of an fMRI experiment): at least
         %  two folds, each of them including all the conditions. The

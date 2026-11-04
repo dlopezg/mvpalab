@@ -68,6 +68,8 @@ for k = 1 : cfg.cv.nfolds
 end
 
 %% Compute the mean of each fold:
+%  Each fold is used once as test set. As in MNE-RSA (compute_rdm_cv), the
+%  cross-validated RDM is the average of the RDMs of all the folds.
 if cfg.cv.nfolds > 1
     rdms = mean(rdms,4);
 end

@@ -33,8 +33,20 @@ function rdm = mvpalab_computerdm(cfg, train, test, dims)
 % end
 
 
+%% Pearson distance:
+%  Without cross-validation train and test are the same data and the
+%  standard Pearson correlation is used. With cross-validation (train and
+%  test are independent partitions) the cross-validated Pearson
+%  correlation of Guggenmos et al. (2018) is used, which is symmetric by
+%  construction and corrects the attenuation of the correlation caused by
+%  noise (see mvpalab_cvpearson for details and references).
+
 if strcmp(cfg.rsa.distance, 'pearson')
-    rdm = mvpalab_pearson(train',test',cfg);
+    if cfg.cv.nfolds > 1
+        rdm = mvpalab_cvpearson(train,test,cfg);
+    else
+        rdm = mvpalab_pearson(train',test',cfg);
+    end
     rdm = 1 - rdm;
 elseif strcmp(cfg.rsa.distance, 'euclidean')
     rdm = pdist2(train, test, 'euclidean');

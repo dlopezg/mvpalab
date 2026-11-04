@@ -13,12 +13,12 @@ function pidx = mvpalab_permidx(cfg,nvec,nperm)
 %%  INPUT:
 %
 %  - {struct} cfg
-%    Description: Configuration structure. cfg.cv.nfolds defines the
-%    vectorization used by mvpalab_vectorizerdm: unique pairs
-%    (squareform) if nfolds < 2, all the cells otherwise.
+%    Description: Configuration structure.
 %
 %  - {integer} nvec
-%    Description: Length of the vectorized RDM.
+%    Description: Length of the vectorized RDM. The RDMs are vectorized by
+%    mvpalab_vectorizerdm as unique pairs of conditions (squareform), so
+%    nvec = n*(n-1)/2 for n conditions.
 %
 %  - {integer} nperm
 %    Description: Number of permutations.
@@ -35,13 +35,8 @@ function pidx = mvpalab_permidx(cfg,nvec,nperm)
 %  each cell in the vectorized RDM. Permuting the conditions of the RDM is
 %  equivalent to permuting the rows and columns of lin.
 
-if cfg.cv.nfolds < 2
-    nconds = (1 + sqrt(1 + 8*nvec)) / 2;
-    lin = squareform(1:nvec);
-else
-    nconds = sqrt(nvec);
-    lin = reshape(1:nvec,nconds,nconds);
-end
+nconds = (1 + sqrt(1 + 8*nvec)) / 2;
+lin = squareform(1:nvec);
 
 %% Number of different permutations:
 %  If the number of conditions is small the same permutations are used
@@ -58,12 +53,7 @@ pidx = zeros(nperm,nvec);
 
 for perm = 1 : nperm
     p = randperm(nconds);
-    lin_ = lin(p,p);
-    if cfg.cv.nfolds < 2
-        pidx(perm,:) = squareform(lin_);
-    else
-        pidx(perm,:) = lin_(:);
-    end
+    pidx(perm,:) = squareform(lin(p,p));
 end
 
 end

@@ -174,6 +174,16 @@ cfg.stats.shownulldis = 0;
 % cfg.rsa.analysis   = 'regress';   - Fit GLM using theoRDMs as regressors. 
 % cfg.rsa.analysis   = 'corr';      - Correlate theoRDMs with neural RDMs.
 
+% cfg.rsa.distance   - Dissimilarity measure (see mvpalab_computerdm):
+%                      'pearson'     - 1 - Pearson correlation
+%                                      (cross-validated if nfolds > 1).
+%                      'euclidean'   - Euclidean distance (cross-validated
+%                                      squared distance if nfolds > 1).
+%                      'mahalanobis' - Squared Mahalanobis distance with
+%                                      multivariate noise normalization
+%                                      (crossnobis if nfolds > 1).
+%                      'crossnobis'  - Cross-validated squared Mahalanobis
+%                                      distance (requires nfolds > 1).
 % cfg.rsa.nfolds     - Number of folds of the cross-validated RDMs. RSA
 %                      has its own number of folds, independent of the
 %                      cross-validation of the classifiers (cfg.cv.nfolds).

@@ -1,23 +1,46 @@
-function rdm = mvpalab_computerdm(cfg, train, test, dims)
-%% MVPALAB_RDM
+function rdm = mvpalab_computerdm(cfg, train, test, dims, prec)
+%% MVPALAB_COMPUTERDM
 %
-%  This function computes the Representational Dissimilarity Matrix.
+%  This function computes the Representational Dissimilarity Matrix
+%  between the training and test patterns of one timepoint. Without
+%  cross-validation (cfg.rsa.nfolds = 1) train and test are the same data.
+%
+%  Distance measures (cfg.rsa.distance):
+%
+%  - 'pearson': 1 - Pearson correlation. With cross-validation, the
+%    cross-validated Pearson distance (mvpalab_cvpearson).
+%
+%  - 'euclidean': Euclidean distance. With cross-validation, the
+%    cross-validated squared Euclidean distance (mvpalab_cveuclidean).
+%
+%  - 'mahalanobis': squared Mahalanobis distance, i.e. the squared
+%    Euclidean distance after multivariate noise normalization with the
+%    noise precision matrix (mvpalab_noiseprec). With cross-validation it
+%    is the crossnobis distance (cross-validated squared Mahalanobis
+%    distance, mvpalab_cveuclidean with prec).
+%
+%  - 'crossnobis': same as 'mahalanobis' with cross-validation. It
+%    requires cfg.rsa.nfolds > 1.
 %
 %%  INPUT:
 %
 %  - {struct} - cfg:
 %    Configuration structure.
 %
-%  - {2D-matrix} - X:
-%    Data matrix for an individual subject containing all the trials and
-%    conditions. [trials x channels]
+%  - {2D-matrix} - train:
+%    Training patterns. [conditions x channels] or [trials x channels]
 %
-%  - {1D-categorical} - Y:
-%    Categorical vector including data labels
+%  - {2D-matrix} - test:
+%    Test patterns, in the same order as train. Same data as train
+%    without cross-validation.
 %
 %  - {1D-array} - dims:
-%    Dimensions of the subject_betas (only for fMRI).
-%    [rows, columns] = [regions, runs]
+%    Not used. Kept for compatibility with previous versions.
+%
+%  - {2D-matrix} - prec:
+%    Noise precision matrix [channels x channels], estimated from the
+%    training trials by mvpalab_rdm. Only used by 'mahalanobis' and
+%    'crossnobis'.
 %
 %%  OUTPUT:
 %
@@ -25,7 +48,6 @@ function rdm = mvpalab_computerdm(cfg, train, test, dims)
 %    Representational Dissimilarity Matrix:
 %    [trials x trials] or [n_conditions x n_conditions]
 %
-
 
 %% Pearson distance:
 %  Without cross-validation train and test are the same data and the
@@ -55,14 +77,18 @@ elseif strcmp(cfg.rsa.distance, 'euclidean')
     else
         rdm = pdist2(train, test, 'euclidean');
     end
-elseif strcmp(cfg.rsa.distance, 'mahalanobis')
-    % covMatrix = mvpalab_computecovmat(X);
-    % rdm = pdist2(X, X, 'mahalanobis', covMatrix);
-    % rdm = mvpalab_computemahalanobis(X, covMatrix);
-elseif strcmp(cfg.rsa.distance, 'cvmahalanobis')
-    % rdm = mvpalab_cvmahalanobis(cfg, X, dims);
+%% Mahalanobis and crossnobis distances:
+%  The same kernel as the cross-validated Euclidean distance, computed
+%  through the noise precision matrix: (A_i - A_j) * prec * (B_i - B_j)'.
+%  With cross-validation this is the crossnobis distance of Walther et al.
+%  (2016), unbiased and possibly negative. Without cross-validation it is
+%  the squared Mahalanobis distance between the patterns, positively
+%  biased by the noise (see mvpalab_cveuclidean and mvpalab_noiseprec).
+
+elseif strcmp(cfg.rsa.distance, 'mahalanobis') || ...
+        strcmp(cfg.rsa.distance, 'crossnobis')
+    rdm = mvpalab_cveuclidean(train,test,prec);
 else
-    rdm = zeros(size(train, 1), size(test, 1));
     error('Distance measure not recognized.');
 end
 

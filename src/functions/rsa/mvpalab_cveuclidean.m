@@ -1,5 +1,20 @@
-function d = mvpalab_cveuclidean(train,test)
+function d = mvpalab_cveuclidean(train,test,prec)
 %% MVPALAB_CVEUCLIDEAN
+%
+%  Crossnobis: if a noise precision matrix is provided (prec, see
+%  mvpalab_noiseprec), the differences are computed in the space of the
+%  noise (multivariate noise normalization), which gives the crossnobis
+%  distance of Walther et al. (2016), the cross-validated squared
+%  Mahalanobis distance:
+%
+%   d(i,j) = (A_i - A_j) * prec * (B_i - B_j)' / nfeatures
+%
+%  as in rsatoolbox (calc_rdm with method 'crossnobis' and the noise
+%  precision as 'noise'). Without prec the identity is used, i.e. the
+%  cross-validated squared Euclidean distance described below. If train
+%  and test are the same data (no cross-validation) the result is the
+%  squared Euclidean (or Mahalanobis) distance, which is positively
+%  biased by the noise.
 %
 %  This function computes the cross-validated squared Euclidean distance
 %  between all pairs of conditions for one cross-validation fold. It is
@@ -61,10 +76,8 @@ function d = mvpalab_cveuclidean(train,test)
 %  training set. This is equivalent to averaging the product over all
 %  pairs of different folds (MNE-RSA, _cv_sq_general).
 %
-%  Noise normalization (multivariate whitening of the patterns with the
-%  noise covariance, i.e. the crossnobis distance) is recommended by
-%  Walther et al. (2016) and Guggenmos et al. (2018) and is not applied
-%  here.
+%  Noise normalization (the crossnobis distance, see above) is recommended
+%  by Walther et al. (2016) and Guggenmos et al. (2018).
 %
 %%  REFERENCES:
 %
@@ -108,16 +121,24 @@ function d = mvpalab_cveuclidean(train,test)
 %    Test patterns for each condition, in the same order as train.
 %    [conditions x features]
 %
+%  - {2D-matrix} - prec (optional):
+%    Noise precision matrix for the crossnobis distance.
+%    [features x features]. Identity if not provided.
+%
 %%  OUTPUT:
 %
 %  - {2D-matrix} - d:
-%    Symmetric cross-validated squared Euclidean distances with zero
-%    diagonal. [conditions x conditions]
+%    Symmetric cross-validated squared Euclidean (or crossnobis)
+%    distances with zero diagonal. [conditions x conditions]
 
 %% Kernel between training and test patterns:
-%  K(i,j) = A_i * B_j'
+%  K(i,j) = A_i * prec * B_j'
 
-K = train * test';
+if nargin < 3 || isempty(prec)
+    K = train * test';
+else
+    K = train * prec * test';
+end
 k = diag(K);
 
 %% Cross-validated squared Euclidean distance:

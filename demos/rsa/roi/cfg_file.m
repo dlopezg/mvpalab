@@ -66,7 +66,6 @@ cfg.rsa.roi_folder = fullfile('anat','rois');
 % Distance metric:
 cfg.rsa.modality = 'corr';
 cfg.rsa.distance = 'euclidean';
-cfg.rsa.cvFolds = 4;
 
 %% VECTORIZED THEORETICAL MODELS:
                      %|          %|        %|      %|    %|  %| %| 

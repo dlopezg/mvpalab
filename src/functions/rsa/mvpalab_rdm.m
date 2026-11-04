@@ -45,8 +45,20 @@ if cfg.rsa.nfolds > 1
     end
     strpar = cvpartition(Y,"KFold",cfg.rsa.nfolds);
 else
+    if strcmp(cfg.rsa.distance,'crossnobis')
+        error(['The crossnobis distance is cross-validated and requires ' ...
+            'cfg.rsa.nfolds > 1. Use cfg.rsa.distance = ''mahalanobis'' ' ...
+            'without cross-validation.']);
+    end
     strpar = false;
 end
+
+%% Noise normalization:
+%  The Mahalanobis and crossnobis distances need the noise precision
+%  matrix, estimated from the residuals of the training trials of each
+%  fold (all the trials without cross-validation).
+
+noisenorm = any(strcmp(cfg.rsa.distance,{'mahalanobis','crossnobis'}));
 
 %% Iterate over folds
 for k = 1 : cfg.rsa.nfolds
@@ -55,6 +67,15 @@ for k = 1 : cfg.rsa.nfolds
     %  training set:
 
     dataset = mvpalab_datasplit(cfg,X,Y,strpar,k);
+
+    %% Noise precision matrix from the training trials if needed:
+    %  Computed before averaging the trials by condition.
+
+    if noisenorm
+        prec = mvpalab_noiseprec(dataset.train_x,dataset.train_y);
+    else
+        prec = [];
+    end
 
     %% Average trials if necessary:
     %  This is used to generate condition-wise RDMs:
@@ -68,11 +89,11 @@ for k = 1 : cfg.rsa.nfolds
 
     if cfg.classmodel.parcomp && ntp > 1
         parfor tp = 1 : ntp
-            rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp), []);
+            rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),[],prec);
         end
     else
         for tp = 1 : ntp
-            rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp), []);
+            rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),[],prec);
         end
     end
 end

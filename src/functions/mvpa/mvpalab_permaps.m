@@ -38,6 +38,10 @@ for sub = 1 : nSubjects
         else
             X = fv{sub}.X.a; Y = fv{sub}.Y.a;
         end
+
+        %% Electrode selection:
+        %  The same channels as in the observed analysis (mvpalab_mvpa).
+        [X,cfg] = mvpalab_chanselection(X,cfg);
         
         %% Number of cross-validation repetitions (k-fold only):
         cfg.classmodel.permlab = true;

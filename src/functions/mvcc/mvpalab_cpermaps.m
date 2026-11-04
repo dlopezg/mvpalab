@@ -40,6 +40,11 @@ for sub = 1 : nSubjects
             train_X = fv{sub}.X.a; test_X = fv{sub}.X.b;
             train_Y = fv{sub}.Y.a; test_Y = fv{sub}.Y.b;
         end
+
+        %% Electrode selection:
+        %  The same channels as in the observed analysis (mvpalab_mvcc).
+        [train_X,cfg] = mvpalab_chanselection(train_X,cfg);
+        [test_X,cfg] = mvpalab_chanselection(test_X,cfg);
         
         %% Generate permuted labels
         cfg.classmodel.permlab = true;

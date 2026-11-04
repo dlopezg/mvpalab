@@ -66,6 +66,12 @@ for sub = 1 : nSubjects
         %% Repeated cross-validation loop:
         for rep = 1 : nreps
 
+            %% Cross-validation partitions, fixed across time:
+            %  One partition of each dataset per direction and repetition,
+            %  used at all the timepoints (see mvpalab_mvccpartition).
+            [sp_ab,spt_ab] = mvpalab_mvccpartition(cfg,train_Y,test_Y);
+            [sp_ba,spt_ba] = mvpalab_mvccpartition(cfg,test_Y,train_Y);
+
             %% Timepoints loop
             if cfg.classmodel.parcomp
                 parfor tp = 1 : cfg.tm.ntp
@@ -82,7 +88,7 @@ for sub = 1 : nSubjects
                         f1_ab_r{tp,rep},...
                         w_ab{1,tp,sub,freq}...
                         ] = mvpalab_mvcceval(...
-                        train_X,train_Y,test_X,test_Y,tp,cfg);
+                        train_X,train_Y,test_X,test_Y,tp,cfg,sp_ab,spt_ab);
 
                     % Direction B - A:
                     [...
@@ -97,7 +103,7 @@ for sub = 1 : nSubjects
                         f1_ba_r{tp,rep},...
                         w_ba{1,tp,sub,freq}...
                         ] = mvpalab_mvcceval(...
-                        test_X,test_Y,train_X,train_Y,tp,cfg);
+                        test_X,test_Y,train_X,train_Y,tp,cfg,sp_ba,spt_ba);
                 end
             else
                 for tp = 1 : cfg.tm.ntp
@@ -114,7 +120,7 @@ for sub = 1 : nSubjects
                         f1_ab_r{tp,rep},...
                         w_ab{1,tp,sub,freq}...
                         ] = mvpalab_mvcceval(...
-                        train_X,train_Y,test_X,test_Y,tp,cfg);
+                        train_X,train_Y,test_X,test_Y,tp,cfg,sp_ab,spt_ab);
 
                     % Direction B - A:
                     [...
@@ -129,7 +135,7 @@ for sub = 1 : nSubjects
                         f1_ba_r{tp,rep},...
                         w_ba{1,tp,sub,freq}...
                         ] = mvpalab_mvcceval(...
-                        test_X,test_Y,train_X,train_Y,tp,cfg);
+                        test_X,test_Y,train_X,train_Y,tp,cfg,sp_ba,spt_ba);
                 end
             end
 

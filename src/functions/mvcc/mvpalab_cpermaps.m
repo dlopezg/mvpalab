@@ -63,6 +63,17 @@ for sub = 1 : nSubjects
 
             %% Repeated cross-validation loop:
             for rep = 1 : nreps
+
+                %% Cross-validation partitions and label permutations:
+                %  Drawn once per direction and repetition, before the
+                %  timepoints loop, so all the timepoints use the same
+                %  partitions and the same permutation of each fold (see
+                %  mvpalab_mvccpartition and mvpalab_foldperm).
+                [sp_ab,spt_ab] = mvpalab_mvccpartition(cfg,train_Y,test_Y);
+                [sp_ba,spt_ba] = mvpalab_mvccpartition(cfg,test_Y,train_Y);
+                pidx_ab = mvpalab_foldperm(sp_ab);
+                pidx_ba = mvpalab_foldperm(sp_ba);
+
                 if cfg.classmodel.parcomp
                     %% Timepoints loop
                     parfor tp = 1 : cfg.tm.ntp
@@ -74,7 +85,7 @@ for sub = 1 : nSubjects
                             pr_ab_r{tp,rep},...
                             re_ab_r{tp,rep},...
                             f1_ab_r{tp,rep},...
-                            ~] = mvpalab_mvcceval(train_X,train_Y,test_X,test_Y,tp,cfg);
+                            ~] = mvpalab_mvcceval(train_X,train_Y,test_X,test_Y,tp,cfg,sp_ab,spt_ab,pidx_ab);
 
                         % Direction B - A:
                         [~,~,~,...
@@ -84,7 +95,7 @@ for sub = 1 : nSubjects
                             pr_ba_r{tp,rep},...
                             re_ba_r{tp,rep},...
                             f1_ba_r{tp,rep},...
-                            ~] = mvpalab_mvcceval(test_X,test_Y,train_X,train_Y,tp,cfg);
+                            ~] = mvpalab_mvcceval(test_X,test_Y,train_X,train_Y,tp,cfg,sp_ba,spt_ba,pidx_ba);
                     end
                 else
                     for tp = 1 : cfg.tm.ntp
@@ -96,7 +107,7 @@ for sub = 1 : nSubjects
                             pr_ab_r{tp,rep},...
                             re_ab_r{tp,rep},...
                             f1_ab_r{tp,rep},...
-                            ~] = mvpalab_mvcceval(train_X,train_Y,test_X,test_Y,tp,cfg);
+                            ~] = mvpalab_mvcceval(train_X,train_Y,test_X,test_Y,tp,cfg,sp_ab,spt_ab,pidx_ab);
 
                         % Direction B - A:
                         [~,~,~,...
@@ -106,7 +117,7 @@ for sub = 1 : nSubjects
                             pr_ba_r{tp,rep},...
                             re_ba_r{tp,rep},...
                             f1_ba_r{tp,rep},...
-                            ~] = mvpalab_mvcceval(test_X,test_Y,train_X,train_Y,tp,cfg);
+                            ~] = mvpalab_mvcceval(test_X,test_Y,train_X,train_Y,tp,cfg,sp_ba,spt_ba,pidx_ba);
                     end
                 end
 

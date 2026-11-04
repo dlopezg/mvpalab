@@ -171,12 +171,21 @@ cfg.cv.loo     = [];
 % cfg.stats.type   = 'below';  - Below chance clusters (Rigth tail)
 % cfg.stats.type   = 'both';   - Above and below chance (Two tails)
 
+% cfg.stats.clustcorr - Cluster-level correction (see mvpalab_clusterpvals):
+%                       'fdr' - Null distribution of all the cluster sizes
+%                               and Benjamini-Hochberg FDR correction of the
+%                               cluster p-values (Stelzer et al., 2013).
+%                       'max' - Null distribution of the maximum cluster
+%                               size of each permutation, family-wise error
+%                               rate control (Maris & Oostenveld, 2007).
+
 cfg.stats.flag   = 0;
 cfg.stats.nper   = 100;
 cfg.stats.nperg  = 1e5;
 cfg.stats.pgroup = 95;
 cfg.stats.pclust = 95;
 cfg.stats.tails  = 2;
+cfg.stats.clustcorr = 'fdr';
 cfg.stats.shownulldis = 0;
 
 %% REPRESENTATIONAL SIMILARITY ANALYSIS:

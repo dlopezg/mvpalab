@@ -103,25 +103,34 @@ end
 fprintf(' - Done!\n');
 
 %% Generate cluster size distribution:
+%  sizedist / sizedist_: sizes of all the clusters of all the permuted maps.
+%  maxdist / maxdist_: size of the largest cluster of each permuted map.
+
 fprintf('   - Generating cluster size distribution:');
 sizedist = [];
 sizedist_ = [];
+maxdist = zeros(1,size(gpermaps,3));
+maxdist_ = zeros(1,size(gpermaps,3));
 
 for map = 1 : size(gpermaps,3)
     if (cfg.stats.tails == 1)
         for i = 1 : clustmaps{map}.NumObjects
             sizedist(end+1) = numel(clustmaps{map}.PixelIdxList{i});
+            maxdist(map) = max(maxdist(map),sizedist(end));
         end
     elseif (cfg.stats.tails == -1)
         for i = 1 : clustmaps_{map}.NumObjects
             sizedist_(end+1) = numel(clustmaps_{map}.PixelIdxList{i});
+            maxdist_(map) = max(maxdist_(map),sizedist_(end));
         end
     else
         for i = 1 : clustmaps{map}.NumObjects
             sizedist(end+1) = numel(clustmaps{map}.PixelIdxList{i});
+            maxdist(map) = max(maxdist(map),sizedist(end));
         end
         for i = 1 : clustmaps_{map}.NumObjects
             sizedist_(end+1) = numel(clustmaps_{map}.PixelIdxList{i});
+            maxdist_(map) = max(maxdist_(map),sizedist_(end));
         end
     end
 end
@@ -217,90 +226,41 @@ end
 
 fprintf(' - Done!\n');
 
-%% Cluster-level p-values and FDR correction (Stelzer et al., 2013):
-%  For each observed cluster, the p-value is the empirical right-tail
-%  probability of obtaining a cluster of equal or greater size under the
-%  null distribution of cluster sizes (sizedist / sizedist_), with the
-%  standard (count+1)/(N+1) smoothing to avoid p = 0 with a finite number
-%  of permutations. Benjamini-Hochberg FDR is then applied to the vector
-%  of cluster p-values, and each cluster is accepted or rejected
-%  individually based on its adjusted p-value.
-
-alpha = (100 - cfg.stats.pclust) / 100;
+%% Cluster-level p-values and correction:
+%  Each observed cluster is accepted or rejected individually using the
+%  method selected in cfg.stats.clustcorr (see mvpalab_clusterpvals):
+%  'fdr' - Null distribution of all the cluster sizes + Benjamini-Hochberg
+%          FDR (Stelzer et al., 2013).
+%  'max' - Null distribution of the maximum cluster size, FWER control
+%          (Maris & Oostenveld, 2007).
 
 clusters.sig      = [];
 clusters.sizes    = [];
 clusters.pvals    = [];
 clusters.fdr      = [];
 clusters.sig_idx  = [];
+clusters.maxdist  = [];
 
 clusters_.sig     = [];
 clusters_.sizes   = [];
 clusters_.pvals   = [];
 clusters_.fdr     = [];
 clusters_.sig_idx = [];
+clusters_.maxdist = [];
 
-% corrcsize / corrcsize_: minimum cluster size that survives FDR
+% corrcsize / corrcsize_: minimum cluster size that survives the
 % correction in the above-chance / below-chance tail (Inf if none).
 corrcsize  = Inf;
 corrcsize_ = Inf;
 
 % Above-chance tail:
 if (cfg.stats.tails == 1) || (cfg.stats.tails == 2)
-    nC     = clusters.NumObjects;
-    csizes = zeros(nC,1);
-    cpvals = ones(nC,1);
-    for i = 1 : nC
-        csizes(i) = numel(clusters.PixelIdxList{i});
-        cpvals(i) = (sum(sizedist >= csizes(i)) + 1) / (numel(sizedist) + 1);
-    end
-    if nC > 0
-        cfdr = mafdr(cpvals,'bhfdr','true');
-    else
-        cfdr = [];
-    end
-    sig_idx = cfdr < alpha;
-    for i = 1 : nC
-        if sig_idx(i)
-            clusters.sig = [clusters.sig; clusters.PixelIdxList{i}];
-        end
-    end
-    clusters.sizes   = csizes;
-    clusters.pvals   = cpvals;
-    clusters.fdr     = cfdr;
-    clusters.sig_idx = sig_idx;
-    if any(sig_idx)
-        corrcsize = min(csizes(sig_idx));
-    end
+    [clusters,corrcsize] = mvpalab_clusterpvals(cfg,clusters,sizedist,maxdist);
 end
 
 % Below-chance tail:
 if (cfg.stats.tails == -1) || (cfg.stats.tails == 2)
-    nC     = clusters_.NumObjects;
-    csizes = zeros(nC,1);
-    cpvals = ones(nC,1);
-    for i = 1 : nC
-        csizes(i) = numel(clusters_.PixelIdxList{i});
-        cpvals(i) = (sum(sizedist_ >= csizes(i)) + 1) / (numel(sizedist_) + 1);
-    end
-    if nC > 0
-        cfdr = mafdr(cpvals,'bhfdr','true');
-    else
-        cfdr = [];
-    end
-    sig_idx = cfdr < alpha;
-    for i = 1 : nC
-        if sig_idx(i)
-            clusters_.sig = [clusters_.sig; clusters_.PixelIdxList{i}];
-        end
-    end
-    clusters_.sizes   = csizes;
-    clusters_.pvals   = cpvals;
-    clusters_.fdr     = cfdr;
-    clusters_.sig_idx = sig_idx;
-    if any(sig_idx)
-        corrcsize_ = min(csizes(sig_idx));
-    end
+    [clusters_,corrcsize_] = mvpalab_clusterpvals(cfg,clusters_,sizedist_,maxdist_);
 end
 
 % Significant clusters mask for representation.

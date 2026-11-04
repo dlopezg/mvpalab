@@ -34,6 +34,15 @@ ntp = size(X,3);
 % is generated here:
 
 if cfg.cv.nfolds > 1
+    %  Cross-validated RDMs compare the pattern of each condition in the
+    %  training set with the pattern of each condition in the test set, so
+    %  they are only defined for condition-wise RDMs. In trial-wise RDMs the
+    %  training and test trials are different trials.
+    if cfg.rsa.trialwise
+        error(['Cross-validated RDMs (cfg.cv.nfolds > 1) require ' ...
+            'condition-wise RDMs (cfg.rsa.trialwise = false). Set ' ...
+            'cfg.cv.nfolds = 1 to compute trial-wise RDMs.']);
+    end
     strpar = cvpartition(Y,"KFold",cfg.cv.nfolds);
 else
     strpar = false;
@@ -42,8 +51,9 @@ end
 %% Iterate over folds
 for k = 1 : cfg.cv.nfolds
     %% Split the data in train and test folds:
-    % One fold is selected for train and the rest are averaged for testing:
-    
+    %  Fold k is the test set and the trials of the remaining folds are the
+    %  training set:
+
     dataset = mvpalab_datasplit(cfg,X,Y,strpar,k);
 
     %% Average trials if necessary:

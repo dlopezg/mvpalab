@@ -35,7 +35,7 @@ if ~cfg.rsa.trialwise
 
         % Average trials per condition:
         train_x_averaged(i,:,:) =  mean(dataset.train_x(...
-            double(dataset.train_y(:,1)) == i,:,:),1);
+            double(dataset.train_y) == i,:,:),1);
         test_x_averaged(i,:,:) =  mean(dataset.test_x(...
             double(dataset.test_y(:,1)) == i,:,:),1);
 

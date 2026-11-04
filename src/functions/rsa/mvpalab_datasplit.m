@@ -4,6 +4,17 @@ function [data] = mvpalab_datasplit(cfg,X,Y,strpar,k)
 %  This function splits the data into training and testing sets based on
 %  the specified cross-validation configuration and the current fold.
 %
+%  With cross-validation, fold k is the test set and all the trials of the
+%  remaining folds are the training set. The training trials are returned
+%  individually (they are not averaged across folds), so that:
+%    - The folds can have different numbers of trials (stratified
+%      partitions are only balanced up to one trial per condition).
+%    - The condition-wise patterns computed by mvpalab_averagetrials are
+%      the mean of all the training trials of each condition, i.e. every
+%      trial has the same weight (as average_dataset_by in rsatoolbox).
+%    - The individual training trials are available, e.g. to estimate the
+%      noise covariance from the residuals.
+%
 %%  INPUT:
 %
 %  - {struct} - cfg:
@@ -15,8 +26,9 @@ function [data] = mvpalab_datasplit(cfg,X,Y,strpar,k)
 %  - {1D-categorical} - Y:
 %    Categorical vector including data labels.
 %
-%  - {struct} - strpar:
-%    Structure containing the trial indices for each fold.
+%  - {cvpartition} - strpar:
+%    Stratified partition of the trials into cfg.cv.nfolds folds (not used
+%    without cross-validation).
 %
 %  - {int} - k:
 %    Current fold index used to select the test set.
@@ -27,35 +39,24 @@ function [data] = mvpalab_datasplit(cfg,X,Y,strpar,k)
 %    Structure containing the training and testing datasets:
 %
 %      - data.train_x: Training data matrix [trials x channels x timepoints]
-%      - data.train_y: Labels for the training data
+%      - data.train_y: Labels for the training data [trials x 1]
 %      - data.test_x:  Testing data matrix  [trials x channels x timepoints]
-%      - data.test_y:  Labels for the testing data
+%      - data.test_y:  Labels for the testing data [trials x 1]
 
 if cfg.cv.nfolds > 1
-    
-    % Generate folds index vector
-    fold_idxs = (1:cfg.cv.nfolds);
 
-    % Not selected folds:
-    rest_folds = fold_idxs(fold_idxs ~= k);
-
-    % Select actual (test) folds:
+    % Test set: trials of fold k.
     data.test_x = X(strpar.test(k),:,:);
     data.test_y = Y(strpar.test(k));
 
-    % Select remaining folds:
-    for fold = 1 : length(rest_folds)
-        data.train_x(:,:,:,fold) = X(strpar.test(rest_folds(fold)),:,:);
-        data.train_y(:,fold) = Y(strpar.test(rest_folds(fold)));
-    end
-
-    % Compute the mean across folds
-    data.train_x = mean(data.train_x,4);
+    % Training set: all the trials of the remaining folds.
+    data.train_x = X(strpar.training(k),:,:);
+    data.train_y = Y(strpar.training(k));
 
 else
 
     % If no CV the train and set data remains the same.
-    data.train_x = X;  data.train_y = Y; 
+    data.train_x = X;  data.train_y = Y;
     data.test_x = X;   data.test_y = Y;
 end
 

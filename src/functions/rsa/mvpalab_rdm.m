@@ -121,6 +121,15 @@ end
 
 noisenorm = any(strcmp(cfg.rsa.distance,{'mahalanobis','crossnobis'}));
 
+%% Multivariate noise normalization of the patterns (cfg.rsa.mnn):
+%  The Pearson and Euclidean distances are computed between whitened
+%  patterns (x * W, W = sigma^(-1/2), see mvpalab_whitening), with the
+%  noise covariance estimated from the training trials of each fold, as in
+%  Guggenmos et al. (2018). The Mahalanobis and crossnobis distances
+%  already include the noise normalization, so they are not whitened again.
+
+mnn = cfg.rsa.mnn && ~noisenorm;
+
 if nreps > 1, fprintf(' Repetition: '); end
 
 %% Repeated cross-validation loop:
@@ -145,13 +154,15 @@ for rep = 1 : nreps
 
         dataset = mvpalab_datasplit(cfg,X,Y,folds,foldids(k));
 
-        %% Noise precision matrix from the training trials if needed:
-        %  Computed before averaging the trials by condition.
+        %% Noise precision or whitening matrix from the training trials:
+        %  Computed before averaging the trials by condition, if needed.
 
+        prec = [];
         if noisenorm
             prec = mvpalab_noiseprec(dataset.train_x,dataset.train_y);
-        else
-            prec = [];
+        elseif mnn
+            [~,sigma] = mvpalab_noiseprec(dataset.train_x,dataset.train_y);
+            W = mvpalab_whitening(sigma);
         end
 
         %% Average trials if necessary:
@@ -161,6 +172,16 @@ for rep = 1 : nreps
 
         train_x = dataset.train_x;
         test_x = dataset.test_x;
+
+        %% Whiten the training and test patterns if needed:
+        %  The same matrix for all the timepoints (x * W at each timepoint).
+        %  Averaging is linear, so whitening the condition means is the
+        %  same as averaging the whitened trials.
+
+        if mnn
+            train_x = pagemtimes(train_x,W);
+            test_x = pagemtimes(test_x,W);
+        end
 
         %% Construct RDMs using the specified distance measure:
 

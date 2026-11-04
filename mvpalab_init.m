@@ -228,6 +228,15 @@ cfg.stats.shownulldis = 0;
 %                      single partition. Not used in fMRI ROI analyses
 %                      (the runs are a fixed partition). Note: running time
 %                      scales ~linearly with nreps.
+% cfg.rsa.mnn        - Multivariate noise normalization of the patterns
+%                      for the 'pearson' and 'euclidean' distances
+%                      (Guggenmos et al., 2018). The patterns are whitened
+%                      with the noise covariance estimated from the
+%                      residuals of the training trials of each fold (all
+%                      the trials if nfolds = 1). With cross-validation,
+%                      'euclidean' with mnn is the crossnobis distance.
+%                      'mahalanobis' and 'crossnobis' are always noise
+%                      normalized, so mnn has no effect on them.
 % cfg.rsa.meancenter - Center each pattern across features before computing
 %                      the Pearson distance (true = Pearson correlation,
 %                      false = cosine similarity).
@@ -239,6 +248,7 @@ cfg.rsa.distance = 'pearson';
 cfg.rsa.trialwise = true;
 cfg.rsa.nfolds = 1;
 cfg.rsa.nreps = 1;
+cfg.rsa.mnn = false;
 cfg.rsa.meancenter = true;
 
 %% SLIDING FILTER ANALYSIS CONFIGURATION:

@@ -96,10 +96,16 @@ for roi = 1 : length(cfg.rsa.roi)
             %  residuals of the betas (each beta minus the mean of its
             %  condition across runs), see mvpalab_noiseprec.
 
+            %  With multivariate noise normalization (cfg.rsa.mnn) the
+            %  Pearson and Euclidean distances are computed between the
+            %  whitened betas (see mvpalab_whitening).
+
+            prec = [];
             if strcmp(dist,'mahalanobis')
                 prec = mvpalab_noiseprec(masked{sub},labels);
-            else
-                prec = [];
+            elseif cfg.rsa.mnn
+                [~,sigma] = mvpalab_noiseprec(masked{sub},labels);
+                masked{sub} = masked{sub} * mvpalab_whitening(sigma);
             end
 
             %% Extract RDM for each roi and subject:

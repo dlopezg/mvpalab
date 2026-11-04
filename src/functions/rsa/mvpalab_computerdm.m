@@ -22,6 +22,10 @@ function rdm = mvpalab_computerdm(cfg, train, test, dims, prec)
 %  - 'crossnobis': same as 'mahalanobis' with cross-validation. It
 %    requires cfg.rsa.nfolds > 1.
 %
+%  Multivariate noise normalization (cfg.rsa.mnn): for 'pearson' and
+%  'euclidean' the patterns are whitened by the callers (mvpalab_rdm and
+%  mvpalab_rsa_roi, see mvpalab_whitening) before calling this function.
+%
 %%  INPUT:
 %
 %  - {struct} - cfg:

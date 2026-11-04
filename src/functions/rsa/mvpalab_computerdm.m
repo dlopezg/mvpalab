@@ -60,8 +60,16 @@ function rdm = mvpalab_computerdm(cfg, train, test, dims, prec)
 %  correlation of Guggenmos et al. (2018) is used, which is symmetric by
 %  construction and corrects the attenuation of the correlation caused by
 %  noise (see mvpalab_cvpearson for details and references).
+%  The correlation is computed across features, so it is not defined for a
+%  single feature (channel or voxel) and an error is raised, as in MNE-RSA.
 
 if strcmp(cfg.rsa.distance, 'pearson')
+    if size(train,2) < 2
+        error(['The Pearson (or cosine) distance is computed across ' ...
+            'features and needs at least 2 features (channels or ' ...
+            'voxels), but the data has %d. Use the Euclidean distance ' ...
+            'or select more channels or voxels.'],size(train,2));
+    end
     if cfg.rsa.nfolds > 1
         rdm = mvpalab_cvpearson(train,test,cfg);
     else

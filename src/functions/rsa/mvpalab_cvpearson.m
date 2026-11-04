@@ -60,6 +60,11 @@ function r = mvpalab_cvpearson(train,test,cfg)
 %    for the regularization terms. The normalization cancels out in r and
 %    only rescales the regularization bounds by n/(n-1).
 %
+%  Constant patterns: a pattern with the same value in all the features
+%  (e.g. a timepoint set to zero in all the channels) is zero after the
+%  centering, so its correlations are 0/0 = NaN: the correlation is not
+%  defined. Use the Euclidean distance or exclude these timepoints.
+%
 %  The diagonal of the returned matrix is 1 unless the regularization is
 %  active. If train and test are the same data (no cross-validation), the
 %  cross-validated variances equal the variances, the regularization has

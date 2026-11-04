@@ -1,4 +1,33 @@
 function r = mvpalab_pearson(train,test,cfg)
+%% MVPALAB_PEARSON
+%
+%  This function computes the Pearson correlation (cfg.rsa.meancenter =
+%  true) or the cosine similarity (false) between the columns of train
+%  and the columns of test, i.e. between patterns across features. It is
+%  used for the Pearson distance without cross-validation (see
+%  mvpalab_computerdm).
+%
+%  Constant patterns: a pattern with the same value in all the features
+%  (e.g. a timepoint set to zero in all the channels) is zero after the
+%  centering, so its correlations are 0/0 = NaN: the correlation is not
+%  defined. Use the Euclidean distance or exclude these timepoints.
+%
+%%  INPUT:
+%
+%  - {2D-matrix} - train:
+%    Patterns in columns. [features x patterns]
+%
+%  - {2D-matrix} - test:
+%    Patterns in columns. [features x patterns]
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%%  OUTPUT:
+%
+%  - {2D-matrix} - r:
+%    Correlation between each pattern of train (rows) and each pattern of
+%    test (columns). [patterns x patterns]
 
     [s_cond(1),s_train] = size(train);
     mean_train = sum(train,1)/s_cond(1); % mean X

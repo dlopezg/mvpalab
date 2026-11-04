@@ -21,9 +21,8 @@ function W = mvpalab_whitening(sigma)
 %    the whitened patterns are centered across features, so it is applied
 %    explicitly to the patterns.
 %
-%  - sigma must be positive definite. The shrinkage estimate of
-%    mvpalab_noiseprec is positive definite unless a channel has zero
-%    variance.
+%  - sigma must be positive definite, otherwise W is infinite or complex.
+%    mvpalab_noiseprec raises an error if its estimate is singular.
 %
 %%  REFERENCES:
 %

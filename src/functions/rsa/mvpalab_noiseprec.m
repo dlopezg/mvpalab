@@ -35,10 +35,14 @@ function [prec,sigma] = mvpalab_noiseprec(X,Y)
 %    Guggenmos et al., 2018).
 %
 %  - Requirements: the residuals need more observations than conditions
-%    (dof >= 1, i.e. at least one condition with two or more observations)
-%    and every channel needs a residual variance greater than zero. An
+%    (dof >= 1, i.e. at least one condition with two or more
+%    observations), no NaN values, and every channel needs a residual
+%    variance greater than zero (at least at one timepoint). The resulting
+%    covariance must be positive definite, which can fail with very few
+%    observations (e.g. dof = 1 with fewer timepoints than channels). An
 %    error is raised otherwise, because the covariance would be undefined
-%    (0/0) and the precision matrix NaN or infinite.
+%    or singular and the precision and whitening matrices NaN, infinite or
+%    complex.
 %
 %  - fMRI: the observations are the betas of each condition and run, so
 %    the residuals are the betas minus the mean of their condition across
@@ -122,16 +126,26 @@ for c = 1 : numel(conds)
 end
 
 %% Channels without residual variance:
-%  E.g. a reference channel or a constant voxel. Their variance is zero (or
-%  undefined if the data includes NaN) at some timepoint, which makes the
-%  covariance undefined.
+%  NaN values at any timepoint make the covariance undefined. A channel
+%  whose residual variance is zero at all the timepoints (e.g. a reference
+%  channel or a constant voxel) makes it singular. Zero variance at some
+%  timepoints only (e.g. a zeroed artifact window) is allowed: these
+%  timepoints add nothing to the variance of the channel and the average
+%  across timepoints is still positive definite.
 
-novar = find(any(~(reshape(sum(res.^2,1),nchannels,ntp) > 0),2));
+ss = reshape(sum(res.^2,1),nchannels,ntp);
+nanch = find(any(isnan(ss),2));
+if ~isempty(nanch)
+    error(['The noise covariance (Mahalanobis and crossnobis distances, ' ...
+        'cfg.rsa.mnn) cannot be estimated from data with NaN values. ' ...
+        '%d channel(s) with NaN values: %s.'],numel(nanch),mat2str(nanch'));
+end
+novar = find(all(ss == 0,2));
 if ~isempty(novar)
     error(['The noise covariance (Mahalanobis and crossnobis distances, ' ...
         'cfg.rsa.mnn) needs a residual variance greater than zero in ' ...
-        'every channel. %d channel(s) with zero or undefined (NaN) ' ...
-        'variance: %s. Remove these channels or voxels from the ' ...
+        'every channel. %d channel(s) with zero variance at all the ' ...
+        'timepoints: %s. Remove these channels or voxels from the ' ...
         'analysis.'],numel(novar),mat2str(novar'));
 end
 
@@ -142,6 +156,18 @@ for tp = 1 : ntp
     sigma = sigma + shrinkdiag(res(:,:,tp),dof);
 end
 sigma = sigma / ntp;
+
+%% Positive definite covariance:
+%  With very few observations (e.g. 3 trials of 2 conditions, dof = 1) the
+%  optimal shrinkage intensity can be zero and the covariance singular.
+
+if ~(rcond(sigma) > eps)
+    error(['The noise covariance (Mahalanobis and crossnobis distances, ' ...
+        'cfg.rsa.mnn) is singular: there are too few observations (%d ' ...
+        'observations of %d conditions, %d channels) to estimate it. ' ...
+        'Use more trials (or fewer folds) or the Pearson or Euclidean ' ...
+        'distance without cfg.rsa.mnn.'],ntrials,numel(conds),nchannels);
+end
 
 %% Precision matrix
 

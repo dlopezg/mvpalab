@@ -13,7 +13,7 @@ function [prec,sigma] = mvpalab_noiseprec(X,Y)
 %    because the trials also contain the differences between conditions
 %    (the signal), which would then be partially removed by the noise
 %    normalization. Degrees of freedom: number of trials minus number of
-%    conditions (as in rsatoolbox, cov_from_measurements).
+%    conditions (as in rsatoolbox, cov_from_unbalanced).
 %
 %  - Shrinkage: with many channels and few trials the sample covariance
 %    is unstable or singular. It is shrunk towards its diagonal with the
@@ -81,7 +81,7 @@ function [prec,sigma] = mvpalab_noiseprec(X,Y)
 %    (2025). A Python toolbox for representational similarity analysis
 %    (rsatoolbox). bioRxiv. https://doi.org/10.1101/2025.05.22.655542
 %    Code: https://github.com/rsagroup/rsatoolbox (rsatoolbox/data/noise.py,
-%    functions cov_from_measurements and _covariance_diag).
+%    functions cov_from_unbalanced and _covariance_diag).
 %
 %%  INPUT:
 %

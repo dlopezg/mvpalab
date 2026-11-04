@@ -51,8 +51,10 @@ function r = mvpalab_cvpearson(train,test,cfg)
 %    training patterns of each pair of conditions, as in Guggenmos et al.
 %    (2018). MNE-RSA uses instead the variance of the pattern averaged
 %    across all folds and, for the second bound, its mean across
-%    conditions. Both choices only differ when the regularization is
-%    active (very low signal-to-noise ratio).
+%    conditions. Both choices differ whenever a bound is active, which
+%    for the single bound of MNE-RSA can also happen at a high
+%    signal-to-noise ratio, for conditions with a low pattern variance
+%    compared with the others.
 %
 %  - All the (co)variances are computed with the same normalization
 %    (1/nfeatures), as in MNE-RSA. The reference code of Guggenmos et al.

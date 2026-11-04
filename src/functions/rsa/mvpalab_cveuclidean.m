@@ -73,8 +73,9 @@ function d = mvpalab_cveuclidean(train,test,prec)
 %  Folds: this function processes one fold. As in rsatoolbox and MNE-RSA,
 %  mvpalab_rdm averages the distances across folds, where each fold is
 %  used once as test set and the average of the remaining folds as
-%  training set. This is equivalent to averaging the product over all
-%  pairs of different folds (MNE-RSA, _cv_sq_general).
+%  training set. This is approximately equivalent (exactly with balanced
+%  folds) to averaging the product over all pairs of different folds
+%  (MNE-RSA, _cv_sq_general).
 %
 %  Noise normalization (the crossnobis distance, see above) is recommended
 %  by Walther et al. (2016) and Guggenmos et al. (2018).

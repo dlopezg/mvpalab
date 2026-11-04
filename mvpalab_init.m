@@ -174,12 +174,24 @@ cfg.stats.shownulldis = 0;
 % cfg.rsa.analysis   = 'regress';   - Fit GLM using theoRDMs as regressors. 
 % cfg.rsa.analysis   = 'corr';      - Correlate theoRDMs with neural RDMs.
 
+% cfg.rsa.nfolds     - Number of folds of the cross-validated RDMs. RSA
+%                      has its own number of folds, independent of the
+%                      cross-validation of the classifiers (cfg.cv.nfolds).
+%                      1 = no cross-validation. Cross-validated RDMs
+%                      (nfolds > 1) require condition-wise RDMs
+%                      (cfg.rsa.trialwise = false).
+% cfg.rsa.meancenter - Center each pattern across features before computing
+%                      the Pearson distance (true = Pearson correlation,
+%                      false = cosine similarity).
+
 cfg.rsa.flag = 0;
 cfg.rsa.nclass = 0;
-cfg.rsa.modality = 'corr'; 
+cfg.rsa.modality = 'corr';
 cfg.rsa.distance = 'pearson';
 cfg.rsa.trialwise = true;
 cfg.rsa.normrdm = true;
+cfg.rsa.nfolds = 1;
+cfg.rsa.meancenter = true;
 
 %% SLIDING FILTER ANALYSIS CONFIGURATION:
 

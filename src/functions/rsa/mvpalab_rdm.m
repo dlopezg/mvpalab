@@ -33,23 +33,23 @@ ntp = size(X,3);
 % If a cross-validated measure is selected, the stratified data partition
 % is generated here:
 
-if cfg.cv.nfolds > 1
+if cfg.rsa.nfolds > 1
     %  Cross-validated RDMs compare the pattern of each condition in the
     %  training set with the pattern of each condition in the test set, so
     %  they are only defined for condition-wise RDMs. In trial-wise RDMs the
     %  training and test trials are different trials.
     if cfg.rsa.trialwise
-        error(['Cross-validated RDMs (cfg.cv.nfolds > 1) require ' ...
+        error(['Cross-validated RDMs (cfg.rsa.nfolds > 1) require ' ...
             'condition-wise RDMs (cfg.rsa.trialwise = false). Set ' ...
-            'cfg.cv.nfolds = 1 to compute trial-wise RDMs.']);
+            'cfg.rsa.nfolds = 1 to compute trial-wise RDMs.']);
     end
-    strpar = cvpartition(Y,"KFold",cfg.cv.nfolds);
+    strpar = cvpartition(Y,"KFold",cfg.rsa.nfolds);
 else
     strpar = false;
 end
 
 %% Iterate over folds
-for k = 1 : cfg.cv.nfolds
+for k = 1 : cfg.rsa.nfolds
     %% Split the data in train and test folds:
     %  Fold k is the test set and the trials of the remaining folds are the
     %  training set:
@@ -80,7 +80,7 @@ end
 %% Compute the mean of each fold:
 %  Each fold is used once as test set. As in MNE-RSA (compute_rdm_cv), the
 %  cross-validated RDM is the average of the RDMs of all the folds.
-if cfg.cv.nfolds > 1
+if cfg.rsa.nfolds > 1
     rdms = mean(rdms,4);
 end
 

@@ -42,7 +42,7 @@ function rdm = mvpalab_computerdm(cfg, train, test, dims)
 %  noise (see mvpalab_cvpearson for details and references).
 
 if strcmp(cfg.rsa.distance, 'pearson')
-    if cfg.cv.nfolds > 1
+    if cfg.rsa.nfolds > 1
         rdm = mvpalab_cvpearson(train,test,cfg);
     else
         rdm = mvpalab_pearson(train',test',cfg);
@@ -56,7 +56,7 @@ if strcmp(cfg.rsa.distance, 'pearson')
 %  negative (see mvpalab_cveuclidean for details and references).
 
 elseif strcmp(cfg.rsa.distance, 'euclidean')
-    if cfg.cv.nfolds > 1
+    if cfg.rsa.nfolds > 1
         rdm = mvpalab_cveuclidean(train,test);
     else
         rdm = pdist2(train, test, 'euclidean');

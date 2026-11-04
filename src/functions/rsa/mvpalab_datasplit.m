@@ -27,7 +27,7 @@ function [data] = mvpalab_datasplit(cfg,X,Y,strpar,k)
 %    Categorical vector including data labels.
 %
 %  - {cvpartition} - strpar:
-%    Stratified partition of the trials into cfg.cv.nfolds folds (not used
+%    Stratified partition of the trials into cfg.rsa.nfolds folds (not used
 %    without cross-validation).
 %
 %  - {int} - k:
@@ -43,7 +43,7 @@ function [data] = mvpalab_datasplit(cfg,X,Y,strpar,k)
 %      - data.test_x:  Testing data matrix  [trials x channels x timepoints]
 %      - data.test_y:  Labels for the testing data [trials x 1]
 
-if cfg.cv.nfolds > 1
+if cfg.rsa.nfolds > 1
 
     % Test set: trials of fold k.
     data.test_x = X(strpar.test(k),:,:);

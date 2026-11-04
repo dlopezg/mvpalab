@@ -42,7 +42,7 @@ cfg.rsa.distance = 'pearson';
 cfg.rsa.trialwise = false;
 cfg.rsa.meancenter = 1;
 cfg.normdata = 1;
-cfg.cv.nfolds  = 3;
+cfg.rsa.nfolds = 3;
 
 %% VECTORIZED THEORETHICAL MODELS:
                      %|          %|        %|      %|    %|  %| %| 

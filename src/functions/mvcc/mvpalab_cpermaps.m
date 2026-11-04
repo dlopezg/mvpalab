@@ -41,6 +41,12 @@ for sub = 1 : nSubjects
             train_Y = fv{sub}.Y.a; test_Y = fv{sub}.Y.b;
         end
 
+        %% Update nfold for each subject if LOO is selected:
+        %  As in the observed analysis (mvpalab_mvcc).
+        if strcmp(cfg.cv.method,'loo')
+            cfg.cv.nfolds = cfg.cv.loo(sub);
+        end
+
         %% Electrode selection:
         %  The same channels as in the observed analysis (mvpalab_mvcc).
         [train_X,cfg] = mvpalab_chanselection(train_X,cfg);

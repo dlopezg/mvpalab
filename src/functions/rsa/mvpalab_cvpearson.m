@@ -44,6 +44,9 @@ function r = mvpalab_cvpearson(train,test,cfg)
 %         non-cross-validated denominator:
 %            den(i,j) = max( sqrt(v_i*v_j), 0.25*sqrt(var(A_i)*var(A_j)) )
 %      Finally r(i,j) is bounded to [-1,1].
+%    The bounds keep NaN values ('includenan'): a pattern with NaN values
+%    gives NaN correlations, as the other distance measures, instead of
+%    being replaced by the bounds (by default max and min ignore NaN).
 %    Here the non-cross-validated variances are computed from the
 %    training patterns of each pair of conditions, as in Guggenmos et al.
 %    (2018). MNE-RSA uses instead the variance of the pattern averaged
@@ -139,14 +142,14 @@ vtrain = sum(train.^2,2)' / nfeatures;
 
 %% Denominator with regularization:
 
-vcv = max(vcv, regvar * vtrain);
+vcv = max(vcv, regvar * vtrain, 'includenan');
 den = sqrt(vcv') * sqrt(vcv);
-den = max(den, regden * (sqrt(vtrain') * sqrt(vtrain)));
+den = max(den, regden * (sqrt(vtrain') * sqrt(vtrain)), 'includenan');
 
 %% Symmetric cross-validated correlation:
 %  Numerator averaged across both directions, bounded to [-1,1].
 
 r = ((G + G') / 2) ./ den;
-r = min(max(r,-1),1);
+r = min(max(r,-1,'includenan'),1,'includenan');
 
 end

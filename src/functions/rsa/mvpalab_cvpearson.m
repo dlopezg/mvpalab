@@ -65,8 +65,14 @@ function r = mvpalab_cvpearson(train,test,cfg)
 %  centering, so its correlations are 0/0 = NaN: the correlation is not
 %  defined. Use the Euclidean distance or exclude these timepoints.
 %
-%  The diagonal of the returned matrix is 1 unless the regularization is
-%  active. If train and test are the same data (no cross-validation), the
+%  The diagonal of the returned matrix is exactly 1 (the correlation of a
+%  condition with itself), so the diagonal of the distance 1-r is exactly
+%  0, as in mvpalab_cveuclidean. The regularization only applies to pairs
+%  of conditions: without this, it would give meaningless values in the
+%  diagonal at low signal-to-noise ratios. The reference implementations
+%  only compute the pairs of different conditions.
+%
+%  If train and test are the same data (no cross-validation), the
 %  cross-validated variances equal the variances, the regularization has
 %  no effect and r is the standard Pearson correlation.
 %
@@ -156,5 +162,10 @@ den = max(den, regden * (sqrt(vtrain') * sqrt(vtrain)), 'includenan');
 
 r = ((G + G') / 2) ./ den;
 r = min(max(r,-1,'includenan'),1,'includenan');
+
+%% Exact diagonal:
+%  The correlation of a condition with itself is 1 by definition.
+
+r(logical(eye(size(r)))) = 1;
 
 end

@@ -1,8 +1,15 @@
-function rdm = mvpalab_rdm(cfg,X,Y)
+function rdm = mvpalab_rdm(cfg,X,Y,folds)
 %% MVPALAB_RDM
 %
 %  This function returns the trial-wise Representational Dissimilarity
 %  Matrices for each timepoint.
+%
+%  Cross-validation (cfg.rsa.nfolds > 1): each fold is used once as test
+%  set and the remaining folds as training set. By default the folds are a
+%  stratified random partition of the trials into cfg.rsa.nfolds folds.
+%  Predefined folds can be provided instead (e.g. the runs of an fMRI
+%  experiment, leave-one-run-out), and then the number of folds is the
+%  number of different values in folds.
 %
 %%  INPUT:
 %
@@ -15,6 +22,9 @@ function rdm = mvpalab_rdm(cfg,X,Y)
 %
 %  - {1D-categorical} - Y:
 %    Categorical vector including data labels
+%
+%  - {1D-array} - folds (optional):
+%    Predefined fold of each trial for the cross-validation.
 %
 %%  OUTPUT:
 %
@@ -43,14 +53,24 @@ if cfg.rsa.nfolds > 1
             'condition-wise RDMs (cfg.rsa.trialwise = false). Set ' ...
             'cfg.rsa.nfolds = 1 to compute trial-wise RDMs.']);
     end
-    strpar = cvpartition(Y,"KFold",cfg.rsa.nfolds);
+    %  Fold of each trial: predefined or stratified random partition.
+    if nargin < 4 || isempty(folds)
+        strpar = cvpartition(Y,"KFold",cfg.rsa.nfolds);
+        folds = zeros(numel(Y),1);
+        for k = 1 : cfg.rsa.nfolds
+            folds(strpar.test(k)) = k;
+        end
+    end
+    folds = folds(:);
+    foldids = unique(folds)';
 else
     if strcmp(cfg.rsa.distance,'crossnobis')
         error(['The crossnobis distance is cross-validated and requires ' ...
             'cfg.rsa.nfolds > 1. Use cfg.rsa.distance = ''mahalanobis'' ' ...
             'without cross-validation.']);
     end
-    strpar = false;
+    folds = [];
+    foldids = 1;
 end
 
 %% Noise normalization:
@@ -61,12 +81,12 @@ end
 noisenorm = any(strcmp(cfg.rsa.distance,{'mahalanobis','crossnobis'}));
 
 %% Iterate over folds
-for k = 1 : cfg.rsa.nfolds
+for k = 1 : numel(foldids)
     %% Split the data in train and test folds:
     %  Fold k is the test set and the trials of the remaining folds are the
     %  training set:
 
-    dataset = mvpalab_datasplit(cfg,X,Y,strpar,k);
+    dataset = mvpalab_datasplit(cfg,X,Y,folds,foldids(k));
 
     %% Noise precision matrix from the training trials if needed:
     %  Computed before averaging the trials by condition.

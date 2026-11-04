@@ -1,4 +1,4 @@
-function [data] = mvpalab_datasplit(cfg,X,Y,strpar,k)
+function [data] = mvpalab_datasplit(cfg,X,Y,folds,k)
 %% MVPALAB_DATASPLIT
 %
 %  This function splits the data into training and testing sets based on
@@ -26,12 +26,13 @@ function [data] = mvpalab_datasplit(cfg,X,Y,strpar,k)
 %  - {1D-categorical} - Y:
 %    Categorical vector including data labels.
 %
-%  - {cvpartition} - strpar:
-%    Stratified partition of the trials into cfg.rsa.nfolds folds (not used
-%    without cross-validation).
+%  - {1D-array} - folds:
+%    Fold of each trial (not used without cross-validation). The folds are
+%    a stratified random partition (EEG/MEG) or predefined groups of trials
+%    such as the runs of an fMRI experiment (see mvpalab_rdm).
 %
 %  - {int} - k:
-%    Current fold index used to select the test set.
+%    Fold used as test set (a value of folds).
 %
 %%  OUTPUT:
 %
@@ -46,12 +47,12 @@ function [data] = mvpalab_datasplit(cfg,X,Y,strpar,k)
 if cfg.rsa.nfolds > 1
 
     % Test set: trials of fold k.
-    data.test_x = X(strpar.test(k),:,:);
-    data.test_y = Y(strpar.test(k));
+    data.test_x = X(folds == k,:,:);
+    data.test_y = Y(folds == k);
 
     % Training set: all the trials of the remaining folds.
-    data.train_x = X(strpar.training(k),:,:);
-    data.train_y = Y(strpar.training(k));
+    data.train_x = X(folds ~= k,:,:);
+    data.train_y = Y(folds ~= k);
 
 else
 

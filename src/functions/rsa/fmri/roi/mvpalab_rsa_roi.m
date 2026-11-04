@@ -1,20 +1,46 @@
 function [res,stats,cfg] = mvpalab_rsa_roi(cfg,volumes,masks)
+%% MVPALAB_RSA_ROI
+%
+%  This function computes the condition-wise RDM of each region of interest
+%  and subject from the fMRI betas (one beta per condition and run).
+%
+%  - Without cross-validation (cfg.rsa.nfolds = 1): the dissimilarity is
+%    computed between all the betas (conditions x runs) and the run blocks
+%    are averaged (mvpalab_mergerunsrdm). The average includes pairs of
+%    betas estimated in the same run, which share the noise of that run
+%    (scanner drifts, head motion, physiological noise...), so the
+%    dissimilarities are affected by this shared noise.
+%
+%  - With cross-validation (cfg.rsa.nfolds > 1): leave-one-run-out. Each
+%    run is used once as test set and the average of the remaining runs as
+%    training set, so the two patterns compared in each dissimilarity are
+%    always estimated from different runs (cross-validated Pearson,
+%    cross-validated Euclidean or crossnobis distances, see
+%    mvpalab_computerdm). The folds are always the runs: the value of
+%    cfg.rsa.nfolds only enables the cross-validation. This is the
+%    standard partition for cross-validated distances in fMRI (Walther et
+%    al., 2016; rsatoolbox, calc_rdm with the run as cv_descriptor).
+%
+%  Walther, A., Nili, H., Ejaz, N., Alink, A., Kriegeskorte, N., &
+%  Diedrichsen, J. (2016). Reliability of dissimilarity measures for
+%  multi-voxel pattern analysis. NeuroImage, 137, 188-200.
+%  https://doi.org/10.1016/j.neuroimage.2015.12.012
+
 %% Initialize
 stats = struct();
 mode = cfg.rsa.modality;
 dist = cfg.rsa.distance;
+crossval = cfg.rsa.nfolds > 1;
 
-%% Cross-validation is not supported yet:
-%  The RDMs are computed between all the betas (conditions x runs) of each
-%  subject, without cross-validation. Cross-validated distances
-%  (cfg.rsa.nfolds > 1 or 'crossnobis') would require a leave-one-run-out
-%  partition, which is not implemented for fMRI data.
-
-if cfg.rsa.nfolds > 1 || strcmp(dist,'crossnobis')
-    error(['Cross-validated RDMs (cfg.rsa.nfolds > 1 or ''crossnobis'') ' ...
-        'are not supported for fMRI ROI analyses yet. Use ' ...
-        'cfg.rsa.nfolds = 1.']);
+if ~crossval && strcmp(dist,'crossnobis')
+    error(['The crossnobis distance is cross-validated and requires ' ...
+        'cfg.rsa.nfolds > 1. Use cfg.rsa.distance = ''mahalanobis'' ' ...
+        'without cross-validation.']);
 end
+
+%  Leave-one-run-out RDMs are condition-wise:
+cfgcv = cfg;
+cfgcv.rsa.trialwise = false;
 
 %% Generate and vectorize the theoretical RD matrices:
 %  Based on the previously designed models.
@@ -45,39 +71,50 @@ for roi = 1 : length(cfg.rsa.roi)
         %% Prepare data: [betas x voxels]
         masked{sub} = mvpalab_combineruns(cfg,masked{sub});
         
-        %% Condition label of each beta:
+        %% Condition and run of each beta:
         %  mvpalab_combineruns stacks the betas condition by condition
         %  (all the runs of condition 1, then condition 2...).
 
         [nconds,nruns] = size(subject_betas);
         labels = categorical(repelem((1:nconds)',nruns));
+        runs = repmat((1:nruns)',nconds,1);
 
-        %% Noise precision matrix if needed:
-        %  For the Mahalanobis distance the noise is estimated from the
-        %  residuals of the betas (each beta minus the mean of its condition
-        %  across runs), see mvpalab_noiseprec.
+        if crossval
+            %% Leave-one-run-out cross-validated RDM:
+            %  mvpalab_rdm uses the runs as folds: training patterns are the
+            %  mean of the betas of the other runs, test patterns the betas
+            %  of the left-out run, and the RDMs are averaged across runs.
+            %  The noise precision matrix (Mahalanobis/crossnobis) is
+            %  estimated from the training betas of each fold.
+            %  rdm - [n_conditions x n_conditions]
 
-        if strcmp(dist,'mahalanobis')
-            prec = mvpalab_noiseprec(masked{sub},labels);
+            cvrdm = mvpalab_rdm(cfgcv,masked{sub},labels,runs);
+            rdm{sub} = cvrdm.rdm;
         else
-            prec = [];
+            %% Noise precision matrix if needed:
+            %  For the Mahalanobis distance the noise is estimated from the
+            %  residuals of the betas (each beta minus the mean of its
+            %  condition across runs), see mvpalab_noiseprec.
+
+            if strcmp(dist,'mahalanobis')
+                prec = mvpalab_noiseprec(masked{sub},labels);
+            else
+                prec = [];
+            end
+
+            %% Extract RDM for each roi and subject:
+            %  rdm - [n_betas x n_betas], n_betas = n_conditions x n_runs
+            %  Without cross-validation the training and test patterns are
+            %  the same betas.
+
+            rdm{sub} = mvpalab_computerdm(cfg,masked{sub},masked{sub},[],prec);
+
+            %% Merge conditions:
+            %  Average the run blocks of each pair of conditions.
+            %  rdm - [n_conditions x n_conditions]
+
+            rdm{sub} = mvpalab_mergerunsrdm(cfg,subject_betas,rdm{sub});
         end
-
-        %% Extract RDM for each roi and subject:
-        %  This function returns 2D matrices containing the RDMs according
-        %  to the following structure:
-        %  rdm - [n_betas x n_betas], n_betas = n_conditions x n_runs
-        %  Without cross-validation the training and test patterns are the
-        %  same betas.
-
-        rdm{sub} = mvpalab_computerdm(cfg,masked{sub},masked{sub},[],prec);
-        
-        %% Merge conditions if needed:
-        %  Combine conditions of different runs in a global condition if
-        %  needed.
-        %  rdm - [n_conditions x voxels]
-        
-        rdm{sub} = mvpalab_mergerunsrdm(cfg,subject_betas,rdm{sub});
         
         %% Vectorize RDMs:
         %  Both theoretical and empirical DRMs are vectorized in order to

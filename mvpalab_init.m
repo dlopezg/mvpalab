@@ -189,7 +189,9 @@ cfg.stats.shownulldis = 0;
 %                      cross-validation of the classifiers (cfg.cv.nfolds).
 %                      1 = no cross-validation. Cross-validated RDMs
 %                      (nfolds > 1) require condition-wise RDMs
-%                      (cfg.rsa.trialwise = false).
+%                      (cfg.rsa.trialwise = false). In fMRI ROI analyses
+%                      the folds are always the runs (leave-one-run-out)
+%                      and nfolds > 1 only enables the cross-validation.
 % cfg.rsa.meancenter - Center each pattern across features before computing
 %                      the Pearson distance (true = Pearson correlation,
 %                      false = cosine similarity).

@@ -30,8 +30,15 @@ if ~cfg.rsa.trialwise
     % Initialize label vector:
     train_y = []; test_y = [];
 
+    % Preallocate [conditions x channels x timepoints]. Also keeps the
+    % channels in the second dimension when there is a single timepoint
+    % (2D data, e.g. fMRI betas).
+    nconds = length(unique(dataset.train_y));
+    train_x_averaged = zeros(nconds,size(dataset.train_x,2),size(dataset.train_x,3));
+    test_x_averaged  = zeros(nconds,size(dataset.test_x,2),size(dataset.test_x,3));
+
     % Iterate over conditions:
-    for i = 1 : length(unique(dataset.train_y))
+    for i = 1 : nconds
 
         % Average trials per condition:
         train_x_averaged(i,:,:) =  mean(dataset.train_x(...

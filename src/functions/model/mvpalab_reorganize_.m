@@ -5,7 +5,8 @@ mvccdirections = exist('metric_','var');
             for freq = 1 : size(metric,3)
                 temp = metric{sub,tp,freq};
                 if mvccdirections
-                    temp_ = metric_;
+                    % Same subject, timepoint and frequency as direction A-B:
+                    temp_ = metric_{sub,tp,freq};
                 end
                 if cfg.classmodel.tempgen
                     for tp_ = 1 : length(temp)

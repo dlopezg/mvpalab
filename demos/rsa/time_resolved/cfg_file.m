@@ -43,6 +43,7 @@ cfg.rsa.trialwise = false;
 cfg.rsa.meancenter = 1;
 cfg.normdata = 1;
 cfg.rsa.nfolds = 3;
+cfg.rsa.nreps = 1;
 
 %% VECTORIZED THEORETHICAL MODELS:
                      %|          %|        %|      %|    %|  %| %| 

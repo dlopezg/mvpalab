@@ -221,6 +221,13 @@ cfg.stats.shownulldis = 0;
 %                      (cfg.rsa.trialwise = false). In fMRI ROI analyses
 %                      the folds are always the runs (leave-one-run-out)
 %                      and nfolds > 1 only enables the cross-validation.
+% cfg.rsa.nreps      - Number of repeated cross-validations of the RDMs
+%                      (nfolds > 1). Each repetition draws a new random
+%                      assignment of trials to folds and the RDM is the
+%                      mean across folds and repetitions. nreps = 1 uses a
+%                      single partition. Not used in fMRI ROI analyses
+%                      (the runs are a fixed partition). Note: running time
+%                      scales ~linearly with nreps.
 % cfg.rsa.meancenter - Center each pattern across features before computing
 %                      the Pearson distance (true = Pearson correlation,
 %                      false = cosine similarity).
@@ -231,6 +238,7 @@ cfg.rsa.modality = 'corr';
 cfg.rsa.distance = 'pearson';
 cfg.rsa.trialwise = true;
 cfg.rsa.nfolds = 1;
+cfg.rsa.nreps = 1;
 cfg.rsa.meancenter = true;
 
 %% SLIDING FILTER ANALYSIS CONFIGURATION:

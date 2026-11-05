@@ -12,7 +12,7 @@ end
 
 hcutoff = cfg.sf.freqvec + cfg.sf.hbw;
 lcutoff = cfg.sf.freqvec - cfg.sf.hbw;
-if lcutoff(1) == 0; lcutoff(1) = 1e-6; end
+if lcutoff(1) < 1e-6; lcutoff(1) = 1e-6; end
 
 for i = 1 : length(cfg.sf.freqvec)
    cfg.sf.fcutoff{i} = [lcutoff(i) hcutoff(i)]; 

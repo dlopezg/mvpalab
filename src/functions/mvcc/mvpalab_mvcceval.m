@@ -1,23 +1,15 @@
-function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvcceval(X,Y,Xt,Yt,tp,cfg,strpar,strpart,pidx)
+function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvcceval(X,Y,Xt,Yt,tp,cfg,strpar,strpart)
 
 % strpar, strpart = Cross-validation partitions of the training (X,Y) and
 %                   test (Xt,Yt) datasets, generated once before the
 %                   timepoints loop (mvpalab_mvccpartition) so that the
 %                   same partitions are used at all the timepoints.
-% pidx            = Permutation of the training labels of each fold,
-%                   drawn once before the timepoints loop
-%                   (mvpalab_foldperm). Required if cfg.classmodel.permlab
-%                   is true (permuted maps).
-
-if cfg.classmodel.permlab && (nargin < 9 || isempty(pidx))
-    error(['Permuted maps require the label permutation of each fold ' ...
-        '(pidx, see mvpalab_foldperm).']);
-end
 
 x = {}; y = {}; t = {}; auc = NaN;
 cm = {}; pr = {}; re = {}; f1 = {};
 cr = NaN;
 raw_weights = [];
+params = [];
 w = [];
 
 %% Cross validation loop:
@@ -27,14 +19,15 @@ w = [];
 if ~cfg.classmodel.tempgen 
 
     
-    predicted_labels = Yt; predicted_labels(:) = missing;
-    predicted_scores = ones(strpart.NumObservations,2);
+    predicted_labels = Yt([]);
+    predicted_scores = [];
 else
     for i = 1 : cfg.tm.ntp_
-        predicted_labels{i} = Yt; predicted_labels{i}(:) = missing;
-        predicted_scores{i} = ones(strpart.NumObservations,2);
+        predicted_labels{i} = Yt([]);
+        predicted_scores{i} = [];
     end
 end
+true_labels = Yt([]);
 
 for k = 1 : strpar.NumTestSets
     %% Update train and test datasets:
@@ -55,14 +48,11 @@ for k = 1 : strpar.NumTestSets
         test_Y = Yt(selected_partition);
     end
     
+    %% Test labels of all the folds:
+    true_labels = [true_labels; test_Y];
+    
     %% Data normalization if needed:
     [train_X,test_X,nparams] = mvpalab_datanorm(cfg,train_X,test_X,[]);
-    
-    %% Permute labels if needed:
-    %  Same permutation of this fold at all the timepoints.
-    if cfg.classmodel.permlab
-        train_Y = train_Y(pidx{k});
-    end
     
     %% Feature selection if needed:
     if ~strcmp(cfg.dimred.method,'none')
@@ -71,11 +61,13 @@ for k = 1 : strpar.NumTestSets
     end
     
     %% Train and test the model:
-    [mdl,raw_weights(:,k)] = mvpalab_train(train_X,train_Y,cfg);
+    [mdl,weights] = mvpalab_train(train_X,train_Y,cfg);
     
-    %% Correct feature weights:
+    %% Correct feature weights and return them in the channel space:
     if cfg.classmodel.wvector
-        haufe_weights(:,k) = mvpalab_wcorrect(train_X,raw_weights(:,k));
+        haufe = mvpalab_wcorrect(train_X,weights);
+        raw_weights(:,k) = mvpalab_backproject(weights,params,cfg);
+        haufe_weights(:,k) = mvpalab_backproject(haufe,params,cfg);
     end
     
     %% Temporal generalization if needed:
@@ -98,8 +90,8 @@ for k = 1 : strpar.NumTestSets
             acc(k,tp_) = sum(test_Y == labels)/length(test_Y);
             
             % Update label and score vectors:
-            predicted_labels{tp_}(selected_partition) = labels;
-            predicted_scores{tp_}(selected_partition,:) = scores;
+            predicted_labels{tp_} = [predicted_labels{tp_}; labels];
+            predicted_scores{tp_} = [predicted_scores{tp_}; scores];
         
         end
     else
@@ -107,8 +99,8 @@ for k = 1 : strpar.NumTestSets
         % Test classifier:
         [labels,scores] = predict(mdl,test_X);
         acc(k) = sum(test_Y == labels)/length(test_Y);
-        predicted_labels(selected_partition) = labels;
-        predicted_scores(selected_partition,:) = scores;
+        predicted_labels = [predicted_labels; labels];
+        predicted_scores = [predicted_scores; scores];
  
     end
 end
@@ -120,7 +112,7 @@ if cfg.classmodel.tempgen
         % Compute confusion matrix if needed:
         if cfg.classmodel.confmat || cfg.classmodel.precision ...
             || cfg.classmodel.recall || cfg.classmodel.f1score
-            cm{tp_} = confusionmat(Yt,predicted_labels{tp_});
+            cm{tp_} = confusionmat(true_labels,predicted_labels{tp_});
         end
         % Compute precision if needed:
         if cfg.classmodel.precision
@@ -137,7 +129,7 @@ if cfg.classmodel.tempgen
         % Receiver operating characteristic (ROC curve) if needed:
         if cfg.classmodel.auc || cfg.classmodel.roc
             [x{tp_},y{tp_},t{tp_},auc(tp_)] = ...
-                perfcurve(Yt,predicted_scores{tp_}(:,1),mdl.ClassNames(1));
+                perfcurve(true_labels,predicted_scores{tp_}(:,1),mdl.ClassNames(1));
         end
     end
     
@@ -155,7 +147,7 @@ else
     % Compute confusion matrix if needed:
     if cfg.classmodel.confmat || cfg.classmodel.precision ...
             || cfg.classmodel.recall || cfg.classmodel.f1score
-        cm = confusionmat(Yt,predicted_labels);
+        cm = confusionmat(true_labels,predicted_labels);
     end
     % Compute precision if needed:
     if cfg.classmodel.precision
@@ -171,7 +163,7 @@ else
     end
     % Receiver operating characteristic (ROC curve):
     if cfg.classmodel.auc || cfg.classmodel.roc
-        [x,y,t,auc] = perfcurve(Yt,predicted_scores(:,1),mdl.ClassNames(1));
+        [x,y,t,auc] = perfcurve(true_labels,predicted_scores(:,1),mdl.ClassNames(1));
     end
     % Feature weights:
     if cfg.classmodel.wvector

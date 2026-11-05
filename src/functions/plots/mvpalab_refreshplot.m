@@ -4,7 +4,7 @@ function mvpalab_refreshplot(graph)
     title(graph.title);
     ylabel(graph.ylabel);
     ylim(graph.ylim);
-    caxis(graph.caxis);
+    if any(graph.caxis), caxis(graph.caxis); end
     colormap(graph.colorMap);
 end
 

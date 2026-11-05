@@ -2,6 +2,9 @@ function [train_X,test_X,params,cfg] = mvpalab_dimred(train_X,train_Y,test_X,tes
 
 if strcmp(cfg.dimred.method,'pca')
     [coeff,scores,~,~,var,mu] = pca(train_X);
+    if cfg.dimred.ncomp < 1 || cfg.dimred.ncomp > size(scores,2)
+        error('cfg.dimred.ncomp must be between 1 and %d.',size(scores,2));
+    end
     train_X = scores(:,1:cfg.dimred.ncomp,:);
     %% Project the test set in the principal component space:
     % When you specify a variable weight, the coefficient matrix is not 

@@ -10,6 +10,7 @@ function out = mvpalab_meanreps(reps)
 %         per-class precision/recall/f1 vector).
 %       - A cell array (temporal generalization case: a container indexed by
 %         test timepoint, whose elements are numeric).
+%       - A structure (feature weights), averaged field by field.
 %       - An empty cell {} (metric disabled), in which case {} is returned to
 %         preserve the current behaviour.
 %
@@ -25,6 +26,13 @@ if iscell(first)
     for i = 1 : numel(first)
         tmp = cellfun(@(r) r{i},reps,'UniformOutput',false);
         out{i} = mvpalab_meanreps(tmp);
+    end
+elseif isstruct(first)
+    % Feature weights:
+    out = first;
+    for field = fieldnames(first)'
+        tmp = cellfun(@(r) r.(field{1}),reps,'UniformOutput',false);
+        out.(field{1}) = mvpalab_meanreps(tmp);
     end
 else
     % Time-resolved numeric container:

@@ -3,6 +3,11 @@ function [per,permaps,stats] = mvpalab_extractdiag(cfg,performance,permuted_maps
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
 
+% The diagonal needs the same training and test timepoints:
+if ~isequal(cfg.tm.tpoints,cfg.tm.tpoints_)
+    error('The diagonal needs the same training and test time windows.');
+end
+
 fprintf('<strong> > Extracting time resolved diagonal: </strong>');
 
 cfg.classmodel.tempgen = false;

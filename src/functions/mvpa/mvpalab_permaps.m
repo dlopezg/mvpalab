@@ -44,7 +44,6 @@ for sub = 1 : nSubjects
         [X,cfg] = mvpalab_chanselection(X,cfg);
         
         %% Number of cross-validation repetitions (k-fold only):
-        cfg.classmodel.permlab = true;
         nreps = 1;
         if strcmp(cfg.cv.method,'kfold')
             nreps = cfg.cv.nreps;
@@ -54,6 +53,12 @@ for sub = 1 : nSubjects
         msglen = 0;
 
         for per = 1 : cfg.stats.nper
+
+            %% Labels of this permuted map:
+            %  Drawn once per map, so the same labels are used at all the
+            %  folds, repetitions and timepoints, as in the observed
+            %  analysis (see mvpalab_permlabels).
+            Yp = mvpalab_permlabels(Y);
 
             %% Repeated cross-validation accumulators:
             acc_r = []; auc_r = [];
@@ -68,13 +73,7 @@ for sub = 1 : nSubjects
                 if strcmp(cfg.cv.method,'loo')
                     cfg.cv.nfolds = cfg.cv.loo(sub);
                 end
-                strpar = cvpartition(Y,'KFold',cfg.cv.nfolds);
-
-                %% Label permutation of each fold, fixed across time:
-                %  Drawn before the timepoints loop, so all the timepoints
-                %  (and the whole temporal generalization matrix) use the
-                %  same permutation (see mvpalab_foldperm).
-                pidx = mvpalab_foldperm(strpar);
+                strpar = cvpartition(Yp,'KFold',cfg.cv.nfolds);
 
                 %% Timepoints loop
                 if cfg.classmodel.parcomp
@@ -86,7 +85,7 @@ for sub = 1 : nSubjects
                         pr_r{tp,rep},...
                         re_r{tp,rep},...
                         f1_r{tp,rep},...
-                        ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar,pidx);
+                        ~] = mvpalab_mvpaeval(X,Yp,tp,cfg,strpar);
                     end
                 else
                     for tp = 1 : cfg.tm.ntp
@@ -97,7 +96,7 @@ for sub = 1 : nSubjects
                         pr_r{tp,rep},...
                         re_r{tp,rep},...
                         f1_r{tp,rep},...
-                        ~] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar,pidx);
+                        ~] = mvpalab_mvpaeval(X,Yp,tp,cfg,strpar);
                     end
                 end
 
@@ -158,8 +157,6 @@ end
 if cfg.classmodel.f1score
     permaps.f1score = mvpalab_reorganize(cfg,f1score);
 end 
-
-cfg.classmodel.permlab = false;
 
 if ~cfg.sf.flag, mvpalab_save(cfg,permaps,'permaps'); end
 

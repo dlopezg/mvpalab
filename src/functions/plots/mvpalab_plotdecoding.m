@@ -10,13 +10,14 @@ data = mvpalab_selectsub(graph,data);
 
 %% Calculate the mean for each timepoint:
 datamean = squeeze(mean(data,3));
+datamean = datamean(:);
 chancelevel = zeros(1,length(datamean))+graph.chanlvl;
 
 %% Smooth the data for the representation if needed:
 if graph.smoothdata
     datamean = smooth(datamean,graph.smoothdata);
     for subject = 1 : size(data,3) 
-        data(1,:,subject) = smooth(data(1,:,subject));
+        data(1,:,subject) = smooth(data(1,:,subject),graph.smoothdata);
     end
 end
 

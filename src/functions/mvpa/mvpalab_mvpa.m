@@ -3,6 +3,9 @@ function [res,cfg] = mvpalab_mvpa(cfg,fv)
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
 
+% Feature weights are not available with non-linear kernels:
+mvpalab_checkwvector(cfg);
+
 fprintf('<strong> > Computing MVPA analysis: </strong>\n');
 
 %% Initialization
@@ -41,6 +44,11 @@ for sub = 1 : nSubjects
         %% Electrode selection:
         [X,cfg] = mvpalab_chanselection(X,cfg);
 
+        %% Decoding with permuted labels if needed (see mvpalab_permlabels):
+        if cfg.classmodel.permlab
+            Y = mvpalab_permlabels(Y);
+        end
+
         %% Number of cross-validation repetitions (k-fold only):
         nreps = 1;
         if strcmp(cfg.cv.method,'kfold')
@@ -53,6 +61,7 @@ for sub = 1 : nSubjects
         pr_r = cell(cfg.tm.ntp,nreps);
         re_r = cell(cfg.tm.ntp,nreps);
         f1_r = cell(cfg.tm.ntp,nreps);
+        w_r  = cell(cfg.tm.ntp,nreps);
 
         if nreps > 1, fprintf(' Repetition: '); end
 
@@ -79,7 +88,7 @@ for sub = 1 : nSubjects
                         pr_r{tp,rep},...
                         re_r{tp,rep},...
                         f1_r{tp,rep},...
-                        w{1,tp,sub,freq}...
+                        w_r{tp,rep}...
                         ] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
                 end
             else
@@ -94,7 +103,7 @@ for sub = 1 : nSubjects
                         pr_r{tp,rep},...
                         re_r{tp,rep},...
                         f1_r{tp,rep},...
-                        w{1,tp,sub,freq}...
+                        w_r{tp,rep}...
                         ] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar);
                 end
             end
@@ -114,6 +123,7 @@ for sub = 1 : nSubjects
             precision{sub,tp,freq} = mvpalab_meanreps(pr_r(tp,:));
             recall{sub,tp,freq}    = mvpalab_meanreps(re_r(tp,:));
             f1score{sub,tp,freq}   = mvpalab_meanreps(f1_r(tp,:));
+            w{1,tp,sub,freq}       = mvpalab_meanreps(w_r(tp,:));
         end
 
         % Reestructure result:

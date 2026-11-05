@@ -5,7 +5,11 @@ function [] = mvpalab_plotrdm(graph,cfg,data)
 %% Plot the RDM.
 %  For a specific subject and timepoint:
 
-imagesc(data,graph.caxis);
+if any(graph.caxis)
+    imagesc(data,graph.caxis);
+else
+    imagesc(data);
+end
 % 
 % contourf(data,64,'LineStyle', 'none');
 % caxis(graph.caxis)

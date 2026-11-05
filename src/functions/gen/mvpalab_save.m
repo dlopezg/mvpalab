@@ -24,6 +24,14 @@ function mvpalab_save(cfg,data,mode,folder)
 %    Description: Current folder name used for the recursive call. 
 %
 
+%% Unfiltered baseline of a sliding filter analysis:
+%  Intermediate results, saved by mvpalab_sfilter in diffMaps/other.
+%  Fusion and RSA ROI do not update the cfg, so the field may not exist.
+
+if isfield(cfg,'sf') && isfield(cfg.sf,'baseline') && cfg.sf.baseline
+    return
+end
+
 %% Initialize the recursive function:
 %  If this call is the initial one, initialize the recursive algorithm:
 

@@ -1,11 +1,13 @@
 function o = mvpalab_reorganize(cfg,metric,metric_)
 
-% Class names:
-id_1 = cfg.study.conditionIdentifier{1,1};
-id_2 = cfg.study.conditionIdentifier{1,2};
-id_3 = cfg.study.conditionIdentifier{2,1};
-id_4 = cfg.study.conditionIdentifier{2,2};
+% Class names, without spaces as in mvpalab_import:
+id_1 = cfg.study.conditionIdentifier{1,1}; id_1 = id_1(~isspace(id_1));
+id_2 = cfg.study.conditionIdentifier{1,2}; id_2 = id_2(~isspace(id_2));
+id_3 = cfg.study.conditionIdentifier{2,1}; id_3 = id_3(~isspace(id_3));
+id_4 = cfg.study.conditionIdentifier{2,2}; id_4 = id_4(~isspace(id_4));
 
+% MVCC: the class metrics are stored by test condition, so conditions 1
+% and 2 come from direction B - A and conditions 3 and 4 from A - B.
 mvcc = exist('metric_','var');
 
 for sub = 1 : size(metric,1)
@@ -26,11 +28,11 @@ for sub = 1 : size(metric,1)
                         % MVPA or MVCC
                         if mvcc
                             
-                            % MVCC - Direction A - B
+                            % MVCC - Direction B - A
                             o.(id_1)(tp,tp_,sub,freq) = temp_{tp_}(1);
                             o.(id_2)(tp,tp_,sub,freq) = temp_{tp_}(2);
                             
-                            % MVCC - Direction B - A
+                            % MVCC - Direction A - B
                             o.(id_3)(tp,tp_,sub,freq) = temp{tp_}(1);
                             o.(id_4)(tp,tp_,sub,freq) = temp{tp_}(2);
                             
@@ -47,11 +49,11 @@ for sub = 1 : size(metric,1)
                     % MVPA or MVCC
                     if mvcc
                         
-                        % MVCC - Direction A - B
+                        % MVCC - Direction B - A
                         o.(id_1)(1,tp,sub,freq) = temp_(1);
                         o.(id_2)(1,tp,sub,freq) = temp_(2);
                         
-                        % MVCC - Direction B - A
+                        % MVCC - Direction A - B
                         o.(id_3)(1,tp,sub,freq) = temp(1);
                         o.(id_4)(1,tp,sub,freq) = temp(2);
                         
@@ -79,11 +81,11 @@ for sub = 1 : size(metric,1)
                             % MVPA or MVCC
                             if mvcc
                                 
-                                % MVCC - Direction A - B
+                                % MVCC - Direction B - A
                                 o.(id_1)(tp,tp_,sub,per,freq) = temp_{tp_}(1);
                                 o.(id_2)(tp,tp_,sub,per,freq) = temp_{tp_}(2);
                                 
-                                % MVCC - Direction B - A
+                                % MVCC - Direction A - B
                                 o.(id_3)(tp,tp_,sub,per,freq) = temp{tp_}(1);
                                 o.(id_4)(tp,tp_,sub,per,freq) = temp{tp_}(2);
                                 
@@ -100,11 +102,11 @@ for sub = 1 : size(metric,1)
                         % MVPA or MVCC
                         if mvcc
                             
-                            % MVCC - Direction A - B
+                            % MVCC - Direction B - A
                             o.(id_1)(1,tp,sub,per,freq) = temp_(1);
                             o.(id_2)(1,tp,sub,per,freq) = temp_(2);
                             
-                            % MVCC - Direction B - A
+                            % MVCC - Direction A - B
                             o.(id_3)(1,tp,sub,per,freq) = temp(1);
                             o.(id_4)(1,tp,sub,per,freq) = temp(2);
                             

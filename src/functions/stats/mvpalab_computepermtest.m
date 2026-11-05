@@ -3,6 +3,10 @@ function stats = mvpalab_computepermtest(cfg,performance,permuted_maps)
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
 
+if ~ismember(cfg.stats.tails,[-1 1 2])
+    error('cfg.stats.tails must be 1 (above chance), -1 (below chance) or 2.');
+end
+
 %% Initilization - Generate permutation idx matrix:
 % Here we determine the map of each subject that has to be selected in each
 % permutation.

@@ -8,10 +8,8 @@ function [strpar,strpart] = mvpalab_mvccpartition(cfg,Y,Yt)
 %  before the timepoints loop, and the same partitions are used at all the
 %  timepoints (as in MVPA, see mvpalab_mvpa and mvpalab_permaps). If a new
 %  partition is drawn at each timepoint, each timepoint is evaluated with
-%  different training and test trials: the result at each timepoint gets
-%  independent cross-validation noise and, in the permuted maps, the same
-%  label permutation (mvpalab_foldperm) would be applied to different
-%  training trials at each timepoint.
+%  different training and test trials and the result at each timepoint
+%  gets independent cross-validation noise.
 %
 %%  INPUT:
 %
@@ -41,6 +39,9 @@ if strcmp(cfg.cv.method,'none')
     strpart.NumTestSets = 1;
     strpart.NumObservations = length(Yt);
 else
+    if strcmp(cfg.cv.method,'loo') && length(Y) ~= length(Yt)
+        error('MVCC with leave-one-out needs datasets of the same size.');
+    end
     strpar  = cvpartition(Y,'KFold',cfg.cv.nfolds);  % Train
     strpart = cvpartition(Yt,'KFold',cfg.cv.nfolds); % Test
 end

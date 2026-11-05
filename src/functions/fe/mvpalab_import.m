@@ -6,8 +6,9 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 nSubjects = length(cfg.study.dataFiles{1,1});
 nCtxt = 1;
 
-if ~cfg.sf.flag
-    cfg.sf.nfreq = 1;
+nfreq = 1;
+if cfg.sf.flag
+    nfreq = cfg.sf.nfreq;
 end
 
 % Check cfg integrity and backwards compatibility:
@@ -34,11 +35,11 @@ for sub = 1 : nSubjects
     fprintf([int2str(sub) '/' int2str(length(cfg.study.dataFiles{1,1}))]);
     fprintf('\n');
     
-    for freq = 1 : cfg.sf.nfreq
+    for freq = 1 : nfreq
         
         if cfg.sf.flag
             fprintf('  <strong> > Filtering data: </strong>');
-            fprintf([int2str(freq) '/' int2str(cfg.sf.nfreq) '\n\n']);
+            fprintf([int2str(freq) '/' int2str(nfreq) '\n\n']);
         end
         
         for ctxt = 1 : nCtxt
@@ -52,11 +53,13 @@ for sub = 1 : nSubjects
                     elseif strcmp(cfg.study.dataFiles{ctxt,class}{sub}(end-3:end),'.set')
                         mvpalab_checkeeglab();
                         temp.data = pop_loadset(cfg.study.dataFiles{ctxt,class}{sub},cfg.study.dataPaths{ctxt,class});
+                    else
+                        error('Only .mat and .set files are supported.');
                     end
                     
-                catch
-                    error(['Data files not found. '...
-                        'Directory: ' cfg.study.dataPaths{ctxt,class}]);
+                catch loaderror
+                    error('Unable to load %s: %s',[cfg.study.dataPaths{ctxt,class} ...
+                        cfg.study.dataFiles{ctxt,class}{sub}],loaderror.message);
                 end
                 
                 % Read and prepare input data for MVPAlab:

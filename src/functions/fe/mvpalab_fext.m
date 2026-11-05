@@ -5,7 +5,7 @@ X = cell(length(cfg.study.dataFiles{1,1}),1);
 Y = X;
 
 %% Match class size (factor of k) is not needed for MVCC:
-if size(data) > 1
+if size(data,2) > 1
     cfg.classsize.matchkfold = false;
 end
 

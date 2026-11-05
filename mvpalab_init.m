@@ -78,6 +78,10 @@ cfg.dimred.ncomp  = 0;
 % fold and applied to the test set (mvpalab_datanorm), so they are only
 % used by the classifiers (MVPA and MVCC); RSA ignores them. fMRI data
 % imported with mvpalab_import_fmri is not normalized.
+%
+% cfg.normdata = 2 and the power envelope use the whole epoch of each
+% trial, so post-stimulus information can reach the baseline. Check the
+% pre-stimulus decoding when using them.
 
 cfg.normdata = 0; 
 
@@ -159,6 +163,7 @@ end
 % repetition draws a new random assignment of trials to folds and the final
 % result is the mean across repetitions. nreps = 1 reproduces the classic
 % single cross-validation. Note: running time scales ~linearly with nreps.
+% ROC curves are not averaged: they come from the last repetition.
 
 cfg.cv.method  = 'kfold';
 cfg.cv.nfolds  = 5;
@@ -167,9 +172,9 @@ cfg.cv.loo     = [];
 
 %% PERMUTATION TEST
 
-% cfg.stats.type   = 'above';  - Above chance clusters (Rigth tail)
-% cfg.stats.type   = 'below';  - Below chance clusters (Rigth tail)
-% cfg.stats.type   = 'both';   - Above and below chance (Two tails)
+% cfg.stats.tails  =  1 - Above chance clusters (right tail).
+% cfg.stats.tails  = -1 - Below chance clusters (left tail).
+% cfg.stats.tails  =  2 - Above and below chance (two tails).
 
 % cfg.stats.clustcorr - Cluster-level correction (see mvpalab_clusterpvals):
 %                       'fdr' - Null distribution of all the cluster sizes
@@ -269,6 +274,7 @@ cfg.rsa.meancenter = true;
 
 % Flag:
 cfg.sf.flag = 0;
+cfg.sf.baseline = false;  % Internal: unfiltered baseline in progress.
 cfg.sf.filesLocation = '';
 cfg.sf.savefdata = false;
 cfg.sf.metric = 'acc';

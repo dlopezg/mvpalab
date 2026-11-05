@@ -18,12 +18,12 @@ for freq = 1 : length(cfg.sf.freqvec)
         for map = 1 : cfg.stats.nper
             if strcmp(cfg.analysis,'MVPA')
                 perdiffMap.(cfg.sf.metric)(freq,:,:,map) = ...
-                    squeeze(permaps(:,:,:,map,freq)) - squeeze(peracc);
+                    squeeze(permaps(:,:,:,map,freq)) - squeeze(peracc(:,:,:,map));
             elseif strcmp(cfg.analysis,'MVCC')
                 perdiffMap.(cfg.sf.metric).ab(freq,:,:,map) = ...
-                    squeeze(permaps.ab(:,:,:,map,freq)) - squeeze(peracc.ab);
+                    squeeze(permaps.ab(:,:,:,map,freq)) - squeeze(peracc.ab(:,:,:,map));
                 perdiffMap.(cfg.sf.metric).ba(freq,:,:,map) = ...
-                    squeeze(permaps.ba(:,:,:,map,freq)) - squeeze(peracc.ba);
+                    squeeze(permaps.ba(:,:,:,map,freq)) - squeeze(peracc.ba(:,:,:,map));
             end
         end
     end
@@ -34,11 +34,11 @@ end
 % dimension is automatically squeezed by MATLAB causing dimensionality
 % problems. This problems are solved here.
 
-if strcmp(cfg.analysis,'MVPA')
-    diffMap.(cfg.sf.metric) = squeeze(diffMap.(cfg.sf.metric));
-else
-    diffMap.(cfg.sf.metric).ab = squeeze(diffMap.(cfg.sf.metric).ab);
-    diffMap.(cfg.sf.metric).ba = squeeze(diffMap.(cfg.sf.metric).ba);
+if strcmp(cfg.analysis,'MVPA') && size(diffMap.(cfg.sf.metric),2) == 1
+    diffMap.(cfg.sf.metric) = permute(diffMap.(cfg.sf.metric),[1 3 2]);
+elseif strcmp(cfg.analysis,'MVCC') && size(diffMap.(cfg.sf.metric).ab,2) == 1
+    diffMap.(cfg.sf.metric).ab = permute(diffMap.(cfg.sf.metric).ab,[1 3 2]);
+    diffMap.(cfg.sf.metric).ba = permute(diffMap.(cfg.sf.metric).ba,[1 3 2]);
 end
 
 if nargin > 3

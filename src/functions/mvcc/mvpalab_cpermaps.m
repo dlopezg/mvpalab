@@ -1,6 +1,19 @@
 function [permaps,cfg] = mvpalab_cpermaps(cfg,fv)
 %PERMUTATION_MAPS This function generates permutation maps at a subject
 %level for future statistical analyses.
+%
+%  Each permuted map is the observed analysis with one reassignment of the
+%  labels of dataset A, used in both directions (training labels in A - B,
+%  test labels in B - A), while dataset B keeps its labels. The two
+%  directions of the observed analysis use the same data and labels, so
+%  they are correlated; permuting each direction separately loses this
+%  correlation and the null distribution of their mean is too narrow.
+%
+%  Limitation: the permutation also removes the decoding within dataset A.
+%  If datasets A and B contain decoding effects that are not shared, the
+%  null distribution is still narrower than the distribution of the
+%  cross-decoding between them (0.082 vs 0.137 in a simulation with
+%  cfg.cv.nreps = 5), so the test can be liberal in that case.
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
@@ -52,8 +65,7 @@ for sub = 1 : nSubjects
         [train_X,cfg] = mvpalab_chanselection(train_X,cfg);
         [test_X,cfg] = mvpalab_chanselection(test_X,cfg);
         
-        %% Generate permuted labels
-        cfg.classmodel.permlab = true;
+        %% Number of cross-validation repetitions (k-fold only):
         nreps = 1;
         if strcmp(cfg.cv.method,'kfold')
             nreps = cfg.cv.nreps;
@@ -65,6 +77,12 @@ for sub = 1 : nSubjects
         for per = 1 : cfg.stats.nper
             if nreps == 1, mvpalab_pcounter(per,cfg.stats.nper); end
 
+            %% Labels of this permuted map:
+            %  Drawn once per map, so the same labels are used in both
+            %  directions and at all the folds, repetitions and timepoints,
+            %  as in the observed analysis (see mvpalab_permlabels).
+            train_Yp = mvpalab_permlabels(train_Y);
+
             %% Repeated cross-validation accumulators:
             acc_ab_r = []; acc_ba_r = []; 
             auc_ba_r = []; auc_ab_r = [];
@@ -75,15 +93,12 @@ for sub = 1 : nSubjects
             %% Repeated cross-validation loop:
             for rep = 1 : nreps
 
-                %% Cross-validation partitions and label permutations:
-                %  Drawn once per direction and repetition, before the
-                %  timepoints loop, so all the timepoints use the same
-                %  partitions and the same permutation of each fold (see
-                %  mvpalab_mvccpartition and mvpalab_foldperm).
-                [sp_ab,spt_ab] = mvpalab_mvccpartition(cfg,train_Y,test_Y);
-                [sp_ba,spt_ba] = mvpalab_mvccpartition(cfg,test_Y,train_Y);
-                pidx_ab = mvpalab_foldperm(sp_ab);
-                pidx_ba = mvpalab_foldperm(sp_ba);
+                %% Cross-validation partitions, fixed across time:
+                %  One partition of each dataset per direction and
+                %  repetition, used at all the timepoints (see
+                %  mvpalab_mvccpartition).
+                [sp_ab,spt_ab] = mvpalab_mvccpartition(cfg,train_Yp,test_Y);
+                [sp_ba,spt_ba] = mvpalab_mvccpartition(cfg,test_Y,train_Yp);
 
                 if cfg.classmodel.parcomp
                     %% Timepoints loop
@@ -96,7 +111,7 @@ for sub = 1 : nSubjects
                             pr_ab_r{tp,rep},...
                             re_ab_r{tp,rep},...
                             f1_ab_r{tp,rep},...
-                            ~] = mvpalab_mvcceval(train_X,train_Y,test_X,test_Y,tp,cfg,sp_ab,spt_ab,pidx_ab);
+                            ~] = mvpalab_mvcceval(train_X,train_Yp,test_X,test_Y,tp,cfg,sp_ab,spt_ab);
 
                         % Direction B - A:
                         [~,~,~,...
@@ -106,7 +121,7 @@ for sub = 1 : nSubjects
                             pr_ba_r{tp,rep},...
                             re_ba_r{tp,rep},...
                             f1_ba_r{tp,rep},...
-                            ~] = mvpalab_mvcceval(test_X,test_Y,train_X,train_Y,tp,cfg,sp_ba,spt_ba,pidx_ba);
+                            ~] = mvpalab_mvcceval(test_X,test_Y,train_X,train_Yp,tp,cfg,sp_ba,spt_ba);
                     end
                 else
                     for tp = 1 : cfg.tm.ntp
@@ -118,7 +133,7 @@ for sub = 1 : nSubjects
                             pr_ab_r{tp,rep},...
                             re_ab_r{tp,rep},...
                             f1_ab_r{tp,rep},...
-                            ~] = mvpalab_mvcceval(train_X,train_Y,test_X,test_Y,tp,cfg,sp_ab,spt_ab,pidx_ab);
+                            ~] = mvpalab_mvcceval(train_X,train_Yp,test_X,test_Y,tp,cfg,sp_ab,spt_ab);
 
                         % Direction B - A:
                         [~,~,~,...
@@ -128,7 +143,7 @@ for sub = 1 : nSubjects
                             pr_ba_r{tp,rep},...
                             re_ba_r{tp,rep},...
                             f1_ba_r{tp,rep},...
-                            ~] = mvpalab_mvcceval(test_X,test_Y,train_X,train_Y,tp,cfg,sp_ba,spt_ba,pidx_ba);
+                            ~] = mvpalab_mvcceval(test_X,test_Y,train_X,train_Yp,tp,cfg,sp_ba,spt_ba);
                     end
                 end
 
@@ -199,8 +214,6 @@ if cfg.classmodel.f1score
     permaps.f1score = mvpalab_reorganize(cfg,f1score_ab,f1score_ba);
 end
 
-
-cfg.classmodel.permlab = false;
 
 if ~cfg.sf.flag, mvpalab_save(cfg,permaps,'permaps'); end
 

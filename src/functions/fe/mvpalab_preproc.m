@@ -11,6 +11,9 @@ end
 
 %% Average trials if needed:
 if cfg.trialaver.flag
+    if cfg.trialaver.ntrials < 1
+        error('cfg.trialaver.ntrials must be at least 1 to average trials.');
+    end
     fprintf('       # Generating supertrials... ');
     for i = 1 : floor(size(data,3)/cfg.trialaver.ntrials)
         if strcmp(cfg.trialaver.order,'rand')

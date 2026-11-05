@@ -64,7 +64,7 @@ set(gca,'XColor','k');
 set(gca,'FontSize',graph.fontsize);
 set(gca,'Layer','top');
 
-if abs(sum(graph.caxis(1)))
+if any(graph.caxis)
     caxis(graph.caxis);
 else
     caxis([min(min(acc_map)) max(max(acc_map))]);

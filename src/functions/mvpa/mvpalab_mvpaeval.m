@@ -1,4 +1,4 @@
-function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar,pidx)
+function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar)
 %This function returns the accuracy of the classifier in a time-resolved way.
 
 % x = x-coordinates of the ROC curve.
@@ -8,20 +8,11 @@ function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar,pidx)
 % cr = Correct rate.
 % cm = Confusion matrix.
 
-% pidx = Permutation of the training labels of each fold, drawn once
-%        before the timepoints loop (mvpalab_foldperm) so that the same
-%        permutation is used at all the timepoints. Required if
-%        cfg.classmodel.permlab is true (permuted maps).
-
-if cfg.classmodel.permlab && (nargin < 6 || isempty(pidx))
-    error(['Permuted maps require the label permutation of each fold ' ...
-        '(pidx, see mvpalab_foldperm).']);
-end
-
 x = {}; y = {}; t = {}; auc = NaN;   
 cm = {}; pr = {}; re = {}; f1 = {};
 cr = NaN;
 raw_weights = []; 
+params = [];
 w = [];
 
 %% Cross validation loop:
@@ -45,12 +36,6 @@ for k = 1 : strpar.NumTestSets
     %% Data normalization if needed:
     [train_X,test_X,nparams] = mvpalab_datanorm(cfg,train_X,test_X,[]);
     
-    %% Permute labels if needed:
-    %  Same permutation of this fold at all the timepoints.
-    if cfg.classmodel.permlab
-        train_Y = train_Y(pidx{k});
-    end
-    
     %% Feature selection if needed:
     if ~strcmp(cfg.dimred.method,'none')
         [train_X,test_X,params] = ...
@@ -58,11 +43,13 @@ for k = 1 : strpar.NumTestSets
     end
     
     %% Train and test the model:
-    [mdl,raw_weights(:,k)] = mvpalab_train(train_X,train_Y,cfg);
+    [mdl,weights] = mvpalab_train(train_X,train_Y,cfg);
     
-    % Correct feature weights:
+    % Correct feature weights and return them in the channel space:
     if cfg.classmodel.wvector
-        haufe_weights(:,k) = mvpalab_wcorrect(train_X,raw_weights(:,k));
+        haufe = mvpalab_wcorrect(train_X,weights);
+        raw_weights(:,k) = mvpalab_backproject(weights,params,cfg);
+        haufe_weights(:,k) = mvpalab_backproject(haufe,params,cfg);
     end
     
     %% Temporal generalization if needed:

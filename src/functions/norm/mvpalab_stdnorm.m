@@ -7,6 +7,7 @@ if exist('params','var') && ~isempty(params)
 else
     params.u = mean(train_X,1);
     params.v = std(train_X,1);
+    params.v(params.v == 0) = 1;
     
     %% Data normalization:
     train_X = (train_X-params.u)./params.v;

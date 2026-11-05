@@ -35,7 +35,7 @@ if ~isempty(selected)
         cfg = mvpalab_updatechanloc(selected, cfg);
         
     else
-        warning('Channel selection fails: Dimension mismatch')
+        error('Channel selection fails: the data has %d channels.',size(X,2));
     end
 end
 end

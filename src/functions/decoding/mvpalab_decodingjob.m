@@ -28,7 +28,8 @@ function job = mvpalab_decodingjob(cfg,mode)
 %    - nsub:     Number of subjects.
 %    - nfreq:    Number of frequency bands.
 %    - nper:     Number of maps.
-%    - nreps:    Number of cross-validation repetitions (k-fold only).
+%    - nreps:    Number of repetitions: k-fold, or MVCC without
+%                cross-validation if each repetition draws new supertrials.
 %    - numeric:  Metrics stored in numeric maps: 'acc' and 'auc'.
 %    - averaged: Metrics stored per timepoint, averaged across repetitions.
 %    - lastrep:  ROC curves, taken from the last repetition.
@@ -63,7 +64,9 @@ job.nper = 1;
 if job.permuted, job.nper = cfg.stats.nper; end
 
 job.nreps = 1;
-if strcmp(cfg.cv.method,'kfold'), job.nreps = cfg.cv.nreps; end
+redraw = job.mvcc && strcmp(cfg.cv.method,'none') && cfg.trialaver.flag ...
+    && strcmp(cfg.trialaver.order,'rand');
+if strcmp(cfg.cv.method,'kfold') || redraw, job.nreps = cfg.cv.nreps; end
 
 job.numeric = {'acc'};
 if cfg.classmodel.auc, job.numeric = {'acc','auc'}; end

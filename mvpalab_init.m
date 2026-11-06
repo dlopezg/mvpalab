@@ -50,8 +50,24 @@ cfg.trialaver.order    = 'rand';
 
 % cfg.trialaver.order = 'rand' - Random order.
 % cfg.trialaver.order = 'seq'  - Secuential order.
+%
+% The classifiers build new supertrials in each cross-validation repetition
+% (see mvpalab_supertrials and cfg.cv.nreps), so the result depends less on
+% one draw of the blocks. With 'seq' all the repetitions use the same
+% blocks. RSA builds them once per subject. The feature vectors keep the
+% single trials, so they use about cfg.trialaver.ntrials times more memory
+% than the supertrials, also on disk in the sliding filter analysis.
 
 %% BALANCED DATASETS:
+
+% cfg.classsize.match      - The classes of a dataset keep the size of the
+%                            smallest one.
+% cfg.classsize.matchkfold - The size of each class is a multiple of
+%                            cfg.cv.nfolds (k-fold only, not used in MVCC).
+%
+% With supertrials both are applied to the supertrials, which are in random
+% order with cfg.trialaver.order = 'rand'. Without them they are applied
+% when the data is imported and the first trials of each class are kept.
 
 cfg.classsize.match = false;
 cfg.classsize.matchkfold = false;
@@ -72,8 +88,9 @@ cfg.dimred.ncomp  = 0;
 % cfg.normdata = 3 - z-score (across trials)
 % cfg.normdata = 4 - std_nor (across trials)
 %
-% Values 1 and 2 are applied to each trial when the data is imported
-% (mvpalab_preproc), so they affect all the analyses, including RSA.
+% Values 1 and 2 are applied to each trial when the data is imported or,
+% with supertrials, to each supertrial (see mvpalab_adjustclasses), so they
+% affect all the analyses, including RSA.
 % Values 3 and 4 are computed in the training set of each cross-validation
 % fold and applied to the test set (mvpalab_datanorm), so they are only
 % used by the classifiers (MVPA and MVCC); RSA ignores them. fMRI data
@@ -159,10 +176,14 @@ end
 % cfg.cv.method = 'kfold' - K-Fold cross-validation.
 % cfg.cv.method = 'loo'   - Leave-one-out cross-validation.
 
-% cfg.cv.nreps - Number of repeated cross-validations (k-fold only). Each
-% repetition draws a new random assignment of trials to folds and the final
-% result is the mean across repetitions. nreps = 1 reproduces the classic
-% single cross-validation. Note: running time scales ~linearly with nreps.
+% cfg.cv.nreps - Number of repeated cross-validations (k-fold). Each
+% repetition draws a new random assignment of trials to folds, with new
+% supertrials if cfg.trialaver.flag is enabled, and the final result is the
+% mean across repetitions. nreps = 1 reproduces the classic single
+% cross-validation. Note: running time scales ~linearly with nreps.
+% In MVCC with cfg.cv.method = 'none' and supertrials in random order, each
+% repetition trains and tests with all the data and only draws new
+% supertrials.
 % ROC curves are not averaged: they come from the last repetition.
 
 cfg.cv.method  = 'kfold';
@@ -184,7 +205,26 @@ cfg.cv.loo     = [];
 %                               size of each permutation, family-wise error
 %                               rate control (Maris & Oostenveld, 2007).
 
+% cfg.stats.signflip - Group test (see mvpalab_permtest):
+%                       false - Permuted maps of each subject (Stelzer et
+%                               al., 2013). Valid if permuting the labels
+%                               represents the null hypothesis. In MVCC it
+%                               can be liberal if datasets A and B contain
+%                               effects that are not shared (see
+%                               mvpalab_decoding).
+%                       true  - Sign flip of each subject around chance
+%                               (see mvpalab_signmaps). It does not repeat
+%                               the classification, so cfg.stats.nper is not
+%                               used. It needs classes of the same size
+%                               and enough subjects, needs cfg.stats.clustcorr
+%                               = 'max', and only tests accuracy and AUC.
+%                               Available for MVPA (not with leave-one-out,
+%                               also in the sliding filter), MVCC, RSA,
+%                               sliding filter and
+%                               the fusion modes 'mean-fmri' and 'mean-eeg'.
+
 cfg.stats.flag   = 0;
+cfg.stats.signflip = false;
 cfg.stats.nper   = 100;
 cfg.stats.nperg  = 1e5;
 cfg.stats.pgroup = 95;

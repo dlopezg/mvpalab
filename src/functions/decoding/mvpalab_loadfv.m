@@ -2,7 +2,9 @@ function [data,cfg] = mvpalab_loadfv(cfg,fv,job)
 %% MVPALAB_LOADFV
 %
 %  This function returns the datasets of the current subject and frequency
-%  band, ready for the decoding analysis.
+%  band, ready for the decoding analysis. With supertrials (cfg.trialaver)
+%  the datasets contain the single trials with all the channels (see
+%  mvpalab_repdata).
 %
 %%  INPUT:
 %
@@ -36,6 +38,8 @@ else
     fv = fv{job.sub};
 end
 
+mvpalab_checkfv(cfg,fv);
+
 %% Update nfold for each subject if LOO is selected:
 if strcmp(cfg.cv.method,'loo')
     cfg.cv.nfolds = cfg.cv.loo(job.sub);
@@ -48,6 +52,12 @@ data.a.Y = fv.Y.a;
 if job.mvcc
     [data.b.X,cfg] = mvpalab_chanselection(fv.X.b,cfg);
     data.b.Y = fv.Y.b;
+end
+
+%  With supertrials the channels are selected in each repetition:
+if cfg.trialaver.flag
+    data.a.X = fv.X.a;
+    if job.mvcc, data.b.X = fv.X.b; end
 end
 
 end

@@ -28,6 +28,9 @@ if ~isempty(cfg.study.dataFiles{2,1}) && ~isempty(cfg.study.dataFiles{2,2})
     nCtxt = 2;
 end
 
+% Check the settings of the sign flip test:
+mvpalab_checksignflip(cfg);
+
 %% Subjects loop:
 for sub = 1 : nSubjects
     fprintf('\n');

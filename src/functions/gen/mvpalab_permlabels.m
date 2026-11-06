@@ -17,6 +17,12 @@ function Yp = mvpalab_permlabels(Y)
 %  the labels again at each timepoint gives temporally independent permuted
 %  maps with null clusters that are too small.
 %
+%  With supertrials (cfg.trialaver) the permuted labels are those of the
+%  single trials, and each repetition builds its supertrials from them, as
+%  in the observed map (see mvpalab_supertrials). Permuting the labels of
+%  the supertrials of each repetition would be a new permutation per
+%  repetition, with the same problem.
+%
 %%  REFERENCES:
 %
 %  - Etzel, J. A., & Braver, T. S. (2013). MVPA permutation schemes:

@@ -1,9 +1,14 @@
 function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
+% Check cfg structure:
+cfg = mvpalab_checkcfg(cfg);
+mvpalab_checksignflip(cfg);
+
 %% Initialize
 stats = struct();
 nsub = length(cfg.study.dataFiles{1,1});
 mode = cfg.rsa.modality;
 dist = cfg.rsa.distance;
+permuted = cfg.stats.flag && ~cfg.stats.signflip;
 
 %% Check the configuration:
 %  Second-order analysis (see cfg.rsa.modality in mvpalab_init):
@@ -15,13 +20,13 @@ end
 
 %  Data normalization: values 3 and 4 of cfg.normdata are applied within
 %  the cross-validation folds of the classifiers (mvpalab_datanorm) and
-%  have no effect in RSA. Values 1 and 2 are applied when the data is
-%  imported (mvpalab_preproc).
+%  have no effect in RSA. Values 1 and 2 are applied to each trial or
+%  supertrial (mvpalab_adjustclasses).
 
 if cfg.normdata >= 3
     warning(['cfg.normdata = %d is only applied by the classifiers ' ...
         '(MVPA and MVCC) and has no effect in RSA. Use cfg.normdata = 1 ' ...
-        'or 2 (applied when the data is imported) or 0.'],cfg.normdata);
+        'or 2 (applied to each trial or supertrial) or 0.'],cfg.normdata);
 end
 
 %% Subjects loop:
@@ -34,9 +39,13 @@ for sub = 1 : nsub
     tic;
 
     %%  Select datamatrix:
-    %   Select subject data, labels and timepoints.
+    %   Select subject data, labels and timepoints. The RDMs are computed
+    %   once, so the supertrials are also built once per subject.
 
-    X = fv{sub}.X.a; Y = fv{sub}.Y.a;
+    mvpalab_checkfv(cfg,fv{sub});
+    data.a.X = fv{sub}.X.a; data.a.Y = fv{sub}.Y.a;
+    data = mvpalab_supertrials(cfg,data);
+    X = data.a.X; Y = data.a.Y;
     X = X(:,:,cfg.tm.tpoints);
 
     %% Generate neural Representational Dissimilarity Matrices:
@@ -93,7 +102,7 @@ for sub = 1 : nsub
         %  Repeat the representational similarity analysis but permuting
         %  the empirical RDM if needed.
 
-        if cfg.stats.flag
+        if permuted
             [pbv,ptv] = mvpalab_fitglm(cfg,vrdms{sub},vtheo{sub},true);
 
              for mdl = 1:size(vtheo{sub},3)
@@ -134,7 +143,7 @@ for sub = 1 : nsub
             %  Repeat the representational similarity analysis but permuting
             %  the empirical RDM if needed.
 
-            if cfg.stats.flag
+            if permuted
                 if strcmp(mode,'corr')
 
                     pmaps = mvpalab_computecorr(cfg,vrdms{sub},vtheo_mdl,true);
@@ -167,13 +176,16 @@ res.(mode).(dist).theo = theo;
 % Save results:
 if ~cfg.sf.flag, mvpalab_save(cfg,res,'res'); end
 
-if cfg.stats.flag
+if permuted
     if ~cfg.sf.flag, mvpalab_save(cfg,permaps,'permaps'); end
 end
 
 %% Compute permutation test:
-%  If needed:
+%  If needed. The correlations and the coefficients have no effect at 0.
 
-if cfg.stats.flag, stats = mvpalab_permtest(cfg,res,permaps); end
+if cfg.stats.flag
+    if cfg.stats.signflip, permaps = mvpalab_signmaps(res,0); end
+    stats = mvpalab_permtest(cfg,res,permaps);
+end
 
 end

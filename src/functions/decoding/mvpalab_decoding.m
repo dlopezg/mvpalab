@@ -13,20 +13,23 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %  both follow the same pipeline:
 %
 %    Subjects > frequency bands > maps (one if observed, cfg.stats.nper if
-%    permuted) > repetitions > timepoints (see mvpalab_decodemap).
+%    permuted) > repetitions (supertrials and partitions) > timepoints (see
+%    mvpalab_decodemap).
 %
 %  In MVCC each permuted map uses one reassignment of the labels of dataset
 %  A in both directions (training labels in A - B, test labels in B - A),
 %  while dataset B keeps its labels. The two directions of the observed
 %  analysis use the same data and labels, so they are correlated; permuting
 %  each direction separately loses this correlation and the null
-%  distribution of their mean is too narrow.
+%  distribution of their mean is too narrow. With supertrials, both
+%  directions of a repetition use the same supertrials of each dataset.
 %
 %  Limitation: the permutation also removes the decoding within dataset A.
 %  If datasets A and B contain decoding effects that are not shared, the
 %  null distribution is still narrower than the distribution of the
-%  cross-decoding between them (0.082 vs 0.137 in a simulation with
-%  cfg.cv.nreps = 5), so the test can be liberal in that case.
+%  cross-decoding between them (0.073 vs 0.189 with synthetic data, a strong
+%  effect in each dataset, cfg.cv.nreps = 5 and supertrials of 4 trials), so
+%  the test can be liberal in that case.
 %
 %%  INPUT:
 %
@@ -34,8 +37,9 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %    Configuration structure.
 %
 %  - {cell array} - fv:
-%    Feature vectors of each subject. Empty or not used in a sliding filter
-%    analysis, where the data of each frequency band is loaded from disk.
+%    Feature vectors of each subject (single trials if cfg.trialaver.flag
+%    is enabled). Empty or not used in a sliding filter analysis, where the
+%    data of each frequency band is loaded from disk.
 %
 %  - {string} - mode:
 %    'observed' (default) or 'permuted'.
@@ -56,9 +60,14 @@ if nargin < 3, mode = 'observed'; end
 cfg = mvpalab_checkcfg(cfg);
 
 if strcmp(mode,'permuted')
+    % The sign flip test has no permuted maps (see mvpalab_nullmaps):
+    if cfg.stats.signflip
+        error('The sign flip test has no permuted maps. Use mvpalab_nullmaps.');
+    end
     % Enable statistics:
     cfg.stats.flag = 1;
 else
+    mvpalab_checksignflip(cfg);
     % Feature weights are not available with non-linear kernels:
     mvpalab_checkwvector(cfg);
 end
@@ -86,9 +95,9 @@ for sub = 1 : job.nsub
 
             %% Labels of this map (see mvpalab_permlabels):
             %  Drawn once per map, so the same labels are used at all the
-            %  folds, repetitions and timepoints. In MVCC only the labels
-            %  of dataset A are permuted, and they are used in both
-            %  directions.
+            %  folds, repetitions and timepoints. With supertrials they are
+            %  the labels of the single trials. In MVCC only the labels of
+            %  dataset A are permuted, and they are used in both directions.
             mapdata = data;
             if job.permuted || cfg.classmodel.permlab
                 mapdata.a.Y = mvpalab_permlabels(data.a.Y);

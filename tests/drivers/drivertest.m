@@ -48,7 +48,7 @@ set(0,'DefaultFigureVisible','off');
 
 work = fullfile(tempdir,'drivertest');
 datadir = fullfile(work,'data');
-if ~exist(datadir,'dir'), makedata(datadir); end
+if ~exist(fullfile(datadir,'j'),'dir'), makedata(datadir); end
 
 cases = gridcases();
 cases = cases(~cellfun(@isempty,regexp({cases.name},filter)));
@@ -63,7 +63,8 @@ for i = 1 : numel(cases)
 end
 
 identity = identitycases(root,work,datadir,filter);
-save(outfile,'record','identity','-v7.3');
+checks = casechecks(record); %#ok<NASGU>
+save(outfile,'record','identity','checks','-v7.3');
 
 end
 
@@ -164,26 +165,115 @@ analyses = {'mvpa',@mvpalab_mvpa,@mvpalab_permaps;
             'mvcc',@mvpalab_mvcc,@mvpalab_cpermaps};
 for a = 1 : size(analyses,1)
     for tempgen = 0 : 1
-        name = sprintf('identity_%s_tg%d',analyses{a,1},tempgen);
-        if isempty(regexp(name,filter,'once')), continue; end
-        loc = fullfile(work,'run');
-        cfg = basecfg(loc,datadir);
-        cfg = allmetrics(cfg);
-        cfg.classmodel.roc = false;
-        cfg.classmodel.confmat = false;
-        cfg.classmodel.wvector = false;
-        cfg.classmodel.tempgen = logical(tempgen);
-        cfg.cv.nreps = 2;
-        cfg.stats.nper = 1;
-        if a == 2, cfg = secondset(cfg,datadir,{'c','d'}); end
-        [~,cfg,~,fv] = evalc('mvpalab_import(cfg)');
-        rng(7,'twister');
-        [~,res,cfg] = evalc('analyses{a,2}(cfg,fv)');
-        rng(7,'twister');
-        [~,permaps] = evalc('analyses{a,3}(cfg,fv)');
-        result.(name) = isequaln(res,permaps);
-        fprintf('%s: %d\n',name,result.(name));
+        for super = 0 : 1
+            name = sprintf('identity_%s_tg%d',analyses{a,1},tempgen);
+            if super, name = [name '_super']; end %#ok<AGROW>
+            if isempty(regexp(name,filter,'once')), continue; end
+            loc = fullfile(work,'run');
+            cfg = basecfg(loc,datadir);
+            cfg = allmetrics(cfg);
+            cfg.classmodel.roc = false;
+            cfg.classmodel.confmat = false;
+            cfg.classmodel.wvector = false;
+            cfg.classmodel.tempgen = logical(tempgen);
+            cfg.cv.nreps = 2;
+            cfg.stats.nper = 1;
+            if a == 2, cfg = secondset(cfg,datadir,{'c','d'}); end
+            if super, cfg = setsuper(cfg,2,'rand'); end
+            [~,cfg,~,fv] = evalc('mvpalab_import(cfg)');
+            rng(7,'twister');
+            [~,res,cfg] = evalc('analyses{a,2}(cfg,fv)');
+            rng(7,'twister');
+            [~,permaps] = evalc('analyses{a,3}(cfg,fv)');
+            result.(name) = isequaln(res,permaps);
+            fprintf('%s: %d\n',name,result.(name));
+        end
     end
+end
+
+end
+
+%% EXPECTED ERRORS AND FIELDS
+
+function result = casechecks(record)
+%% Cases that must stop with an error or keep a field of the result.
+
+errors = {'direct_oldfv_mvpa','already contain supertrials';
+          'direct_oldfv_mvcc','already contain supertrials';
+          'rsa_oldfv','already contain supertrials';
+          'mvpa_tg0_flipfdr','clustcorr';
+          'mvpa_tg1_flipfdr','clustcorr';
+          'mvcc_tg0_flipfdr','clustcorr';
+          'mvcc_tg1_flipfdr','clustcorr';
+          'sf_mvpa_flipfdr','clustcorr';
+          'mvpa_tg0_fliploo','leave-one-out';
+          'mvpa_tg1_fliploo','leave-one-out';
+          'sf_mvpa_fliploo','leave-one-out';
+          'direct_mvpa_flipperm','mvpalab_nullmaps';
+          'direct_mvcc_flipperm','mvpalab_nullmaps';
+          'direct_mvpa_flag0fdr','clustcorr';
+          'direct_mvcc_flag0fdr','clustcorr';
+          'direct_mvpa_flag0loo','leave-one-out';
+          'direct_mvpa_flag0late','clustcorr'};
+
+result = struct();
+for i = 1 : size(errors,1)
+    if isfield(record,errors{i,1})
+        result.(errors{i,1}) = contains(record.(errors{i,1}).error,errors{i,2});
+    end
+end
+
+% The early checks stop the analysis before the first result:
+for name = {'mvpa_tg0_flipfdr','sf_mvpa_flipfdr','sf_mvpa_fliploo',...
+        'direct_mvpa_flag0fdr','direct_mvpa_flag0loo'}
+    if isfield(record,name{1})
+        result.([name{1} '_early']) = ~isfield(record.(name{1}),'result');
+    end
+end
+
+% Repetitions without draws give the single run:
+for tempgen = 0 : 1
+    name = sprintf('mvcc_tg%d_seqnone',tempgen);
+    if isfield(record,name) && isfield(record,[name 'reps'])
+        result.(['seq_one_repetition_tg' num2str(tempgen)]) = ...
+            isequaln(record.([name 'reps']).result,record.(name).result);
+    end
+end
+
+% The sign flip test does not change the result of the analysis:
+pairs = {'mvpa_tg0_flip','mvpa_tg0_all'; 'mvpa_tg1_flip','mvpa_tg1_all';
+         'mvcc_tg0_flip','mvcc_tg0_all'; 'mvcc_tg1_flip','mvcc_tg1_all';
+         'mvpa_tg0_flipsuper','mvpa_tg0_fliprefsuper';
+         'mvpa_tg1_flipsuper','mvpa_tg1_fliprefsuper';
+         'mvcc_tg0_flipsuper','mvcc_tg0_fliprefsuper';
+         'mvcc_tg1_flipsuper','mvcc_tg1_fliprefsuper';
+         'rsa_flip','rsa_min'};
+for i = 1 : size(pairs,1)
+    if isfield(record,pairs{i,1}) && isfield(record,pairs{i,2})
+        result.(['flip_same_result_' pairs{i,1}]) = ...
+            isequaln(record.(pairs{i,1}).result,record.(pairs{i,2}).result);
+    end
+end
+
+% The sequence of the demos runs the test with cfg.stats.flag = 0:
+for name = {'direct_mvpa_flag0','direct_mvcc_flag0'}
+    if isfield(record,name{1})
+        result.([name{1} '_stats']) = isempty(record.(name{1}).error) && ...
+            isfield(record.(name{1}),'stats');
+    end
+end
+
+if isfield(record,'rsa_flipname')
+    result.flip_model_name = isfield(record.rsa_flipname.stats.corr.pearson,'recall');
+end
+
+if isfield(record,'mvpa_tg1_flip')
+    result.flip_diag_metrics = isfield(record.mvpa_tg1_flip.resultdiag,'precision');
+end
+
+names = fieldnames(result);
+for i = 1 : numel(names)
+    fprintf('%s: %d\n',names{i},result.(names{i}));
 end
 
 end
@@ -211,7 +301,36 @@ mods = {
     'wvector',  @(c,d) setmetric(c,'wvector'),                 false;
     'onesub',   @(c,d) onesubject(allmetrics(c)),              false;
     'parallel', @(c,d) setparallel(setreps(allmetrics(c),2)),  true;
-    'parmin',   @(c,d) setparallel(c),                         true};
+    'parmin',   @(c,d) setparallel(c),                         true;
+    'match',      @(c,d) setclasses(unequal(allmetrics(c),d),1,0),        false;
+    'matchkfold', @(c,d) setclasses(unequal(allmetrics(c),d),0,1),        false;
+    'matchboth',  @(c,d) setclasses(unequal(allmetrics(c),d),1,1),        false;
+    'norm1',      @(c,d) setnorm(setclasses(unequal(c,d),1,1),1),         false;
+    'norm2',      @(c,d) setnorm(setclasses(unequal(c,d),1,1),2),         false;
+    'super',      @(c,d) setsuper(allmetrics(c),2,'rand'),                false;
+    'superreps',  @(c,d) setreps(setsuper(allmetrics(c),2,'rand'),3),     false;
+    'superboth',  @(c,d) setsuper(setclasses(unequal(c,d),1,1),2,'rand'), false;
+    'supernorm',  @(c,d) setnorm(setsuper(c,2,'rand'),2),                 false;
+    'superchan',  @(c,d) setsuper(setchannels(allmetrics(c)),2,'rand'),   false;
+    'superloo',   @(c,d) setcv(setsuper(c,2,'rand'),'loo'),               false;
+    'supernone',  @(c,d) setcv(setsuper(c,2,'rand'),'none'),              false;
+    'superpar',   @(c,d) setparallel(setreps(setsuper(c,2,'rand'),2)),    true;
+    'seq',        @(c,d) noperm(setsuper(allmetrics(c),2,'seq')),         false;
+    'seqreps',    @(c,d) noperm(setreps(setsuper(c,2,'seq'),3)),          false;
+    'seqboth',    @(c,d) noperm(setsuper(setclasses(unequal(c,d),1,1),2,'seq')), false;
+    'seqnorm1',   @(c,d) noperm(setnorm(setsuper(c,2,'seq'),1)),          false;
+    'seqnorm2',   @(c,d) noperm(setnorm(setsuper(c,2,'seq'),2)),          false;
+    'seqchan',    @(c,d) noperm(setsuper(setchannels(allmetrics(c)),2,'seq')), false;
+    'seqchannorm',@(c,d) noperm(setnorm(setsuper(setchannels(c),2,'seq'),1)), false;
+    'superchannorm',@(c,d) setnorm(setsuper(setchannels(c),2,'rand'),1),  false;
+    'seqloo',     @(c,d) noperm(setcv(setsuper(c,2,'seq'),'loo')),        false;
+    'seqnone',    @(c,d) noperm(setcv(setsuper(c,2,'seq'),'none')),       false;
+    'nonereps',   @(c,d) setreps(setcv(setsuper(c,2,'rand'),'none'),3),   false;
+    'seqnonereps',@(c,d) noperm(setreps(setcv(setsuper(c,2,'seq'),'none'),3)), false;
+    'flip',       @(c,d) setflip(allmetrics(c)),                          false;
+    'flipsuper',  @(c,d) setflip(setreps(setsuper(c,2,'rand'),2)),        false;
+    'flipfdr',    @(c,d) setfdr(setflip(c)),                              false;
+    'fliploo',    @(c,d) setcv(setflip(c),'loo'),                         false};
 
 cases = struct('name',{},'build',{},'controller',{},'seed',{},...
     'parallel',{},'noconsole',{});
@@ -221,7 +340,7 @@ for m = 1 : size(mods,1)
         for tempgen = 0 : 1
             c.name = sprintf('%s_tg%d_%s',analysis{1},tempgen,mods{m,1});
             c.build = decodingbuild(mods{m,2},analysis{1},tempgen,...
-                strcmp(mods{m,1},'loo'));
+                ismember(mods{m,1},{'loo','superloo','seqloo','fliploo'}));
             c.controller = 'analysisController;';
             c.seed = 1000 + numel(cases);
             c.parallel = mods{m,3};
@@ -281,6 +400,49 @@ for d = 1 : size(direct,1)
     cases(end+1) = c; %#ok<AGROW>
 end
 
+% Feature vectors saved by a previous version, already with supertrials:
+oldfv = ['[cfg,~,fv] = mvpalab_import(cfg); ' ...
+    'fv = cellfun(@(f) rmfield(f,''singletrials''),fv,''UniformOutput'',false); '];
+stale = {
+    'direct_oldfv_mvpa','mvpa',[oldfv '[result,cfg] = mvpalab_decoding(cfg,fv);'];
+    'direct_oldfv_mvcc','mvcc',[oldfv '[result,cfg] = mvpalab_decoding(cfg,fv);']};
+for d = 1 : size(stale,1)
+    c.name = stale{d,1};
+    c.build = decodingbuild(@(c,d) setsuper(c,2,'rand'),stale{d,2},0,false);
+    c.controller = stale{d,3};
+    c.seed = 1000 + numel(cases);
+    c.parallel = false;
+    c.noconsole = false;
+    cases(end+1) = c; %#ok<AGROW>
+end
+c.name = 'rsa_oldfv';
+c.build = @(cfg) setsuper(rsacfg(cfg),2,'rand');
+c.controller = [oldfv '[result,stats,cfg] = mvpalab_rsa_time(cfg,fv);'];
+c.seed = 1000 + numel(cases);
+c.parallel = false;
+c.noconsole = false;
+cases(end+1) = c;
+
+% A cfg saved by a previous version has no cfg.stats.signflip:
+oldcfg = 'cfg.stats = rmfield(cfg.stats,''signflip''); ';
+c.name = 'direct_oldcfg_nullmaps';
+c.build = decodingbuild(@(c,d) c,'mvpa',0,false);
+c.controller = ['[cfg,~,fv] = mvpalab_import(cfg); ' ...
+    '[result,cfg] = mvpalab_decoding(cfg,fv); ' oldcfg ...
+    '[permaps,cfg] = mvpalab_nullmaps(cfg,fv,result);'];
+c.seed = 1000 + numel(cases);
+c.parallel = false;
+c.noconsole = false;
+cases(end+1) = c;
+c.name = 'rsa_oldcfg';
+c.build = @(cfg) rsacfg(cfg);
+c.controller = ['[cfg,~,fv] = mvpalab_import(cfg); ' oldcfg ...
+    '[result,stats,cfg] = mvpalab_rsa_time(cfg,fv);'];
+c.seed = 1000 + numel(cases);
+c.parallel = false;
+c.noconsole = false;
+cases(end+1) = c;
+
 sfdirect = {
     'direct_sf_mvpa','MVPA',['cfg = mvpalab_import(cfg); cfg.stats.nper = 2; ' ...
         'cfg.cv.nfolds = 3; [result,cfg] = mvpalab_mvpa(cfg); ' ...
@@ -311,6 +473,142 @@ for analysis = {'MVPA','MVCC'}
             c.noconsole = false;
             cases(end+1) = c; %#ok<AGROW>
         end
+    end
+end
+
+% Sliding filter with supertrials:
+for analysis = {'MVPA','MVCC'}
+    for order = {'rand','seq'}
+        c.name = sprintf('sf_%s_%s',lower(analysis{1}),order{1});
+        c.build = @(cfg) setsuper(sfcfg(cfg,analysis{1},strcmp(order{1},'rand'),2),...
+            2,order{1});
+        c.controller = 'sfilterController;';
+        c.seed = 1000 + numel(cases);
+        c.parallel = false;
+        c.noconsole = false;
+        cases(end+1) = c; %#ok<AGROW>
+    end
+end
+
+% Sliding filter with the sign flip test:
+for analysis = {'MVPA','MVCC'}
+    c.name = sprintf('sf_%s_flip',lower(analysis{1}));
+    c.build = @(cfg) setflip(sfcfg(cfg,analysis{1},1,2));
+    c.controller = 'sfilterController;';
+    c.seed = 1000 + numel(cases);
+    c.parallel = false;
+    c.noconsole = false;
+    cases(end+1) = c; %#ok<AGROW>
+end
+
+c.name = 'sf_mvpa_fliploo';
+c.build = @(cfg) setcv(setflip(sfcfg(cfg,'MVPA',1,1)),'loo');
+c.controller = 'sfilterController;';
+c.seed = 1000 + numel(cases);
+c.parallel = false;
+c.noconsole = false;
+cases(end+1) = c;
+
+c.name = 'sf_mvpa_flipfdr';
+c.build = @(cfg) setfdr(setflip(sfcfg(cfg,'MVPA',1,1)));
+c.controller = 'sfilterController;';
+c.seed = 1000 + numel(cases);
+c.parallel = false;
+c.noconsole = false;
+cases(end+1) = c;
+
+% The sign flip test has no permuted maps:
+flipperm = {
+    'direct_mvpa_flipperm','mvpa','[permaps,cfg] = mvpalab_permaps(cfg,fv);';
+    'direct_mvcc_flipperm','mvcc','[permaps,cfg] = mvpalab_cpermaps(cfg,fv);'};
+for d = 1 : size(flipperm,1)
+    c.name = flipperm{d,1};
+    c.build = decodingbuild(@(c,d) setflip(c),flipperm{d,2},0,false);
+    c.controller = ['[cfg,~,fv] = mvpalab_import(cfg); ' flipperm{d,3}];
+    c.seed = 1000 + numel(cases);
+    c.parallel = false;
+    c.noconsole = false;
+    cases(end+1) = c; %#ok<AGROW>
+end
+
+% RSA reads the feature vectors of each subject directly:
+rsamods = {
+    'min',      @(c) c;
+    'super',    @(c) setsuper(c,2,'rand');
+    'seq',      @(c) setsuper(c,2,'seq');
+    'seqboth',  @(c) setnorm(setclasses(setsuper(c,2,'seq'),1,1),1);
+    'superboth',@(c) setnorm(setclasses(setsuper(c,2,'rand'),1,1),2);
+    'flip',     @(c) setflip(c);
+    'flipglm',  @(c) setflip(setrsamode(c,'regress'));
+    'flipmulti',@(c) setflip(setrsamode(c,'multiple_regress'));
+    'flipname', @(c) setflip(setrsamodel(c,'recall'))};
+for m = 1 : size(rsamods,1)
+    c.name = sprintf('rsa_%s',rsamods{m,1});
+    c.build = @(cfg) rsamods{m,2}(rsacfg(cfg));
+    c.controller = ['[cfg,~,fv] = mvpalab_import(cfg); ' ...
+        '[result,stats,cfg] = mvpalab_rsa_time(cfg,fv);'];
+    c.seed = 1000 + numel(cases);
+    c.parallel = false;
+    c.noconsole = false;
+    cases(end+1) = c; %#ok<AGROW>
+end
+
+% Sequence of the demos, which run the test with cfg.stats.flag = 0:
+demo = ['[cfg,~,fv] = mvpalab_import(cfg); ' ...
+    '[result,cfg] = mvpalab_decoding(cfg,fv); ' ...
+    '[permaps,cfg] = mvpalab_nullmaps(cfg,fv,result); ' ...
+    'stats = mvpalab_permtest(cfg,result,permaps);'];
+late = ['[cfg,~,fv] = mvpalab_import(cfg); ' ...
+    '[result,cfg] = mvpalab_decoding(cfg,fv); ' ...
+    'cfg.stats.signflip = true; ' ...
+    '[permaps,cfg] = mvpalab_nullmaps(cfg,fv,result); ' ...
+    'stats = mvpalab_permtest(cfg,result,permaps);'];
+flagless = {
+    'direct_mvpa_flag0','mvpa',@(c,d) noperm(setflip(c)),demo;
+    'direct_mvcc_flag0','mvcc',@(c,d) noperm(setflip(c)),demo;
+    'direct_mvpa_flag0fdr','mvpa',@(c,d) noperm(setfdr(setflip(c))),demo;
+    'direct_mvcc_flag0fdr','mvcc',@(c,d) noperm(setfdr(setflip(c))),demo;
+    'direct_mvpa_flag0loo','mvpa',@(c,d) noperm(setcv(setflip(c),'loo')),demo;
+    'direct_mvpa_flag0late','mvpa',@(c,d) noperm(c),late};
+for d = 1 : size(flagless,1)
+    c.name = flagless{d,1};
+    c.build = decodingbuild(flagless{d,3},flagless{d,2},0,false);
+    c.controller = flagless{d,4};
+    c.seed = 1000 + numel(cases);
+    c.parallel = false;
+    c.noconsole = false;
+    cases(end+1) = c; %#ok<AGROW>
+end
+
+% The same analysis as the 'flipsuper' cases with permuted maps:
+for analysis = {'mvpa','mvcc'}
+    for tempgen = 0 : 1
+        c.name = sprintf('%s_tg%d_fliprefsuper',analysis{1},tempgen);
+        c.build = decodingbuild(@(c,d) setreps(setsuper(c,2,'rand'),2),...
+            analysis{1},tempgen,false);
+        c.controller = 'analysisController;';
+        c.seed = 1000 + numel(cases);
+        c.parallel = false;
+        c.noconsole = false;
+        cases(end+1) = c; %#ok<AGROW>
+    end
+end
+
+cases = pairseeds(cases);
+
+end
+
+function cases = pairseeds(cases)
+%% The test must not change the result, so each case of the sign flip test
+%  uses the seed of the same analysis with permuted maps.
+
+names = {cases.name};
+for i = 1 : numel(cases)
+    partner = regexprep(names{i},{'_flipsuper$','_flip$'},{'_fliprefsuper','_all'});
+    if strcmp(names{i},'rsa_flip'), partner = 'rsa_min'; end
+    j = find(strcmp(names,partner));
+    if ~strcmp(partner,names{i}) && ~isempty(j)
+        cases(i).seed = cases(j).seed;
     end
 end
 
@@ -423,6 +721,72 @@ function cfg = setparallel(cfg)
 cfg.classmodel.parcomp = true;
 end
 
+function cfg = setsuper(cfg,ntrials,order)
+cfg.trialaver.flag = true;
+cfg.trialaver.ntrials = ntrials;
+cfg.trialaver.order = order;
+end
+
+function cfg = setclasses(cfg,match,matchkfold)
+cfg.classsize.match = logical(match);
+cfg.classsize.matchkfold = logical(matchkfold);
+end
+
+function cfg = setnorm(cfg,normdata)
+cfg.normdata = normdata;
+end
+
+function cfg = setflip(cfg)
+cfg.stats.signflip = true;
+cfg.stats.clustcorr = 'max';
+end
+
+function cfg = setfdr(cfg)
+cfg.stats.clustcorr = 'fdr';
+end
+
+function cfg = setrsamode(cfg,mode)
+cfg.rsa.modality = mode;
+end
+
+function cfg = setrsamodel(cfg,id)
+cfg.rsa.tmodels{1}.id = id;
+end
+
+function cfg = noperm(cfg)
+%% Without permuted maps the supertrials in 'seq' order draw nothing.
+cfg.stats.flag = 0;
+end
+
+function cfg = unequal(cfg,datadir)
+%% Classes of different sizes in each dataset.
+
+cfg.study.dataPaths{1,1} = [datadir filesep 'g' filesep];
+cfg.study.dataPaths{1,2} = [datadir filesep 'h' filesep];
+if ~isempty(cfg.study.dataFiles{2,1})
+    cfg.study.dataPaths{2,1} = [datadir filesep 'i' filesep];
+    cfg.study.dataPaths{2,2} = [datadir filesep 'j' filesep];
+end
+
+end
+
+function cfg = rsacfg(cfg)
+%% Three conditions of different sizes and one theoretical model.
+
+datadir = cfg.drivertestdata;
+cfg = rmfield(cfg,'drivertestdata');
+cfg.analysis = 'rsa-time-resolved';
+cfg.study.conditionIdentifier{1,3} = 'condition_e';
+cfg.study.dataPaths{1,3} = [datadir filesep 'g' filesep];
+cfg.study.dataFiles{1,3} = cfg.study.dataFiles{1,1};
+cfg.rsa.trialwise = false;
+cfg.rsa.tmodels{1}.id = 'model';
+cfg.rsa.tmodels{1}.mdl = squareform([1 0 1]);
+cfg.tm.tpstart = -30;
+cfg.tm.tpend = 40;
+
+end
+
 function cfg = setwindow(cfg)
 cfg.classmodel.extdiag = false;
 cfg.tm.tpstart = -20;
@@ -503,6 +867,22 @@ for set = fieldnames(sfsigns)'
     for sub = 1 : 2
         X = randn(nch,numel(times),24) + sfsigns.(name) * 2.5 * Q(:,1) * burst;
         saveset(fullfile(datadir,name),sub,X,fs,times);
+    end
+end
+
+% Classes of different sizes, with their own stream so the previous data
+% does not change:
+rng(20261107,'twister');
+times = -30:10:40;
+sizes = struct('g',[14 16 18],'h',[10 12 11],'i',[12 15 14],'j',[9 11 13]);
+signs = struct('g',1,'h',-1,'i',1,'j',-1);
+for set = fieldnames(sizes)'
+    name = set{1};
+    for sub = 1 : numel(sizes.(name))
+        ntrials = sizes.(name)(sub);
+        X = randn(nch,numel(times),ntrials);
+        X = X + signs.(name) * Q(:,1) * double(times >= 0);
+        saveset(fullfile(datadir,name),sub,X,100,times);
     end
 end
 

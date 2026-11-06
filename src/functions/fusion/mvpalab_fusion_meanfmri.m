@@ -31,7 +31,7 @@ function [cfg,results] = mvpalab_fusion_meanfmri(cfg,fmri_rois,eeg_rdms)
                 cfg,eeg_rdm,vmean_rdm_,false);
             
             % Compute permutated maps if needed:
-            if cfg.stats.flag
+            if cfg.stats.flag && ~cfg.stats.signflip
                 results.permaps.(roi_name)(1,:,sub,:) = mvpalab_computecorr(...
                     cfg,eeg_rdm,vmean_rdm_,true);
             end

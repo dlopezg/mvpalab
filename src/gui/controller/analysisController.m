@@ -13,7 +13,7 @@ mvpalab_mkdir([cfg.location '/results']);
 %% If permutation analysis is enabled
 if cfg.stats.flag
     % Generate permuted maps:
-    [permaps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
+    [permaps,cfg] = mvpalab_nullmaps(cfg,fv,result);
 
     % Compute the permutation based analysis:
     stats = mvpalab_permtest(cfg,result,permaps);

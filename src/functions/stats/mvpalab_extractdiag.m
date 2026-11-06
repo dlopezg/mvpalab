@@ -18,10 +18,13 @@ validfields = {'acc' 'auc' 'precision' 'recall' 'f1score'};
 % For each field:
 for i = 1 : numel(fields)
     if find(strcmp(validfields, fields{i}))
+        % The sign flip test has no maps of the class metrics:
+        hasmaps = nargin > 2 && isfield(permuted_maps,fields{i});
+        
         % Extract performance metric:
         performance_ = performance.(fields{i});
         % Extract permuted maps if needed:
-        if nargin > 2
+        if hasmaps
             permuted_maps_ = permuted_maps.(fields{i});
         end
         
@@ -30,7 +33,7 @@ for i = 1 : numel(fields)
             % Extract performance metric:
             temp = performance_;
             % Extract permuted maps if needed:
-            if nargin > 2
+            if hasmaps
                 temp_ = permuted_maps_;
             end
             subfields = fieldnames(temp);
@@ -39,7 +42,7 @@ for i = 1 : numel(fields)
             for j = 1 : numel(subfields)
                 performance_ = performance_.(subfields{j});
                 
-                if nargin > 2
+                if hasmaps
                     permuted_maps_ = permuted_maps_.(subfields{j});
                 end
                 
@@ -51,7 +54,7 @@ for i = 1 : numel(fields)
                         per.(fields{i}).(subfields{j}).ba(1,:,k) = diag(performance_.ba(:,:,k));
                     end
                     % Extract diagonal (permuted maps)  - Both directions:
-                    if nargin > 2
+                    if hasmaps
                         for k = 1 : size(permuted_maps_.ab,4)
                             for l = 1 : size(permuted_maps_.ab,3)
                                 permaps.(fields{i}).(subfields{j}).ab(1,:,l,k) = diag(permuted_maps_.ab(:,:,l,k));
@@ -66,7 +69,7 @@ for i = 1 : numel(fields)
                         per.(fields{i}).(subfields{j})(1,:,k) = diag(performance_(:,:,k));
                     end
                     % Extract diagonal (permuted maps)
-                    if nargin > 2
+                    if hasmaps
                         for k = 1 : size(permuted_maps_,4)
                             for l = 1 : size(permuted_maps_,3)
                                 permaps.(fields{i}).(subfields{j})(1,:,l,k) = diag(permuted_maps_(:,:,l,k));
@@ -76,7 +79,7 @@ for i = 1 : numel(fields)
                 end
                 performance_ = temp;
                 
-                if nargin > 2
+                if hasmaps
                     permuted_maps_ = temp_;
                 end
             end
@@ -90,7 +93,7 @@ for i = 1 : numel(fields)
                     per.(fields{i}).mean(1,:,k) = diag(performance_.mean(:,:,k));
                 end
                 % Extract diagonal (permuted maps) - Both directions:
-                if nargin > 2
+                if hasmaps
                     for k = 1 : size(permuted_maps_.ab,4)
                         for l = 1 : size(permuted_maps_.ab,3)
                             permaps.(fields{i}).ab(1,:,l,k) = diag(permuted_maps_.ab(:,:,l,k));
@@ -106,7 +109,7 @@ for i = 1 : numel(fields)
                 end
                 
                 % Extract diagonal (permuted maps)
-                if nargin > 2
+                if hasmaps
                     for k = 1 : size(permuted_maps_,4)
                         for l = 1 : size(permuted_maps_,3)
                             permaps.(fields{i})(1,:,l,k) = diag(permuted_maps_(:,:,l,k));

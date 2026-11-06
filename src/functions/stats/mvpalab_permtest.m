@@ -37,7 +37,7 @@ if isstruct(results)
     for i = 1 : length(field_names)
         fname = field_names{i};
         
-        if ~any(find(strcmp(ommited_fields, fname)))
+        if ~any(find(strcmp(ommited_fields, fname))) && isfield(permuted_maps,fname)
             res = results.(fname);
             pmap = permuted_maps.(fname);
             stats.(fname) = mvpalab_permtest(cfg,res,pmap,fname);

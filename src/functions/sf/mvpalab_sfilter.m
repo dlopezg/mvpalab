@@ -6,6 +6,9 @@ cfg = mvpalab_checkcfg(cfg);
 % Only computed if cfg.stats.flag is enabled:
 stats = [];
 
+% The sign flip test does not need permuted maps:
+permuted = cfg.stats.flag && ~cfg.stats.signflip;
+
 %% Sliding filter analysis:
 
 % Compute analysis for each frequency band:
@@ -15,7 +18,7 @@ save([cfg.sf.savefolder 'other' filesep 'performance_maps.mat'],...
     'performance_maps','-v7.3');
 
 % Generate permuted maps for each frequency band if needed:
-if cfg.stats.flag
+if permuted
     [permuted_maps,cfg] = mvpalab_decoding(cfg,[],'permuted');
     save([cfg.sf.savefolder 'other' filesep 'permuted_maps.mat'],...
         'permuted_maps','-v7.3');
@@ -36,7 +39,7 @@ save([cfg.sf.savefolder 'other' filesep 'performance.mat'],...
 % Chance level if needed:
 %  One permuted map of the unfiltered data for each permutation, so every
 %  permuted diffMap has its own baseline (see mvpalab_gendiffmap).
-if cfg.stats.flag
+if permuted
     [permuted_performance,cfg] = mvpalab_decoding(cfg,fv,'permuted');
     save([cfg.sf.savefolder 'other' filesep 'permuted_performance.mat'],...
         'permuted_performance','-v7.3');
@@ -48,7 +51,7 @@ mvpalab_savecfg(cfg);
 
 %% Sliding filter analysis - Generate diffMaps:
 
-if cfg.stats.flag
+if permuted
     [cfg,diffMap,perdiffMap] = mvpalab_gendiffmap(...
         cfg,performance.(cfg.sf.metric),...
         performance_maps.(cfg.sf.metric),...
@@ -58,6 +61,8 @@ else
     [cfg,diffMap] = mvpalab_gendiffmap(...
         cfg,performance.(cfg.sf.metric),...
         performance_maps.(cfg.sf.metric));
+    % The diffMaps have no effect at 0:
+    if cfg.stats.flag, perdiffMap = mvpalab_signmaps(diffMap,0); end
 end
 
 result = diffMap.(cfg.sf.metric);

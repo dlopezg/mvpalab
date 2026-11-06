@@ -37,7 +37,7 @@ for roi = 1 :length(roi_names)
             cfg,fmri_rdm,eeg_rdm,false);
         
         % Compute permutated maps if needed:
-        if cfg.stats.flag
+        if cfg.stats.flag && ~cfg.stats.signflip
             results.permaps.(roi_name)(1,:,sub,:) = mvpalab_computecorr(...
                 cfg,fmri_rdm,eeg_rdm,true);
         end

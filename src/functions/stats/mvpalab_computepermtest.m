@@ -7,12 +7,14 @@ if ~ismember(cfg.stats.tails,[-1 1 2])
     error('cfg.stats.tails must be 1 (above chance), -1 (below chance) or 2.');
 end
 
+mvpalab_checksignflip(cfg);
+
 %% Initilization - Generate permutation idx matrix:
 % Here we determine the map of each subject that has to be selected in each
 % permutation.
 nSubjects = size(performance,3);
 cfg.stats.sub = nSubjects;
-perm_idxs = randi(cfg.stats.nper,cfg.stats.sub,cfg.stats.nperg,'single');
+perm_idxs = randi(size(permuted_maps,4),cfg.stats.sub,cfg.stats.nperg,'single');
 
 %% Generate permuted maps at group level:
 % One permuted map of each subject has to be randomly selected and group

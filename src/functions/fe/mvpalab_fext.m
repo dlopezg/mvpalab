@@ -4,6 +4,11 @@ function [ out_data,cfg] = mvpalab_fext ( cfg, data, sub )
 X = cell(length(cfg.study.dataFiles{1,1}),1);
 Y = X;
 
+%% Check the size of the supertrials:
+if cfg.trialaver.flag && cfg.trialaver.ntrials < 1
+    error('cfg.trialaver.ntrials must be at least 1 to average trials.');
+end
+
 %% Match class size (factor of k) is not needed for MVCC:
 if size(data,2) > 1
     cfg.classsize.matchkfold = false;
@@ -27,34 +32,43 @@ for ctxt = 1 : size(data,2)
         end
         
         fv{ctxt,class} = mvpalab_preproc(cfg,data_);
-        class_size(ctxt,class) = size(fv{ctxt,class},1);
+        if cfg.trialaver.flag && size(fv{ctxt,class},1) < cfg.trialaver.ntrials
+            error('Class %s has fewer trials than cfg.trialaver.ntrials.',...
+                class_names{class});
+        end
     end
 end
 
-%% Match coditions size by downsampling:
+%% Class sizes and normalization:
+%  With supertrials they are applied to the supertrials of each repetition
+%  (see mvpalab_supertrials) and the feature vectors keep the single trials.
+if ~cfg.trialaver.flag
+    fv = mvpalab_adjustclasses(cfg,fv);
+end
+
 c = 1;
 for ctxt = 1 : size(fv,1)
-    minsize = min(class_size(ctxt,:));
     for class = 1 : size(fv,2)
-        if cfg.classsize.match
-            inpvec{ctxt,class} = fv{ctxt,class}(1:minsize,:,:);
-        else
-            inpvec{ctxt,class} = fv{ctxt,class};
-        end
-        cfg.datalength(sub,c) = size(inpvec{ctxt,class},1);
+        cfg.datalength(sub,c) = size(fv{ctxt,class},1);
         c = c + 1;
     end
 end
 
 
 %% Data and labels:
-[X,Y,cfg] = mvpalab_datalabels(cfg,inpvec);
+[X,Y,cfg] = mvpalab_datalabels(cfg,fv);
 out_data.X = X;
 out_data.Y = Y;
 
+%  mvpalab_checkfv needs to know that they are not supertrials:
+if cfg.trialaver.flag, out_data.singletrials = true; end
+
 %% Update nfolds if LOOCV:
 if strcmp(cfg.cv.method,'loo')
-    cfg.cv.loo(sub) = size(X.a,1);
+    dataset.a.X = X.a;
+    dataset.a.Y = Y.a;
+    dataset = mvpalab_supertrials(cfg,dataset);
+    cfg.cv.loo(sub) = size(dataset.a.X,1);
 end
 
 fprintf('\n');

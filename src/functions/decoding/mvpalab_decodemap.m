@@ -5,8 +5,12 @@ function map = mvpalab_decodemap(cfg,data,job)
 %  frequency band: the mean across the cross-validation repetitions of the
 %  performance at each timepoint.
 %
-%  The partitions are drawn once per repetition, before the timepoints
-%  loop, and the same partitions are used at all the timepoints.
+%  The supertrials and the partitions are drawn once per repetition, before
+%  the timepoints loop, and they are used at all the timepoints.
+%
+%  The labels of a permuted map belong to the single trials and do not
+%  change across repetitions, so each repetition builds its supertrials
+%  from them (see mvpalab_supertrials and mvpalab_permlabels).
 %
 %%  INPUT:
 %
@@ -15,7 +19,7 @@ function map = mvpalab_decodemap(cfg,data,job)
 %
 %  - {struct} - data:
 %    Datasets of the subject (see mvpalab_loadfv), with the labels of this
-%    map.
+%    map. Single trials if cfg.trialaver.flag is enabled.
 %
 %  - {struct} - job:
 %    Description of the analysis (see mvpalab_decodingjob).
@@ -33,17 +37,20 @@ perf = cell(cfg.tm.ntp,job.nreps);
 for rep = 1 : job.nreps
     job.rep = rep;
 
+    %% Supertrials of this repetition:
+    repdata = mvpalab_repdata(cfg,data);
+
     %% Stratified partition for cross validation:
-    part = mvpalab_cvpartitions(cfg,data,job);
+    part = mvpalab_cvpartitions(cfg,repdata,job);
 
     %% Timepoints loop:
     if cfg.classmodel.parcomp
         parfor tp = 1 : cfg.tm.ntp
-            perf{tp,rep} = mvpalab_evaltp(cfg,data,part,tp,job);
+            perf{tp,rep} = mvpalab_evaltp(cfg,repdata,part,tp,job);
         end
     else
         for tp = 1 : cfg.tm.ntp
-            perf{tp,rep} = mvpalab_evaltp(cfg,data,part,tp,job);
+            perf{tp,rep} = mvpalab_evaltp(cfg,repdata,part,tp,job);
         end
     end
 

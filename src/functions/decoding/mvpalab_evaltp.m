@@ -29,10 +29,10 @@ function perf = mvpalab_evaltp(cfg,data,part,tp,job)
 %    in the last repetition, so they do not accumulate in memory.
 
 if job.mvcc
-    perf.ab = mvpalab_mvcceval(cfg,data.a,data.b,part.ab,tp);
-    perf.ba = mvpalab_mvcceval(cfg,data.b,data.a,part.ba,tp);
+    perf.ab = mvpalab_evalfolds(cfg,data.a,data.b,part.ab,tp);
+    perf.ba = mvpalab_evalfolds(cfg,data.b,data.a,part.ba,tp);
 else
-    perf.aa = mvpalab_mvpaeval(cfg,data.a,part.aa,tp);
+    perf.aa = mvpalab_evalfolds(cfg,data.a,data.a,part.aa,tp);
 end
 
 for d = 1 : numel(job.dirs)

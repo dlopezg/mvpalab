@@ -196,6 +196,12 @@ cfg.cv.loo     = [];
 % cfg.stats.tails  =  1 - Above chance clusters (right tail).
 % cfg.stats.tails  = -1 - Below chance clusters (left tail).
 % cfg.stats.tails  =  2 - Above and below chance (two tails).
+%
+% With two tails cfg.stats.pgroup is split between them, while the clusters
+% above and below chance are two separate tests with their own distribution
+% of cluster sizes, each one with the alpha of cfg.stats.pclust. To control
+% the error of both tests together use cfg.stats.pclust = 97.5. If only the
+% clusters above chance are of interest use cfg.stats.tails = 1.
 
 % cfg.stats.clustcorr - Cluster-level correction (see mvpalab_clusterpvals):
 %                       'fdr' - Null distribution of all the cluster sizes

@@ -33,7 +33,7 @@ function job = mvpalab_decodingjob(cfg,mode)
 %    - numeric:  Metrics stored in numeric maps: 'acc' and 'auc'.
 %    - averaged: Metrics stored per timepoint, averaged across repetitions.
 %    - lastrep:  ROC curves, taken from the last repetition.
-%    - keep:     Outputs of the evaluation functions that are needed.
+%    - keep:     Outputs of mvpalab_evalfolds that are needed.
 %    - folders:  Subject folders of a sliding filter analysis.
 %    - title:    Name of the analysis in the console.
 %    - savemode: Save modality of mvpalab_save.

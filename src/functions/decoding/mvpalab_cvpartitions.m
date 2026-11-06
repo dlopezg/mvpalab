@@ -3,7 +3,8 @@ function part = mvpalab_cvpartitions(cfg,data,job)
 %
 %  This function draws the cross-validation partitions of one repetition:
 %  one partition in MVPA and, in MVCC, one partition of each dataset per
-%  direction (see mvpalab_mvccpartition).
+%  direction (see mvpalab_mvccpartition). All of them are described in the
+%  same way, so the trials of each fold are decided here.
 %
 %%  INPUT:
 %
@@ -19,15 +20,16 @@ function part = mvpalab_cvpartitions(cfg,data,job)
 %%  OUTPUT:
 %
 %  - {struct} - part:
-%    Partition of each direction: part.aa in MVPA, or the training and test
-%    partitions part.ab.train, part.ab.test, part.ba.train and part.ba.test
-%    in MVCC.
+%    Partition of each direction (part.aa in MVPA, or part.ab and part.ba
+%    in MVCC), with logical matrices [trials x folds] of the training
+%    (train) and test (test) trials of each fold.
 
 if job.mvcc
-    [part.ab.train,part.ab.test] = mvpalab_mvccpartition(cfg,data.a.Y,data.b.Y);
-    [part.ba.train,part.ba.test] = mvpalab_mvccpartition(cfg,data.b.Y,data.a.Y);
+    part.ab = mvpalab_mvccpartition(cfg,data.a.Y,data.b.Y);
+    part.ba = mvpalab_mvccpartition(cfg,data.b.Y,data.a.Y);
 else
-    part.aa = cvpartition(data.a.Y,'KFold',cfg.cv.nfolds);
+    part.aa.train = mvpalab_trainfolds(cfg,data.a.Y);
+    part.aa.test = ~part.aa.train;
 end
 
 end

@@ -89,6 +89,9 @@ for sub = 1 : job.nsub
 
         [data,cfg] = mvpalab_loadfv(cfg,fv,job);
 
+        %% Random draws of this band (see mvpalab_sfrng):
+        cfg = mvpalab_sfrng(cfg,job);
+
         %% Maps loop:
         for per = 1 : job.nper
             job.per = per;

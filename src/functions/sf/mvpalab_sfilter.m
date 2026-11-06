@@ -9,6 +9,12 @@ stats = [];
 % The sign flip test does not need permuted maps:
 permuted = cfg.stats.flag && ~cfg.stats.signflip;
 
+% The bands and the unfiltered baseline share their draws (see mvpalab_sfrng):
+cfg.sf.rng = cell(length(cfg.study.dataFiles{1,1}),2);
+if cfg.classmodel.optimize.flag
+    warning('The hyperparameter search does not share its draws across bands.');
+end
+
 %% Sliding filter analysis:
 
 % Compute analysis for each frequency band:
@@ -45,6 +51,7 @@ if permuted
         'permuted_performance','-v7.3');
 end
 
+cfg.sf = rmfield(cfg.sf,'rng');
 cfg.sf.flag = true;
 cfg.sf.baseline = false;
 mvpalab_savecfg(cfg);

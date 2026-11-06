@@ -1,20 +1,27 @@
-function perf = mvpalab_mvpaeval(cfg,data,strpar,tp)
-%% MVPALAB_MVPAEVAL
+function perf = mvpalab_evalfolds(cfg,train,test,part,tp)
+%% MVPALAB_EVALFOLDS
 %
-%  This function evaluates one timepoint of the decoding analysis with
-%  cross-validation.
+%  This function evaluates one timepoint of one direction of the analysis:
+%  in each fold the classifier is trained with some trials of the training
+%  dataset and tested with some trials of the test dataset. In MVPA both
+%  are dataset A. In MVCC they are different datasets. Each analysis decides
+%  the trials of its folds in mvpalab_cvpartitions.
 %
 %%  INPUT:
 %
 %  - {struct} - cfg:
 %    Configuration structure.
 %
-%  - {struct} - data:
-%    Data matrix (X) and labels (Y) of the dataset.
+%  - {struct} - train:
+%    Data matrix (X) and labels (Y) of the training dataset.
 %
-%  - {cvpartition} - strpar:
-%    Cross-validation partition, generated once before the timepoints loop
-%    so that the same partition is used at all the timepoints.
+%  - {struct} - test:
+%    Data matrix (X) and labels (Y) of the test dataset.
+%
+%  - {struct} - part:
+%    Trials of the training (part.train) and test (part.test) datasets of
+%    each fold, generated once before the timepoints loop so that the same
+%    partitions are used at all the timepoints (see mvpalab_cvpartitions).
 %
 %  - {int} - tp:
 %    Timepoint.
@@ -24,8 +31,10 @@ function perf = mvpalab_mvpaeval(cfg,data,strpar,tp)
 %  - {struct} - perf:
 %    Performance of this timepoint (see mvpalab_evalmetrics).
 
-X = data.X;
-Y = data.Y;
+X = train.X;
+Y = train.Y;
+Xt = test.X;
+Yt = test.Y;
 
 raw_weights = [];
 haufe_weights = [];
@@ -33,21 +42,25 @@ params = [];
 
 %% Cross validation loop:
 if ~cfg.classmodel.tempgen
-    predicted_labels = Y; predicted_labels(:) = missing;
-    predicted_scores = ones(strpar.NumObservations,2);
+    predicted_labels = Yt([]);
+    predicted_scores = [];
 else
     for i = 1 : cfg.tm.ntp_
-        predicted_labels{i} = Y; predicted_labels{i}(:) = missing;
-        predicted_scores{i} = ones(strpar.NumObservations,2);
+        predicted_labels{i} = Yt([]);
+        predicted_scores{i} = [];
     end
 end
+true_labels = Yt([]);
 
-for k = 1 : strpar.NumTestSets
-    %% Train and test data:
-    train_X = X(strpar.training(k),:,cfg.tm.tpoints(tp));
-    train_Y = Y(strpar.training(k));
-    test_X = X(strpar.test(k),:,cfg.tm.tpoints(tp));
-    test_Y = Y(strpar.test(k));
+for k = 1 : size(part.train,2)
+    %% Update train and test datasets:
+    train_X = X(part.train(:,k),:,cfg.tm.tpoints(tp));
+    train_Y = Y(part.train(:,k));
+    test_X = Xt(part.test(:,k),:,cfg.tm.tpoints(tp));
+    test_Y = Yt(part.test(:,k));
+    
+    %% Test labels of all the folds:
+    true_labels = [true_labels; test_Y];
     
     %% Data normalization if needed:
     [train_X,test_X,nparams] = mvpalab_datanorm(cfg,train_X,test_X,[]);
@@ -73,7 +86,7 @@ for k = 1 : strpar.NumTestSets
         for tp_ = 1 : cfg.tm.ntp_
             
             % Update test set for the actual timepoint:
-            test_X = X(strpar.test(k),:,cfg.tm.tpoints_(tp_));
+            test_X = Xt(part.test(:,k),:,cfg.tm.tpoints_(tp_));
             
             % Data normalization if needed:
             [~,test_X] = mvpalab_datanorm(cfg,[],test_X,nparams);
@@ -88,20 +101,20 @@ for k = 1 : strpar.NumTestSets
             acc(k,tp_) = sum(test_Y == labels)/length(test_Y);
             
             % Update label and score vectors:
-            predicted_labels{tp_}(strpar.test(k)) = labels;
-            predicted_scores{tp_}(strpar.test(k),:) = scores;
+            predicted_labels{tp_} = [predicted_labels{tp_}; labels];
+            predicted_scores{tp_} = [predicted_scores{tp_}; scores];
         end
     else
         % Test classifier:
         [labels,scores] = predict(mdl,test_X);
         acc(k) = sum(test_Y == labels)/length(test_Y);
-        predicted_labels(strpar.test(k)) = labels;
-        predicted_scores(strpar.test(k),:) = scores;
+        predicted_labels = [predicted_labels; labels];
+        predicted_scores = [predicted_scores; scores];
     end
 end
 
 %% Calculate the performance of the model:
-pred.truth = Y;
+pred.truth = true_labels;
 pred.labels = predicted_labels;
 pred.scores = predicted_scores;
 pred.class = mdl.ClassNames(1);

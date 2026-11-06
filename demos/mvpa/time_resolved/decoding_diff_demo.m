@@ -17,13 +17,13 @@ cfg_b = cfg;
 
 %% Compute MVPA analyses:
 
-[result_a,cfg_a] = mvpalab_mvpa(cfg_a,fv_a);
-[result_b,cfg_b] = mvpalab_mvpa(cfg_b,fv_b);
+[result_a,cfg_a] = mvpalab_decoding(cfg_a,fv_a);
+[result_b,cfg_b] = mvpalab_decoding(cfg_b,fv_b);
 
 %% Compute permutation maps:
 
-[permaps_a,cfg_a] = mvpalab_permaps(cfg_a,fv_a);
-[permaps_b,cfg_b] = mvpalab_permaps(cfg_b,fv_b);
+[permaps_a,cfg_a] = mvpalab_decoding(cfg_a,fv_a,'permuted');
+[permaps_b,cfg_b] = mvpalab_decoding(cfg_b,fv_b,'permuted');
 
 
 %% Calculate the difference:

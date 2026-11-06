@@ -1,19 +1,35 @@
-function [x,y,t,auc,cr,cm,pr,re,f1,w] = mvpalab_mvpaeval(X,Y,tp,cfg,strpar)
-%This function returns the accuracy of the classifier in a time-resolved way.
+function perf = mvpalab_mvpaeval(cfg,data,strpar,tp)
+%% MVPALAB_MVPAEVAL
+%
+%  This function evaluates one timepoint of the decoding analysis with
+%  cross-validation.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {struct} - data:
+%    Data matrix (X) and labels (Y) of the dataset.
+%
+%  - {cvpartition} - strpar:
+%    Cross-validation partition, generated once before the timepoints loop
+%    so that the same partition is used at all the timepoints.
+%
+%  - {int} - tp:
+%    Timepoint.
+%
+%%  OUTPUT:
+%
+%  - {struct} - perf:
+%    Performance of this timepoint (see mvpalab_evalmetrics).
 
-% x = x-coordinates of the ROC curve.
-% y = y-coordinates of the ROC curve.
-% t =
-% auc = Area Under the Curve value.
-% cr = Correct rate.
-% cm = Confusion matrix.
+X = data.X;
+Y = data.Y;
 
-x = {}; y = {}; t = {}; auc = NaN;   
-cm = {}; pr = {}; re = {}; f1 = {};
-cr = NaN;
-raw_weights = []; 
+raw_weights = [];
+haufe_weights = [];
 params = [];
-w = [];
 
 %% Cross validation loop:
 if ~cfg.classmodel.tempgen
@@ -85,73 +101,14 @@ for k = 1 : strpar.NumTestSets
 end
 
 %% Calculate the performance of the model:
+pred.truth = Y;
+pred.labels = predicted_labels;
+pred.scores = predicted_scores;
+pred.class = mdl.ClassNames(1);
+pred.acc = acc;
+pred.raw = raw_weights;
+pred.haufe = haufe_weights;
 
-% Calculate mean weights.
-% Correct the weights using paper.
-% Return weights and repeat por all needed functions (MVCC). 
-if cfg.classmodel.tempgen
-    for tp_ = 1 : cfg.tm.ntp_
-        % Compute confusion matrix if needed:
-        if cfg.classmodel.confmat || cfg.classmodel.precision ...
-            || cfg.classmodel.recall || cfg.classmodel.f1score
-            cm{tp_} = confusionmat(Y,predicted_labels{tp_});
-        end
-        % Compute precision if needed:
-        if cfg.classmodel.precision
-            pr{tp_} =  mvpalab_precision(cm{tp_}');
-        end
-        % Compute recall if needed:
-        if cfg.classmodel.recall
-            re{tp_} =  mvpalab_recall(cm{tp_}');
-        end
-        % Compute F1-score if needed:
-        if cfg.classmodel.f1score
-            f1{tp_} =  mvpalab_f1score(cm{tp_}');
-        end
-        % Receiver operating characteristic (ROC curve) if needed:
-        if cfg.classmodel.auc || cfg.classmodel.roc
-            [x{tp_},y{tp_},t{tp_},auc(tp_)] = ...
-                perfcurve(Y,predicted_scores{tp_}(:,1),mdl.ClassNames(1));
-        end
-    end
-    
-    % Feature weights:
-    if cfg.classmodel.wvector
-        w.raw = mean(raw_weights,2);
-        w.haufe_corrected = mean(haufe_weights,2);
-    end
-    
-    % Mean accuracy:
-    cr = mean(acc);
-else
-    % Mean accuracy:
-    cr = mean(acc);
-    % Compute confusion matrix if needed:
-    if cfg.classmodel.confmat || cfg.classmodel.precision ...
-            || cfg.classmodel.recall || cfg.classmodel.f1score
-        cm = confusionmat(Y,predicted_labels);
-    end
-    % Compute precision if needed:
-    if cfg.classmodel.precision
-        pr =  mvpalab_precision(cm');
-    end
-    % Compute recall if needed:
-    if cfg.classmodel.recall
-        re =  mvpalab_recall(cm');
-    end
-    % Compute F1-score if needed:
-    if cfg.classmodel.f1score
-        f1 =  mvpalab_f1score(cm');
-    end
-    % Receiver operating characteristic (ROC curve):
-    if cfg.classmodel.auc || cfg.classmodel.roc
-        [x,y,t,auc] = perfcurve(Y,predicted_scores(:,1),mdl.ClassNames(1));
-    end
-    % Feature weights:
-    if cfg.classmodel.wvector
-        w.raw = mean(raw_weights,2);
-        w.haufe_corrected = mean(haufe_weights,2);
-    end
-end
+perf = mvpalab_evalmetrics(cfg,pred);
 
 end

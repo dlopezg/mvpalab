@@ -7,22 +7,14 @@ mvpalab_mkdir([cfg.location '/results']);
 %% Load data, generate conditions and feature extraction:
 [cfg,~,fv] = mvpalab_import(cfg);
 
-%% Compute MVPA analysis and save results:
-if strcmp(cfg.analysis,'MVPA')
-    [result,cfg] = mvpalab_mvpa(cfg,fv);
-elseif strcmp(cfg.analysis,'MVCC')
-    [result,cfg] = mvpalab_mvcc(cfg,fv);
-end
+%% Compute the decoding analysis and save results:
+[result,cfg] = mvpalab_decoding(cfg,fv);
 
 %% If permutation analysis is enabled
 if cfg.stats.flag
     % Generate permuted maps:
-    if strcmp(cfg.analysis,'MVPA')
-        [permaps,cfg] = mvpalab_permaps(cfg,fv);
-    elseif strcmp(cfg.analysis,'MVCC')
-        [permaps,cfg] = mvpalab_cpermaps(cfg,fv);
-    end
-    
+    [permaps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
+
     % Compute the permutation based analysis:
     stats = mvpalab_permtest(cfg,result,permaps);
 end

@@ -6,7 +6,7 @@ function [strpar,strpart] = mvpalab_mvccpartition(cfg,Y,Yt)
 %
 %  The partitions are generated once per cross-validation repetition,
 %  before the timepoints loop, and the same partitions are used at all the
-%  timepoints (as in MVPA, see mvpalab_mvpa and mvpalab_permaps). If a new
+%  timepoints (as in MVPA, see mvpalab_decodemap). If a new
 %  partition is drawn at each timepoint, each timepoint is evaluated with
 %  different training and test trials and the result at each timepoint
 %  gets independent cross-validation noise.

@@ -9,22 +9,14 @@ stats = [];
 %% Sliding filter analysis:
 
 % Compute analysis for each frequency band:
-if strcmp(cfg.analysis,'MVPA')
-    [performance_maps,cfg] = mvpalab_mvpa(cfg);
-elseif strcmp(cfg.analysis,'MVCC')
-    [performance_maps,cfg] = mvpalab_mvcc(cfg);
-end
+[performance_maps,cfg] = mvpalab_decoding(cfg);
 
 save([cfg.sf.savefolder 'other' filesep 'performance_maps.mat'],...
     'performance_maps','-v7.3');
 
 % Generate permuted maps for each frequency band if needed:
 if cfg.stats.flag
-    if strcmp(cfg.analysis,'MVPA')
-        [permuted_maps,cfg] = mvpalab_permaps(cfg);
-    elseif strcmp(cfg.analysis,'MVCC')
-        [permuted_maps,cfg] = mvpalab_cpermaps(cfg);
-    end
+    [permuted_maps,cfg] = mvpalab_decoding(cfg,[],'permuted');
     save([cfg.sf.savefolder 'other' filesep 'permuted_maps.mat'],...
         'permuted_maps','-v7.3');
 end
@@ -36,11 +28,7 @@ cfg.sf.flag = false;
 cfg.sf.baseline = true;
 [cfg,~,fv] = mvpalab_import(cfg);
 
-if strcmp(cfg.analysis,'MVPA')
-    [performance,cfg] = mvpalab_mvpa(cfg,fv);
-elseif strcmp(cfg.analysis,'MVCC')
-    [performance,cfg] = mvpalab_mvcc(cfg,fv);
-end
+[performance,cfg] = mvpalab_decoding(cfg,fv);
 
 save([cfg.sf.savefolder 'other' filesep 'performance.mat'],...
     'performance','-v7.3');
@@ -49,13 +37,7 @@ save([cfg.sf.savefolder 'other' filesep 'performance.mat'],...
 %  One permuted map of the unfiltered data for each permutation, so every
 %  permuted diffMap has its own baseline (see mvpalab_gendiffmap).
 if cfg.stats.flag
-
-    if strcmp(cfg.analysis,'MVPA')
-        [permuted_performance,cfg] = mvpalab_permaps(cfg,fv);
-    elseif strcmp(cfg.analysis,'MVCC')
-        [permuted_performance,cfg] = mvpalab_cpermaps(cfg,fv);
-    end
-
+    [permuted_performance,cfg] = mvpalab_decoding(cfg,fv,'permuted');
     save([cfg.sf.savefolder 'other' filesep 'permuted_performance.mat'],...
         'permuted_performance','-v7.3');
 end

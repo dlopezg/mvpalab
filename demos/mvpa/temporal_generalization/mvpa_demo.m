@@ -17,11 +17,11 @@ run cfg_file;
 
 %% Compute MVPA analysis:
 
-[result,cfg] = mvpalab_mvpa(cfg,fv);
+[result,cfg] = mvpalab_decoding(cfg,fv);
 
 %% Compute permutation maps and run statistical analysis:
 
-[permaps,cfg] = mvpalab_permaps(cfg,fv);
+[permaps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
 stats = mvpalab_permtest(cfg,result,permaps);
 
 %% Save cfg file:

@@ -15,11 +15,11 @@ run cfg_file;
 [cfg,data,fv] = mvpalab_import(cfg);
 
 %% Compute MVCC analysis:
-[result,cfg] = mvpalab_mvcc(cfg,fv);
+[result,cfg] = mvpalab_decoding(cfg,fv);
 
 %% Compute permutation maps and run statistical analysis:
 
-[permaps,cfg] = mvpalab_cpermaps(cfg,fv);
+[permaps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
 stats = mvpalab_permtest(cfg,result,permaps);
 
 %% Save cfg file:

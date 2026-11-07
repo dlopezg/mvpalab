@@ -1,4 +1,4 @@
-function [data,cfg] = mvpalab_loadfv(cfg,fv,job)
+function data = mvpalab_loadfv(cfg,fv,job)
 %% MVPALAB_LOADFV
 %
 %  This function returns the datasets of the current subject and frequency
@@ -22,9 +22,6 @@ function [data,cfg] = mvpalab_loadfv(cfg,fv,job)
 %  - {struct} - data:
 %    Data matrix (X) and labels (Y) of dataset A (data.a) and, in MVCC, of
 %    dataset B (data.b).
-%
-%  - {struct} - cfg:
-%    Updated configuration structure.
 
 %% Load data if needed:
 if cfg.sf.flag
@@ -35,11 +32,6 @@ else
 end
 
 mvpalab_checkfv(cfg,fv);
-
-%% Update nfold for each subject if LOO is selected:
-if strcmp(cfg.cv.method,'loo')
-    cfg.cv.nfolds = cfg.cv.loo(job.sub);
-end
 
 %% Datasets:
 data.a.X = fv.X.a;

@@ -37,22 +37,18 @@ sets = fieldnames(data);
 
 %% Average the trials of each class:
 for ctxt = 1 : numel(sets)
-    set = data.(sets{ctxt});
-    classes = categories(set.Y);
-    for class = 1 : numel(classes)
-        fv{ctxt,class} = averageclass(cfg,set.X(set.Y == classes{class},:,:));
+    [trials,classes{ctxt}] = mvpalab_splitclasses(data.(sets{ctxt}));
+    for class = 1 : numel(trials)
+        fv{ctxt,class} = averageclass(cfg,trials{class});
     end
 end
 
 %% Class sizes and normalization:
 fv = mvpalab_adjustclasses(cfg,fv);
 
-%% Data and labels:
-[X,Y] = mvpalab_datalabels(fv);
-
+%% Data and labels, with the names of the classes:
 for ctxt = 1 : numel(sets)
-    data.(sets{ctxt}).X = X.(sets{ctxt});
-    data.(sets{ctxt}).Y = Y.(sets{ctxt});
+    data.(sets{ctxt}) = mvpalab_joinclasses(fv(ctxt,:),classes{ctxt});
 end
 
 end
@@ -60,21 +56,18 @@ end
 function super = averageclass(cfg,trials)
 %% Supertrials of one class: [supertrials x channels x timepoints].
 
-trials = permute(trials,[2 3 1]);
 ntrials = cfg.trialaver.ntrials;
-nsuper = floor(size(trials,3)/ntrials);
+nsuper = floor(size(trials,1)/ntrials);
 
-order = 1 : size(trials,3);
+order = 1 : size(trials,1);
 if strcmp(cfg.trialaver.order,'rand')
-    order = randperm(size(trials,3));
+    order = randperm(size(trials,1));
 end
 
-super = zeros(size(trials,1),size(trials,2),nsuper);
+super = zeros(nsuper,size(trials,2),size(trials,3));
 for i = 1 : nsuper
     block = order((i-1)*ntrials + (1:ntrials));
-    super(:,:,i) = mean(trials(:,:,block),3);
+    super(i,:,:) = mean(trials(block,:,:),1);
 end
-
-super = permute(super,[3 1 2]);
 
 end

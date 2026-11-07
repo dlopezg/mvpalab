@@ -1,4 +1,4 @@
-function weights = mvpalab_backproject(weights,params,cfg)
+function weights = mvpalab_backproject(weights,fold)
 %% MVPALAB_BACKPROJECT
 %
 %  This function returns the feature weights of a model trained in the
@@ -9,25 +9,23 @@ function weights = mvpalab_backproject(weights,params,cfg)
 %  across folds in the channel space, which is also the space needed to
 %  plot them. If X = scores * coeff', the weights of the channels are
 %  coeff * weights, and the same applies to the Haufe corrected patterns.
+%  Without PCA the weights do not change.
 %
 %%  INPUT:
 %
-%  - {1D-array} - weights:
-%    Feature weights. [features x 1]
+%  - {matrix} - weights:
+%    Feature weights [features x 1].
 %
-%  - {struct} - params:
-%    PCA parameters of this fold (mvpalab_dimred).
-%
-%  - {struct} - cfg:
-%    Configuration structure (cfg.dimred).
+%  - {struct} - fold:
+%    Transformation of the fold (see mvpalab_fitfold).
 %
 %%  OUTPUT:
 %
-%  - {1D-array} - weights:
-%    Feature weights in the channel space. [channels x 1]
+%  - {matrix} - weights:
+%    Feature weights in the channel space [channels x 1].
 
-if ~strcmp(cfg.dimred.method,'none')
-    weights = params.coeff(:,1:cfg.dimred.ncomp) * weights;
+if ~isempty(fold.pca)
+    weights = fold.pca.coeff(:,1:fold.pca.ncomp) * weights;
 end
 
 end

@@ -4,7 +4,7 @@ function [out_data,cfg] = mvpalab_fext(cfg,data,sub)
 %  This function generates the feature vectors of one subject from the
 %  data of each class: the features of each class (see mvpalab_preproc),
 %  the class sizes and the normalization (see mvpalab_adjustclasses) and
-%  the data matrix and the labels (see mvpalab_datalabels).
+%  the data matrix and the labels (see mvpalab_joinclasses).
 %
 %  With supertrials (cfg.trialaver.flag) the feature vectors keep the
 %  single trials and the class sizes and the normalization are applied to
@@ -12,12 +12,9 @@ function [out_data,cfg] = mvpalab_fext(cfg,data,sub)
 %  class needs at least cfg.trialaver.ntrials trials; otherwise it gives an
 %  error.
 %
-%  It also changes cfg:
-%  - cfg.datalength(sub,:): number of trials of each class in the feature
-%    vectors, first those of dataset A and then those of dataset B.
-%  - cfg.cv.loo(sub): with cfg.cv.method = 'loo', the number of
-%    observations of dataset A (supertrials, if enabled), used as the
-%    number of folds (see mvpalab_loadfv).
+%  It also stores in cfg.datalength(sub,:) the number of trials of each
+%  class in the feature vectors, first those of dataset A and then those
+%  of dataset B.
 %
 %%  INPUT:
 %
@@ -37,7 +34,7 @@ function [out_data,cfg] = mvpalab_fext(cfg,data,sub)
 %
 %  - {struct} - out_data:
 %    Data matrices (X) and categorical labels (Y), with the fields a and,
-%    in MVCC, b (see mvpalab_datalabels). X: [trials x channels x
+%    in MVCC, b (see mvpalab_joinclasses). X: [trials x channels x
 %    timepoints]. With supertrials, also singletrials = true (see
 %    mvpalab_checkfv).
 %
@@ -68,19 +65,17 @@ end
 nobs = cellfun(@(class) size(class,1),fv');
 cfg.datalength(sub,:) = nobs(:)';
 
-%% Data and labels:
-[out_data.X,out_data.Y] = mvpalab_datalabels(fv);
+%% Data and labels, with the classes named '1', '2'...:
+sets = {'a','b'};
+classes = cellstr(string(1:size(fv,2)));
+for ctxt = 1 : size(fv,1)
+    dataset = mvpalab_joinclasses(fv(ctxt,:),classes);
+    out_data.X.(sets{ctxt}) = dataset.X;
+    out_data.Y.(sets{ctxt}) = dataset.Y;
+end
 
 %  mvpalab_checkfv needs to know that they are not supertrials:
 if cfg.trialaver.flag, out_data.singletrials = true; end
-
-%% Update nfolds if LOOCV:
-if strcmp(cfg.cv.method,'loo')
-    dataset.a.X = out_data.X.a;
-    dataset.a.Y = out_data.Y.a;
-    dataset = mvpalab_supertrials(cfg,dataset);
-    cfg.cv.loo(sub) = size(dataset.a.X,1);
-end
 
 fprintf('\n');
 

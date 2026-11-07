@@ -24,7 +24,8 @@ function job = mvpalab_decodingjob(cfg,mode)
 %    - mvcc:     True in a cross-classification analysis.
 %    - permuted: True if the maps are computed with permuted labels.
 %    - dirs:     Field name of each direction of a map: 'aa' (MVPA, within
-%                dataset A) or 'ab' and 'ba' (MVCC, training - test).
+%                dataset A) or 'ab' and 'ba' (MVCC). The two letters are the
+%                fields of the training and test datasets in data.
 %    - nsub:     Number of subjects.
 %    - nfreq:    Number of frequency bands.
 %    - nper:     Number of maps.

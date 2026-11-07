@@ -1,10 +1,11 @@
 function part = mvpalab_cvpartitions(cfg,data,job)
 %% MVPALAB_CVPARTITIONS
 %
-%  This function draws the cross-validation partitions of one repetition:
-%  one partition in MVPA and, in MVCC, one partition of each dataset per
-%  direction (see mvpalab_mvccpartition). All of them are described in the
-%  same way, so the trials of each fold are decided here.
+%  This function draws the cross-validation partitions of one repetition,
+%  one per direction of the analysis (see mvpalab_dirpartition): the two
+%  letters of each direction are the training and test datasets. All of
+%  them are described in the same way, so the trials of each fold are
+%  decided here. Leave-one-out in MVCC needs datasets of the same size.
 %
 %%  INPUT:
 %
@@ -12,7 +13,7 @@ function part = mvpalab_cvpartitions(cfg,data,job)
 %    Configuration structure (cfg.cv).
 %
 %  - {struct} - data:
-%    Datasets of the subject (see mvpalab_loadfv).
+%    Datasets of the repetition (see mvpalab_repdata).
 %
 %  - {struct} - job:
 %    Description of the analysis (see mvpalab_decodingjob).
@@ -24,12 +25,14 @@ function part = mvpalab_cvpartitions(cfg,data,job)
 %    in MVCC), with logical matrices [trials x folds] of the training
 %    (train) and test (test) trials of each fold.
 
-if job.mvcc
-    part.ab = mvpalab_mvccpartition(cfg,data.a.Y,data.b.Y);
-    part.ba = mvpalab_mvccpartition(cfg,data.b.Y,data.a.Y);
-else
-    part.aa.train = mvpalab_trainfolds(cfg,data.a.Y);
-    part.aa.test = ~part.aa.train;
+if job.mvcc && strcmp(cfg.cv.method,'loo') && length(data.a.Y) ~= length(data.b.Y)
+    error('MVCC with leave-one-out needs datasets of the same size.');
+end
+
+for d = 1 : numel(job.dirs)
+    way = job.dirs{d};
+    part.(way) = mvpalab_dirpartition(cfg,data.(way(1)).Y,data.(way(2)).Y,...
+        way(1) == way(2));
 end
 
 end

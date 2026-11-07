@@ -33,6 +33,7 @@ mvpalab_savecfg(cfg);
 % Settings of the study and checks before reading any file:
 cfg = mvpalab_preparestudy(cfg);
 mvpalab_checkstudy(cfg);
+mvpalab_checkmethods(cfg);
 mvpalab_checksignflip(cfg);
 mvpalab_checkclasses(cfg);
 

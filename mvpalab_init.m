@@ -111,7 +111,7 @@ cfg.dimred.ncomp  = 0;
 % with supertrials, to each supertrial (see mvpalab_adjustclasses), so they
 % affect all the analyses, including RSA.
 % Values 3 and 4 are computed in the training set of each cross-validation
-% fold and applied to the test set (mvpalab_datanorm), so they are only
+% fold and applied to the test set (mvpalab_fitfold), so they are only
 % used by the classifiers (MVPA and MVCC); RSA ignores them. fMRI data
 % imported with mvpalab_import_fmri is not normalized.
 %
@@ -208,7 +208,6 @@ end
 cfg.cv.method  = 'kfold';
 cfg.cv.nfolds  = 5;
 cfg.cv.nreps   = 1;
-cfg.cv.loo     = [];
 
 %% PERMUTATION TEST
 

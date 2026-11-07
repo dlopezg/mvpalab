@@ -28,15 +28,10 @@ function perf = mvpalab_evaltp(cfg,data,part,tp,job)
 %    the metrics that are needed (job.keep). The ROC curves are only kept
 %    in the last repetition, so they do not accumulate in memory.
 
-if job.mvcc
-    perf.ab = mvpalab_evalfolds(cfg,data.a,data.b,part.ab,tp);
-    perf.ba = mvpalab_evalfolds(cfg,data.b,data.a,part.ba,tp);
-else
-    perf.aa = mvpalab_evalfolds(cfg,data.a,data.a,part.aa,tp);
-end
-
 for d = 1 : numel(job.dirs)
     way = job.dirs{d};
+    perf.(way) = mvpalab_evalfolds(cfg,data.(way(1)),data.(way(2)),...
+        part.(way),tp,job);
     perf.(way) = rmfield(perf.(way),setdiff(fieldnames(perf.(way)),job.keep));
     if job.rep < job.nreps
         for m = 1 : numel(job.lastrep)

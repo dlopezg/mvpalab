@@ -60,8 +60,9 @@ if nargin < 3, mode = 'observed'; end
 cfg = mvpalab_checkcfg(cfg);
 mvpalab_savecfg(cfg);
 
-% Check the classes of the analysis:
+% Check the classes and the methods of the analysis:
 mvpalab_checkclasses(cfg);
+mvpalab_checkmethods(cfg);
 
 if strcmp(mode,'permuted')
     % The sign flip test has no permuted maps (see mvpalab_nullmaps):

@@ -43,7 +43,7 @@ for sub = 1 : job.nsub
         job.freq = freq;
         mvpalab_decodingprint('band',cfg,job);
 
-        [data,cfg] = mvpalab_loadfv(cfg,fv,job);
+        data = mvpalab_loadfv(cfg,fv,job);
 
         %% Random draws of this band (see mvpalab_sfrng):
         cfg = mvpalab_sfrng(cfg,job);

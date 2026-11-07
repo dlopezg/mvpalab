@@ -77,7 +77,7 @@ if ~any(strcmp(mode,{'corr','regress','multiple_regress'}))
 end
 
 %  Data normalization: values 3 and 4 of cfg.normdata are applied within
-%  the cross-validation folds of the classifiers (mvpalab_datanorm) and
+%  the cross-validation folds of the classifiers (mvpalab_fitfold) and
 %  have no effect in RSA. Values 1 and 2 are applied to each trial or
 %  supertrial (mvpalab_adjustclasses).
 

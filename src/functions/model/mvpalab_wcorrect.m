@@ -24,7 +24,7 @@ function [wcorrected] = mvpalab_wcorrect(train_X,w)
 %  - {matrix} - wcorrected:
 %    Corrected feature weights [features x 1].
 
-train_X = (train_X - repmat(mean(train_X), size(train_X,1),1)) ./ sqrt(size(train_X,1)-1);
+train_X = (train_X - mean(train_X,1)) ./ sqrt(size(train_X,1)-1);
 wcorrected = train_X' * (train_X * w);
 end
 

@@ -1,16 +1,32 @@
 function [volumes,masks,cfg] = mvpalab_import_fmri(cfg)
-%% MVPALAB_IMPORTFMRI
+%% MVPALAB_IMPORT_FMRI
 %
-%  This function import the required fmri data for the searchligth
-%  analysis, including the mask, the specified betas for each condition.
+%  This function imports the fMRI data of each subject in
+%  cfg.rsa.subjects:
+%
+%  - The betas of the conditions in cfg.rsa.conditions, from the folder
+%    cfg.rsa.betafolder of the subject (mvpalab_load_betas).
+%  - The masks of the regions of interest in cfg.rsa.roi, from the folder
+%    cfg.rsa.roi_folder of the subject (mvpalab_load_volumes). Each
+%    region is named after its file without the extension.
 %
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Description: Configuration structure.
+%    Configuration structure.
 %
 %%  OUTPUT:
 %
+%  - {cell array} - volumes:
+%    Betas of each subject, each one a cell array [conditions x runs] (see
+%    mvpalab_load_betas).
+%
+%  - {cell array} - masks:
+%    Regions of interest of each subject, each one a struct with one field
+%    per region in the order of cfg.rsa.roi (see mvpalab_load_volumes).
+%
+%  - {struct} - cfg:
+%    Configuration structure, without changes.
 
 %% Subjects loop:
 %  Iterate along subjects:

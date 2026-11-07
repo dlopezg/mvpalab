@@ -1,4 +1,35 @@
 function [cfg,results] = mvpalab_fusion_nomean(cfg,fmri_rois,eeg_rdms)
+%% MVPALAB_FUSION_NOMEAN
+%
+%  This function computes the fusion in the 'no-mean' mode of
+%  mvpalab_fusion: the RDM of each fMRI subject in each region of interest
+%  is correlated with the RDM of each M/EEG subject at each timepoint
+%  (mvpalab_computecorr). There is one observation per pair of subjects,
+%  ordered by fMRI subject: first the first fMRI subject with each M/EEG
+%  subject, then the second fMRI subject...
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {struct} - fmri_rois:
+%    One field per region of interest, with a cell array that contains the
+%    RDM of each fMRI subject [conditions x conditions].
+%
+%  - {cell array} - eeg_rdms:
+%    RDM of each M/EEG subject [conditions x conditions x timepoints].
+%
+%%  OUTPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure, without changes.
+%
+%  - {struct} - results:
+%    - res.(region): Correlations [1 x timepoints x pairs].
+%    - permaps.(region): Permuted maps [1 x timepoints x pairs x
+%      permutations], only with cfg.stats.flag and without
+%      cfg.stats.signflip.
 
 % Initialize:
 ntp = size(eeg_rdms{1},3);

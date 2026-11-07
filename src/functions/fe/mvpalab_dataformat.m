@@ -1,4 +1,38 @@
 function [cfg,EEG] = mvpalab_dataformat(cfg,input)
+%% MVPALAB_DATAFORMAT
+%
+%  This function reads the content of one data file and returns its data
+%  in the EEGLAB format used by MVPAlab. The format is detected from the
+%  fields of the data:
+%
+%  - FieldTrip (field fsample): the trials are concatenated in EEG.data
+%    and the times of the first trial are converted to milliseconds.
+%  - EEGLAB (field srate): the structure is used as it is.
+%  - MVPAlab (field format = 'mvpalab'): fields data, fs and, optionally,
+%    times. Without times, the time vector is 1 to the number of
+%    timepoints and a warning is shown.
+%
+%  Any other format gives an error. Channel locations are only kept from
+%  EEGLAB files. It also stores the sampling frequency in cfg.fs and the
+%  format in cfg.format ('fieldtrip', 'eeglab' or 'mvpalab').
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {struct} - input:
+%    Content of the file, with the data in its first field (see
+%    mvpalab_readdata).
+%
+%%  OUTPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure, with cfg.fs and cfg.format.
+%
+%  - {struct} - EEG:
+%    Data in the EEGLAB format: data [channels x timepoints x trials],
+%    srate, nbchan, pnts, trials, times and chanlocs.
 
 % Extract field names:
 fields = fieldnames(input);

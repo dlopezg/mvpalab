@@ -1,26 +1,37 @@
 function stats = mvpalab_permtest(cfg,results,permuted_maps,fname)
 %% MVPALAB_PERMTEST
 %
-% This function recursively iterates over the fields contained in the 
-% results and permuted_maps structures. If the selected field has permuted
-% maps we make a recursive call and the permutation test is computed. Cell
-% arrays are not maps: an RSA model can share its name with the RDMs.
+%  This function recursively iterates over the fields contained in the
+%  results and permuted_maps structures. If the selected field has permuted
+%  maps we make a recursive call and the permutation test is computed with
+%  mvpalab_computepermtest. Cell arrays are not maps: an RSA model can
+%  share its name with the RDMs.
+%
+%  The first call (without fname) saves the statistics with mvpalab_save,
+%  unless cfg.sf.flag is true.
 %
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Description: Configuration structure.
+%    Configuration structure.
 %
-%  - {struct} results
-%    Description: Data structure containing the results for each measure.
+%  - {struct} - results:
+%    Data structure containing the results for each measure, or one map
+%    in the recursive call.
 %
-%  - {struct} permuted_maps
-%    Description: Data structure containing the permuted maps for each
-%    measure.
+%  - {struct} - permuted_maps:
+%    Data structure containing the permuted maps for each measure, or the
+%    permuted maps of one map in the recursive call.
 %
-%  - {string} fname
-%    Description: Current field name used for the recursive call. 
+%  - {string} - fname:
+%    Optional. Current field name used for the recursive call.
 %
+%%  OUTPUT:
+%
+%  - {struct} - stats:
+%    The same fields as results that have permuted maps, with the output
+%    of mvpalab_computepermtest for each map.
+
 %% Check if the current input is a struct:
 %  Description: If the current input is a struct, extract field names and
 %  iterate over fields.

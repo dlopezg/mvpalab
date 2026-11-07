@@ -1,4 +1,38 @@
 function [result,stats,cfg] = mvpalab_searchlight(cfg,mask,data)
+%% MVPALAB_SEARCHLIGHT
+%
+%  This function computes a searchlight analysis of the fMRI betas of one
+%  subject. The mask and the betas are padded with cfg.sl.radius NaN
+%  voxels (mvpalab_padvolumes), and a sphere of radius cfg.sl.radius
+%  (mvpalab_sphere) is centered at each voxel in the idxs of the padded
+%  mask. At each voxel, the correlation matrix (corrcoef) between the
+%  betas is computed with the voxels inside the sphere, without the voxels
+%  with NaN values.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {struct} - mask:
+%    Mask of the analysis (see mvpalab_load_volumes).
+%
+%  - {cell array} - data:
+%    Betas [conditions x runs] (see mvpalab_load_betas).
+%
+%%  OUTPUT:
+%
+%  - {matrix} - result:
+%    Correlation matrix at each voxel of the mask [betas x betas x
+%    voxels], with betas = conditions x runs ordered condition by
+%    condition.
+%
+%  - {matrix} - stats:
+%    Empty matrix.
+%
+%  - {struct} - cfg:
+%    Configuration structure, without changes.
+
 %% Pad volumes:
 mask_ = mvpalab_padvolumes(cfg,mask);
 data_ = mvpalab_padvolumes(cfg,data);

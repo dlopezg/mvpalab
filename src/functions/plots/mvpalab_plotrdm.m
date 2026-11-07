@@ -1,6 +1,24 @@
 function [] = mvpalab_plotrdm(graph,cfg,data)
-%MVPALAB_PLOTRDM Summary of this function goes here
-%   Detailed explanation goes here
+%% MVPALAB_PLOTRDM
+%
+%  This function plots a representational dissimilarity matrix (RDM) of
+%  one subject and timepoint in the current axes, with lines at the
+%  boundaries of the conditions and the names of the conditions
+%  (cfg.study.conditionIdentifier, with '_' replaced by '-') as labels.
+%
+%%  INPUT:
+%
+%  - {struct} - graph:
+%    Parameters of the plot (see mvpalab_plotinit). graph.sub is the
+%    index of the subject in cfg.rsa.bounds; mvpalab_plotinit does not
+%    set it.
+%
+%  - {struct} - cfg:
+%    Configuration structure (cfg.rsa.bounds, see mvpalab_rsa_time, and
+%    cfg.study.conditionIdentifier).
+%
+%  - {matrix} - data:
+%    RDM [trials x trials].
 
 %% Plot the RDM.
 %  For a specific subject and timepoint:

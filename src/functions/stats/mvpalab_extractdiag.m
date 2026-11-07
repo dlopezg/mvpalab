@@ -1,4 +1,45 @@
 function [per,permaps,stats] = mvpalab_extractdiag(cfg,performance,permuted_maps)
+%% MVPALAB_EXTRACTDIAG
+%
+%  This function extracts the diagonal of the temporal generalization maps
+%  (the same training and test timepoints) to obtain the time-resolved
+%  results. It needs the same training and test time windows
+%  (cfg.tm.tpoints and cfg.tm.tpoints_), and stops with an error
+%  otherwise. Only the fields acc, auc, precision, recall and f1score at
+%  the first level of performance are extracted, as in the results of
+%  MVPA, without fields per direction.
+%
+%  The results are saved with mvpalab_save in the time_resolved folder.
+%  With permuted maps, the permuted maps are saved too and the
+%  permutation test is computed and saved (see mvpalab_permtest). Only
+%  the metrics that have permuted maps are tested.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {struct} - performance:
+%    Result structure of a temporal generalization analysis, with maps
+%    [ntp x ntp x subjects x bands] in each metric (precision, recall and
+%    f1score with one field per class, see mvpalab_storemap).
+%
+%  - {struct} - permuted_maps:
+%    Optional. Permuted maps of a temporal generalization analysis, with
+%    maps [ntp x ntp x subjects x maps x bands] in each metric.
+%
+%%  OUTPUT:
+%
+%  - {struct} - per:
+%    Diagonal of each metric, with maps [1 x ntp x subjects x bands].
+%
+%  - {struct} - permaps:
+%    Diagonal of the permuted maps, with maps
+%    [1 x ntp x subjects x maps x bands]. Only with permuted_maps.
+%
+%  - {struct} - stats:
+%    Statistics of the permutation test (see mvpalab_permtest). Only with
+%    permuted_maps.
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);

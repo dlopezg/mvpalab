@@ -1,6 +1,42 @@
 function [ mdl , w ] = mvpalab_train(train_X,train_Y,cfg)
-%MVPALAB_TRAINCLASS Summary of this function goes here
-%   Detailed explanation goes here
+%% MVPALAB_TRAIN
+%
+%  This function trains the classifier selected in cfg.classmodel.method
+%  and returns its feature weights:
+%
+%  - 'svm': support vector machine (fitcsvm) with the kernel in
+%    cfg.classmodel.kernel. With the 'rbf' or 'gaussian' kernel and
+%    without hyperparameter optimization, the kernel scale is
+%    sqrt(features * var(train_X(:))), the same as gamma = 'scale' in
+%    scikit-learn. With more than two classes, one binary SVM per pair of
+%    classes is combined by fitcecoc.
+%  - 'da': discriminant analysis (fitcdiscr) with the discriminant type in
+%    cfg.classmodel.kernel.
+%
+%  Any other method gives an error. If cfg.classmodel.optimize.flag is
+%  enabled, the hyperparameters in cfg.classmodel.optimize.params are
+%  optimized with the options in cfg.classmodel.optimize.opt. The feature
+%  weights are only defined for the linear SVM of two classes and the
+%  discriminant type 'linear'; otherwise they are NaN.
+%
+%%  INPUT:
+%
+%  - {matrix} - train_X:
+%    Training data [trials x features].
+%
+%  - {matrix} - train_Y:
+%    Categorical labels of the training trials [trials x 1].
+%
+%  - {struct} - cfg:
+%    Configuration structure (cfg.classmodel).
+%
+%%  OUTPUT:
+%
+%  - {object} - mdl:
+%    Trained model, returned by fitcsvm, fitcecoc or fitcdiscr.
+%
+%  - {matrix} - w:
+%    Feature weights [features x 1], NaN when they are not defined.
 
 if strcmp(cfg.classmodel.method,'svm')
     kernel = {'KernelFunction',cfg.classmodel.kernel};

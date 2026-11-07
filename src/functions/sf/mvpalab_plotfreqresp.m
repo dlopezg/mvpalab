@@ -1,4 +1,29 @@
 function cfg = mvpalab_plotfreqresp(cfg)
+%% MVPALAB_PLOTFREQRESP
+%
+%  This function plots, in a new figure, the magnitude response of the
+%  filter of each frequency band, computed with firws and windows of
+%  EEGLAB from cfg.sf.wtype and cfg.sf.order. The filter is band-stop if
+%  cfg.sf.ftype is 'bandstop' and band-pass otherwise. The x axis goes up
+%  to cfg.sf.hfreq. It needs EEGLAB and the bands in cfg.sf.fcutoff (see
+%  mvpalab_genfreqvec). The first subplot shows the bands of cfg.sf.fspac,
+%  and the second one the bands generated again with the other spacing
+%  ('lin' or 'log'). The titles of the subplots are fixed (log spacing,
+%  then linear spacing), so they are right when cfg.sf.fspac is 'log'. The
+%  sampling rate is cfg.fs, or 250 Hz if cfg has no field fs.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%%  OUTPUT:
+%
+%  - {struct} - cfg:
+%    Updated configuration structure: cfg.sf.fs, cfg.sf.win and
+%    cfg.sf.coeff, and cfg.sf.fspac, cfg.sf.freqvec and cfg.sf.fcutoff
+%    changed to the other spacing.
+
     % Check if EEGlab is installed.
     mvpalab_checkeeglab();
     

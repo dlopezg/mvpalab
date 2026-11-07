@@ -1,20 +1,22 @@
 function bounds = mvpalab_findbound(Y)
-%% MVPALAB_FINDBOUNDS
+%% MVPALAB_FINDBOUND
 %
-%  This function returns the indexes of the last trials of each condition.
-%  It additionally returns the index of the middle trial of each condition.
+%  This function returns the indexes of the last trial and of the middle
+%  trial of each condition. The trials of each condition must be together:
+%  each change of label starts a new condition.
 %
 %%  INPUT:
 %
-%  - {array of logicals} Y
-%    Description: This vector contains logical labels for an individual 
-%    subject.
+%  - {matrix} - Y:
+%    Categorical labels of each trial or condition [trials x 1]
+%    (rdm.labels of mvpalab_rdm).
 %
 %%  OUTPUT:
 %
-%  - {struct.array} bounds
-%    Description: This vector contains the indexes of the last and the 
-%    middle trial of each condition in the data matrix.
+%  - {struct} - bounds:
+%    Indexes of each condition in the RDM:
+%    - last: Index of the last trial [1 x conditions].
+%    - middle: Index of the middle trial [conditions x 1].
 
 %% Find boundaries:
 %  Find first and last element of each condition:

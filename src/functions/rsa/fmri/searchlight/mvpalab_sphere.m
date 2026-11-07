@@ -1,7 +1,22 @@
 function sphere = mvpalab_sphere(cfg,mask)
 %% MVPALAB_SPHERE
 %
-%   Detailed explanation goes here
+%  This function returns the relative coordinates of the voxels of a
+%  searchlight sphere: the voxels at a distance smaller than cfg.sl.radius
+%  from the center, which is the voxel (0,0,0).
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure (cfg.sl.radius).
+%
+%  - {struct} - mask:
+%    Mask of the analysis, with its size in dim (see mvpalab_padvolumes).
+%
+%%  OUTPUT:
+%
+%  - {matrix} - sphere:
+%    Relative coordinates of the voxels of the sphere [voxels x 3].
 
 %% Initialization:
 sphere = [];

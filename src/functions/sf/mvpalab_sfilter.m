@@ -1,4 +1,50 @@
 function [cfg,diffMap,stats] = mvpalab_sfilter(cfg)
+%% MVPALAB_SFILTER
+%
+%  This function computes a sliding filter analysis: the diffMaps, the
+%  performance of each frequency band minus the performance of the
+%  unfiltered data (see mvpalab_gendiffmap). The feature vectors of the
+%  bands must be in cfg.sf.filesLocation (see mvpalab_import with
+%  cfg.sf.flag enabled).
+%
+%  All the maps are computed with mvpalab_decodingmaps. The unfiltered
+%  baseline is read again with mvpalab_readdata. The bands and the baseline
+%  share their random draws (see mvpalab_sfrng), except the draws of the
+%  hyperparameter search (cfg.classmodel.optimize), with a warning.
+%
+%  If cfg.stats.flag is enabled, it computes the permutation test of the
+%  diffMaps (see mvpalab_permtest). With cfg.stats.signflip the permuted
+%  maps are not computed, and the test uses the sign flip maps of the
+%  diffMaps (see mvpalab_signmaps).
+%
+%  It saves cfg (see mvpalab_savecfg) after checking it and again after
+%  computing the maps, and these files in cfg.sf.savefolder:
+%  - result.mat: diffMap of cfg.sf.metric, with cfg.
+%  - stats.mat: Statistics, if cfg.stats.flag is enabled.
+%  - other/performance_maps.mat, other/performance.mat: Maps of the bands
+%    and of the baseline.
+%  - other/permuted_maps.mat, other/permuted_performance.mat: Permuted
+%    maps of the bands and of the baseline, if they are computed.
+%  - other/perdiffMap.mat: Permuted or sign flip diffMaps, if
+%    cfg.stats.flag is enabled.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%%  OUTPUT:
+%
+%  - {struct} - cfg:
+%    Updated configuration structure.
+%
+%  - {struct} - diffMap:
+%    Field cfg.sf.metric with the diffMaps [bands x ntp x subjects]. In
+%    MVCC, fields ab and ba.
+%
+%  - {struct} - stats:
+%    Statistics of cfg.sf.metric (see mvpalab_permtest), or empty if
+%    cfg.stats.flag is disabled.
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);

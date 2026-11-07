@@ -1,6 +1,31 @@
 function [] = mvpalab_plottempogen(graph,cfg,data,stats)
-%PLOT_RESULTS Summary of this function goes here
-%   Detailed explanation goes here
+%% MVPALAB_PLOTTEMPOGEN
+%
+%  This function plots a temporal generalization matrix in the current
+%  axes: the mean across subjects, or one subject (graph.subject, see
+%  mvpalab_selectsub).
+%
+%  With stats, the contours of the significant clusters above
+%  (graph.stats.above) and below (graph.stats.below) chance are drawn.
+%  If graph has the field onscreen (two times), dash-dot lines are drawn
+%  at both times on the two axes. If graph.caxis is zero, the color
+%  limits are the minimum and maximum of the matrix. If cfg.tm.tpstart_ and cfg.tm.tpend_ are 0 (older
+%  versions of MVPAlab), cfg.tm.tpstart and cfg.tm.tpend are used.
+%
+%%  INPUT:
+%
+%  - {struct} - graph:
+%    Parameters of the plot (see mvpalab_plotinit).
+%
+%  - {struct} - cfg:
+%    Configuration structure (cfg.tm).
+%
+%  - {matrix} - data:
+%    Temporal generalization matrix [ntp x ntp_ x subjects].
+%
+%  - {struct} - stats (optional):
+%    Statistics of the matrix, with stats.clusters, stats.clusters_,
+%    stats.sigmask and stats.sigmask_ (see mvpalab_computepermtest).
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);

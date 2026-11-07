@@ -1,6 +1,32 @@
 function [] = mvpalab_plotdecoding(graph,cfg,data,stats)
-%PLOT_RESULTS Summary of this function goes here
-%   Detailed explanation goes here
+%% MVPALAB_PLOTDECODING
+%
+%  This function plots a time-resolved result in the current axes: the
+%  mean across subjects (graph.plotmean), a shade with the STD or the SEM
+%  (graph.stdsem) and a dotted line at the chance level (graph.chanlvl).
+%  The data can be smoothed for the plot (graph.smoothdata) and one
+%  subject can be selected (graph.subject, see mvpalab_selectsub).
+%
+%  With stats, the significant timepoints above (graph.stats.above) and
+%  below (graph.stats.below) chance are shown as a shade
+%  (graph.sigmode.shade) or as points at height graph.sigh
+%  (graph.sigmode.points).
+%
+%%  INPUT:
+%
+%  - {struct} - graph:
+%    Parameters of the plot (see mvpalab_plotinit).
+%
+%  - {struct} - cfg:
+%    Configuration structure (cfg.tm.times).
+%
+%  - {matrix} - data:
+%    Time-resolved result [1 x timepoints x subjects].
+%
+%  - {struct} - stats (optional):
+%    Statistics of the result, with the masks of the significant
+%    clusters stats.sigmask and stats.sigmask_ (see
+%    mvpalab_computepermtest).
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);

@@ -1,6 +1,27 @@
 function rdm_ = mvpalab_mergerunsrdm(cfg,data,rdm)
-%MVPALAB_MERGERUNS Summary of this function goes here
-%   Detailed explanation goes here
+%% MVPALAB_MERGERUNSRDM
+%
+%  This function averages the run blocks of an RDM between betas, so it
+%  returns the RDM between conditions. Each element is the mean of the
+%  block of a pair of conditions, and the diagonal is set to 0. With one
+%  run the RDM is returned without changes.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure (not used).
+%
+%  - {cell array} - data:
+%    Betas [conditions x runs]. Only the number of runs is used.
+%
+%  - {matrix} - rdm:
+%    RDM between the betas [betas x betas], with the betas ordered
+%    condition by condition (see mvpalab_combineruns).
+%
+%%  OUTPUT:
+%
+%  - {matrix} - rdm_:
+%    RDM between the conditions [conditions x conditions].
 
 offset = size(data,2);
 offset_ = offset - 1;

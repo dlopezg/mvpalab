@@ -1,4 +1,25 @@
 function graph = mvpalab_plotinit(cfg)
+%% MVPALAB_PLOTINIT
+%
+%  This function returns the graph structure with the default parameters
+%  of the MVPAlab plots: color schemes and gradients (loaded from
+%  mvpalab_colorschemes.mat), labels, limits, chance level, smoothing,
+%  cluster contours, statistics and feature weights.
+%
+%  With cfg, graph.xlim is set to [cfg.tm.tpstart cfg.tm.tpend] and, in
+%  MVPA and MVCC, graph.chanlvl is set to 1/number of classes. Without
+%  cfg, graph.xlim is not set and graph.chanlvl stays at 0.5.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg (optional):
+%    Configuration structure (cfg.tm, cfg.analysis and cfg.study).
+%
+%%  OUTPUT:
+%
+%  - {struct} - graph:
+%    Default parameters of the plots.
+
 load mvpalab_colorschemes.mat
 graph.grads = grd;
 graph.colors = sch;

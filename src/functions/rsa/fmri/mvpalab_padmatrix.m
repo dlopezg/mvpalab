@@ -1,7 +1,24 @@
 function padded_volume = mvpalab_padmatrix(r,volume)
 %% MVPALAB_PADMATRIX
-
-%   Detailed explanation goes here
+%
+%  This function adds r NaN voxels at both sides of each dimension of a
+%  volume. MATLAB converts NaN to 0 when data is of an integer type.
+%
+%%  INPUT:
+%
+%  - {int} - r:
+%    Number of voxels added at each side (cfg.sl.radius in
+%    mvpalab_padvolumes).
+%
+%  - {struct} - volume:
+%    Volume with the fields data, dim and fname (see mvpalab_read_nifti).
+%
+%%  OUTPUT:
+%
+%  - {struct} - padded_volume:
+%    Padded volume [dim + 2r] with the fields dim, fname, data, idxs (the
+%    indexes of the nonzero elements of data, which include the NaN
+%    voxels) and coor (their coordinates [voxels x 3]).
 
 %% First dimension:
 pad = NaN(r,volume.dim(2),volume.dim(3));

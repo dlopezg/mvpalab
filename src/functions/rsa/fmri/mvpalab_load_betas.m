@@ -1,5 +1,5 @@
 function betas = mvpalab_load_betas(folder,conditions_to_extract)
-%% MVPALAB_LOADBETAS
+%% MVPALAB_LOAD_BETAS
 %
 %  This function loads the beta images of the specified conditions from a
 %  first-level SPM model: one beta per condition and run (session).
@@ -26,15 +26,15 @@ function betas = mvpalab_load_betas(folder,conditions_to_extract)
 %    Folder of the first-level model, including the SPM.mat file and the
 %    beta images.
 %
-%  - {cell} - conditions_to_extract:
+%  - {cell array} - conditions_to_extract:
 %    Names of the conditions (regressor names of the SPM model).
 %
 %%  OUTPUT:
 %
-%  - {cell} - betas:
-%    Beta images [conditions x runs]. Each cell includes the fields of
-%    mvpalab_read_nifti and the name of the regressor (regressor) and the
-%    session of the SPM model (session).
+%  - {cell array} - betas:
+%    Beta images [conditions x runs]. Each cell is a struct with the
+%    fields of mvpalab_read_nifti, the name of the regressor (regressor)
+%    and the session of the SPM model (session).
 
 load(fullfile(folder,'SPM.mat'),'SPM');
 

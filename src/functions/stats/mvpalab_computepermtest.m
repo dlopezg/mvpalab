@@ -1,4 +1,70 @@
 function stats = mvpalab_computepermtest(cfg,performance,permuted_maps)
+%% MVPALAB_COMPUTEPERMTEST
+%
+%  This function computes the cluster-based permutation test of one
+%  performance map at group level (Stelzer et al., 2013):
+%
+%  - It builds cfg.stats.nperg permuted maps at group level, each one the
+%    mean of one permuted map of each subject selected at random.
+%  - At each position of the maps, the threshold is the percentile
+%    cfg.stats.pgroup of this null distribution. With cfg.stats.tails = 2
+%    the percentile is split between the two tails.
+%  - The clusters are the connected positions above (or below) the
+%    threshold (bwconncomp), in the permuted maps and in the group mean of
+%    the real maps.
+%  - Each cluster of the real data is accepted or rejected at the level
+%    cfg.stats.pclust with the correction in cfg.stats.clustcorr: 'fdr',
+%    the null distribution of all the cluster sizes with the
+%    Benjamini-Hochberg FDR correction, or 'max', the null distribution of
+%    the largest cluster of each permuted map (Maris & Oostenveld, 2007).
+%    See mvpalab_clusterpvals.
+%
+%  cfg.stats.tails selects the tails: 1 (above chance), -1 (below chance)
+%  or 2 (both). The function stops with an error if cfg.stats.tails is
+%  not one of them or if the settings of the sign flip test are not valid
+%  (see mvpalab_checksignflip). It opens a figure with the null
+%  distribution at the last position of the maps and the null
+%  distributions of the cluster sizes, which is closed if
+%  cfg.stats.shownulldis is false. It does not save any file.
+%
+%  - Maris, E., & Oostenveld, R. (2007). Nonparametric statistical testing
+%    of EEG- and MEG-data. Journal of Neuroscience Methods, 164(1),
+%    177-190.
+%
+%  - Stelzer, J., Chen, Y., & Turner, R. (2013). Statistical inference and
+%    multiple testing correction in classification-based multi-voxel
+%    pattern analysis (MVPA): random permutations and cluster size
+%    control. NeuroImage, 65, 69-82.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {matrix} - performance:
+%    Maps of each subject, for example the accuracy,
+%    [ntp x ntp_ x subjects], with a single row in the time-resolved
+%    analyses.
+%
+%  - {matrix} - permuted_maps:
+%    Permuted maps of each subject [ntp x ntp_ x subjects x maps].
+%
+%%  OUTPUT:
+%
+%  - {struct} - stats:
+%    Results of the test. The fields without _ are the above-chance tail
+%    and the fields with _ the below-chance tail:
+%    - thresdata, thresdata_: Logical maps [ntp x ntp_], true where the
+%      group mean performance is above (below) the threshold. Empty if
+%      the tail is not tested.
+%    - clusters, clusters_: Clusters of thresdata (thresdata_), the
+%      output of bwconncomp with the fields of mvpalab_clusterpvals
+%      (sizes, pvals, fdr, sig_idx, sig, maxdist). With no objects and
+%      empty fields if the tail is not tested.
+%    - sigmask, sigmask_: Maps [ntp x ntp_] of ones, with 0 at the
+%      positions of the significant clusters.
+%    - corrcsize, corrcsize_: Minimum size of the significant clusters
+%      (Inf if none or if the tail is not tested).
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);

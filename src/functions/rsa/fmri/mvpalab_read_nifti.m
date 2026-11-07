@@ -1,25 +1,23 @@
 function volume = mvpalab_read_nifti(file)
-%% MVPALAB_READNIFTI
+%% MVPALAB_READ_NIFTI
 %
-%  This function load the specified NIFTI file using the matlab function
-%  niftiread if it is available (matlab version R2017b and avobe).
-%
-%  Otherwise the SPM function spm_vol is employed. Note that SPM must be
-%  installed and added to the matlab path.
+%  This function loads a NIfTI file with the MATLAB function niftiread if
+%  it is available (MATLAB R2017b and above). Otherwise the SPM functions
+%  spm_vol and spm_read_vols are used, so SPM must be installed and added
+%  to the MATLAB path. An error is raised if neither is available.
 %
 %%  INPUT:
 %
-%  - {struct} - file:
-%    Configuration structure.
+%  - {string} - file:
+%    Path of the NIfTI file.
 %
 %%  OUTPUT:
 %
-%  - {struct} - data:
-%    NIFTI file containing the following fields:
-%       mask.data:  [3D-matrix] containing the value for each voxel.
-%       mask.dim:   [vector]    containing the size of the volume.
-%       mask.fname: [string]    containing the path to the volume file.
-%%
+%  - {struct} - volume:
+%    Volume with the fields:
+%    - data: Value of each voxel.
+%    - dim: Size of the volume.
+%    - fname: Path of the file.
 
 if exist('niftiread','file')
     

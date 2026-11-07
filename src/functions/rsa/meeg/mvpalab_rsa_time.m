@@ -1,4 +1,60 @@
 function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
+%% MVPALAB_RSA_TIME
+%
+%  This function computes the time-resolved representational similarity
+%  analysis of M/EEG data. For each subject it builds the supertrials
+%  (mvpalab_supertrials), the RDM at each timepoint of cfg.tm.tpoints
+%  (mvpalab_rdm) and the theoretical RDMs (mvpalab_gentrdms), and compares
+%  them as set in cfg.rsa.modality:
+%
+%  - 'corr': Spearman correlation with each theoretical model, Fisher
+%    z-transformed (mvpalab_computecorr).
+%  - 'regress': a general linear model for each theoretical model
+%    (mvpalab_fitglm).
+%  - 'multiple_regress': one general linear model with all the theoretical
+%    models as regressors (mvpalab_fitglm).
+%
+%  The values 3 and 4 of cfg.normdata have no effect in RSA (a warning is
+%  shown). With cfg.stats.flag the permuted maps are computed and the
+%  permutation test is run (mvpalab_permtest); with cfg.stats.signflip the
+%  sign flip test is used instead (mvpalab_signmaps).
+%
+%  The results and the permuted maps are saved with mvpalab_save and the
+%  statistics by mvpalab_permtest, except in a sliding filter analysis
+%  (cfg.sf.flag). The configuration is saved with mvpalab_savecfg at the
+%  start and at the end of the analysis.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {cell array} - fv:
+%    Feature vectors of each subject, with the data in X.a [trials x
+%    channels x timepoints] and the labels in Y.a.
+%
+%%  OUTPUT:
+%
+%  - {struct} - res:
+%    Results in res.(cfg.rsa.modality).(cfg.rsa.distance):
+%    - One field per theoretical model (cfg.rsa.tmodels{i}.id): the
+%      correlation [1 x timepoints x subjects] in 'corr', or the fields
+%      bvalues and tvalues of the same size in 'regress' and
+%      'multiple_regress'.
+%    - rdms: Cell array with the RDM of each subject [conditions x
+%      conditions x timepoints] or, with cfg.rsa.trialwise, [trials x
+%      trials x timepoints].
+%    - theo: Cell array with the theoretical RDMs of each subject (see
+%      mvpalab_gentrdms).
+%
+%  - {struct} - stats:
+%    Result of the permutation test (see mvpalab_permtest), empty without
+%    cfg.stats.flag.
+%
+%  - {struct} - cfg:
+%    Configuration structure, with the condition boundaries of each
+%    subject in cfg.rsa.bounds (see mvpalab_findbound).
+
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
 mvpalab_savecfg(cfg);

@@ -4,6 +4,22 @@ function [ cfg ] = mvpalab_init(verbose,updatepath)
 %  This function initializes the default configuration structure for
 %  MVPAlab. It also adds the toolbox to the MATLAB path, unless updatepath
 %  is false, which only returns the default structure.
+%
+%%  INPUT:
+%
+%  - {logical} - verbose:
+%    Optional. The messages in the command window are printed only when
+%    mvpalab_init is called without inputs, so any value hides them.
+%
+%  - {logical} - updatepath:
+%    Optional (true by default). If false, the toolbox is not added to the
+%    MATLAB path.
+%
+%%  OUTPUT:
+%
+%  - {struct} - cfg:
+%    Default configuration structure, with the version of the toolbox in
+%    cfg.version (see mvpalab_getversion).
 
 cfg = [];
 

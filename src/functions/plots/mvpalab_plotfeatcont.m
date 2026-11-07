@@ -1,4 +1,36 @@
 function mvpalab_plotfeatcont(graph,cfg,weights,result)
+%% MVPALAB_PLOTFEATCONT
+%
+%  This function plots the feature contribution analysis: the topography
+%  of the feature weights with topoplot from EEGLAB and, next to it, the
+%  decoding performance with the selected temporal window. It opens new
+%  figures and does nothing if cfg.channels.selectedchanloc is empty.
+%  EEGLAB is checked with mvpalab_checkeeglab.
+%
+%  The weights are averaged across subjects, or one subject is selected
+%  (graph.weights.sub), between graph.weights.start and
+%  graph.weights.end. With graph.weights.anim, one topography per
+%  timepoint is shown as an animation (graph.weights.speed), which
+%  starts when a key is pressed; otherwise the mean topography of the
+%  window is shown, and a second figure shows the weights of the features
+%  sorted. The chance level line is at 0.5.
+%
+%%  INPUT:
+%
+%  - {struct} - graph:
+%    Parameters of the plot (see mvpalab_plotinit).
+%
+%  - {struct} - cfg:
+%    Configuration structure (cfg.channels.selectedchanloc and cfg.tm).
+%
+%  - {cell array} - weights:
+%    Feature weights of each subject {subjects,1}, with matrices
+%    [channels x ntp] (see mvpalab_storemap).
+%
+%  - {matrix} - result:
+%    Decoding performance [1 x ntp x subjects] or, in temporal
+%    generalization, [ntp x ntp_ x subjects], where the diagonal is
+%    used. If it is empty or a struct, the performance is not plotted.
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);

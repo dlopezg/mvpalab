@@ -1,6 +1,32 @@
 function [] = mvpalab_plotfreqcont(graph,cfg,data,stats )
-%PLOT_RESULTS Summary of this function goes here
-%   Detailed explanation goes here
+%% MVPALAB_PLOTFREQCONT
+%
+%  This function plots the frequency contribution map of a sliding filter
+%  analysis in the current axes: the mean across subjects for each
+%  frequency band and timepoint, or one subject (graph.subject, see
+%  mvpalab_selectsub). It needs at least two frequency bands in
+%  cfg.sf.freqvec.
+%
+%  With stats, the contours of the significant clusters above
+%  (graph.stats.above) and below (graph.stats.below) chance are drawn.
+%  If graph.caxis is zero, the color limits are the minimum and maximum
+%  of the map. With cfg.sf.fspac = 'log', the frequency axis is in log
+%  scale.
+%
+%%  INPUT:
+%
+%  - {struct} - graph:
+%    Parameters of the plot (see mvpalab_plotinit).
+%
+%  - {struct} - cfg:
+%    Configuration structure (cfg.tm and cfg.sf).
+%
+%  - {matrix} - data:
+%    Frequency contribution map [bands x timepoints x subjects].
+%
+%  - {struct} - stats (optional):
+%    Statistics of the map, with stats.clusters, stats.clusters_,
+%    stats.sigmask and stats.sigmask_ (see mvpalab_computepermtest).
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);

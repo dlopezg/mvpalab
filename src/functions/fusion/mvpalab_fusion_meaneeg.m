@@ -1,4 +1,33 @@
 function [cfg,results] = mvpalab_fusion_meaneeg(cfg,fmri_rois,eeg_rdms)
+%% MVPALAB_FUSION_MEANEEG
+%
+%  This function computes the fusion in the 'mean-eeg' mode of
+%  mvpalab_fusion: the mean RDM of the M/EEG subjects (mvpalab_meanrdm) is
+%  correlated with the RDM of each fMRI subject in each region of interest
+%  at each timepoint (mvpalab_computecorr).
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {struct} - fmri_rois:
+%    One field per region of interest, with a cell array that contains the
+%    RDM of each fMRI subject [conditions x conditions].
+%
+%  - {cell array} - eeg_rdms:
+%    RDM of each M/EEG subject [conditions x conditions x timepoints].
+%
+%%  OUTPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure, without changes.
+%
+%  - {struct} - results:
+%    - res.(region): Correlations [1 x timepoints x fMRI subjects].
+%    - permaps.(region): Permuted maps [1 x timepoints x fMRI subjects x
+%      permutations], only with cfg.stats.flag and without
+%      cfg.stats.signflip.
 
 %% Fusion: mean EEG - FMRI:
 

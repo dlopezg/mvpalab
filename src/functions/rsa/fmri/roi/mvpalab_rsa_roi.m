@@ -33,6 +33,40 @@ function [res,stats,cfg] = mvpalab_rsa_roi(cfg,volumes,masks)
 %  Diedrichsen, J. (2016). Reliability of dissimilarity measures for
 %  multi-voxel pattern analysis. NeuroImage, 137, 188-200.
 %  https://doi.org/10.1016/j.neuroimage.2015.12.012
+%
+%  The RDMs are not compared with the theoretical models: the result
+%  includes the RDMs and the theoretical RDMs, and is saved with
+%  mvpalab_save.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {cell array} - volumes:
+%    Betas of each subject, each one a cell array [conditions x runs] (see
+%    mvpalab_import_fmri and mvpalab_load_betas).
+%
+%  - {cell array} - masks:
+%    Regions of interest of each subject, each one a struct with one field
+%    per region in the order of cfg.rsa.roi (see mvpalab_import_fmri and
+%    mvpalab_load_volumes).
+%
+%%  OUTPUT:
+%
+%  - {struct} - res:
+%    Results in res.(cfg.rsa.modality).(cfg.rsa.distance).(region), with
+%    the names of the fields of masks:
+%    - rdms: Cell array with the RDM of each subject [conditions x
+%      conditions].
+%    - theo: Theoretical RDMs [conditions x conditions x 1 x models] (see
+%      mvpalab_gentrdms).
+%
+%  - {struct} - stats:
+%    Empty structure.
+%
+%  - {struct} - cfg:
+%    Configuration structure, without changes.
 
 %% Initialize
 stats = struct();

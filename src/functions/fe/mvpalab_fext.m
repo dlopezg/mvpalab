@@ -1,5 +1,51 @@
 function [ out_data,cfg] = mvpalab_fext ( cfg, data, sub )
-% FEATURE_EXTRACTION This function generates the feature vectors.
+%% MVPALAB_FEXT
+%
+%  This function generates the feature vectors of one subject from the
+%  data of each class: the power envelope if cfg.feature = 'envelope' (see
+%  mvpalab_powenvelope), the smoothing (see mvpalab_preproc), the class
+%  sizes and the normalization (see mvpalab_adjustclasses) and the data
+%  matrix and the labels (see mvpalab_datalabels).
+%
+%  With supertrials (cfg.trialaver.flag) the feature vectors keep the
+%  single trials and the class sizes and the normalization are applied to
+%  the supertrials of each repetition (see mvpalab_supertrials). Then
+%  cfg.trialaver.ntrials must be at least 1 and each class needs at least
+%  cfg.trialaver.ntrials trials; otherwise it gives an error.
+%
+%  It also changes cfg:
+%  - cfg.classsize.matchkfold is disabled in MVCC.
+%  - cfg.datalength(sub,:): number of trials of each class in the feature
+%    vectors, first those of dataset A and then those of dataset B.
+%  - cfg.cv.loo(sub): with cfg.cv.method = 'loo', the number of
+%    observations of dataset A (supertrials, if enabled), used as the
+%    number of folds (see mvpalab_loadfv).
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {cell array} - data:
+%    Data of the subject, one cell per dataset (see mvpalab_readdata).
+%    Each cell is a structure with one field per class, named after
+%    cfg.study.conditionIdentifier without spaces, with the data
+%    [channels x timepoints x trials].
+%
+%  - {int} - sub:
+%    Subject.
+%
+%%  OUTPUT:
+%
+%  - {struct} - out_data:
+%    Data matrices (X) and categorical labels (Y), with the fields a and,
+%    in MVCC, b (see mvpalab_datalabels). X: [trials x channels x
+%    timepoints]. With supertrials, also singletrials = true (see
+%    mvpalab_checkfv).
+%
+%  - {struct} - cfg:
+%    Configuration structure, with the changes above.
+
 %% Initialize:
 X = cell(length(cfg.study.dataFiles{1,1}),1);
 Y = X;

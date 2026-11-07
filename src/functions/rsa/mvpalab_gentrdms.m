@@ -38,7 +38,7 @@ fprintf('   - Computing theoretical RDMs:\n');
 
 if ~cfg.rsa.trialwise || nargin < 3
     for i = 1 : length(mdls)
-        trdms(:,:,1,i) = cfg.rsa.tmodels{i}.mdl;
+        trdms(:,:,1,i) = mdls{i}.mdl;
     end
     return
 end
@@ -56,7 +56,7 @@ for i = 1 : length(mdls)
     %  Each cell of the neural RDM is a pair of trials, and takes the value
     %  of the model for the conditions of these trials.
 
-    fprintf(['      # Model: ' cfg.rsa.tmodels{i}.id '... ']);
+    fprintf(['      # Model: ' mdls{i}.id '... ']);
 
     trdms(:,:,1,i) = mdls{i}.mdl(cond,cond);
 

@@ -90,7 +90,7 @@ cfgcv.rsa.trialwise = false;
 %  vtheo - [1 x vectorized]
 
 theo = mvpalab_gentrdms(cfg,cfg.rsa.tmodels);
-vtheo = mvpalab_vectorizerdm(cfg,theo);
+vtheo = mvpalab_vectorizerdm(theo);
     
 %% ROIs loop:
 %  Iterate along brain regions:
@@ -169,7 +169,7 @@ for roi = 1 : length(cfg.rsa.roi)
         %  compute the Representational Similarity Analysis.
         %  vrdms - [1 x vectorized]
         
-        vrdms{sub} = mvpalab_vectorizerdm(cfg,rdm{sub});
+        vrdms{sub} = mvpalab_vectorizerdm(rdm{sub});
         
         %% Compute the Representational similarity analysis:
         %  Empirical and theoretical models are correlated to obtain the time

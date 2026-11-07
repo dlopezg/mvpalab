@@ -43,80 +43,15 @@ function rdm = mvpalab_rdm(cfg,X,Y,folds)
 %% Print some information:
 fprintf('   - Computing neural RDMs:');
 
-%% Number of timepoints:
+%% Checks and folds of each repetition:
+if nargin < 4, folds = []; end
+mvpalab_checkrdm(cfg,Y,folds);
+folds = mvpalab_rdmfolds(cfg,Y,folds);
+nreps = size(folds,2);
+
 ntp = size(X,3);
-
-%% Generate partitions
-% If a cross-validated measure is selected, the stratified data partition
-% is generated here:
-
-if cfg.rsa.nfolds > 1
-    %  Cross-validated RDMs compare the pattern of each condition in the
-    %  training set with the pattern of each condition in the test set, so
-    %  they are only defined for condition-wise RDMs. In trial-wise RDMs the
-    %  training and test trials are different trials.
-    if cfg.rsa.trialwise
-        error(['Cross-validated RDMs (cfg.rsa.nfolds > 1) require ' ...
-            'condition-wise RDMs (cfg.rsa.trialwise = false). Set ' ...
-            'cfg.rsa.nfolds = 1 to compute trial-wise RDMs.']);
-    end
-    %  Every condition needs at least one trial in each fold. Otherwise its
-    %  test (or training) pattern is the mean of an empty set (NaN), which
-    %  turns its row and column of the RDM into NaN (Euclidean and
-    %  crossnobis) or into wrong finite values (cross-validated Pearson).
-    conds = unique(Y);
-    %  Fold of each trial: predefined or stratified random partition.
-    randpart = nargin < 4 || isempty(folds);
-    if randpart
-        %  The stratified partition only places one trial of a condition in
-        %  every fold if the condition has at least cfg.rsa.nfolds trials.
-        %  The partition is drawn in each repetition (see below).
-        ntrials = arrayfun(@(c) sum(Y == c), conds);
-        few = ntrials < cfg.rsa.nfolds;
-        if any(few)
-            error(['Cross-validated RDMs need at least cfg.rsa.nfolds ' ...
-                '= %d trials per condition. Conditions with fewer ' ...
-                'trials: %s. Set cfg.rsa.nfolds to at most %d.'], ...
-                cfg.rsa.nfolds,strjoin(compose('%s (%d trials)', ...
-                string(conds(few)),ntrials(few)),', '),min(ntrials));
-        end
-        nreps = cfg.rsa.nreps;
-        if ~(isscalar(nreps) && nreps >= 1 && nreps == round(nreps))
-            error(['cfg.rsa.nreps must be a positive integer (number of ' ...
-                'repeated cross-validations).']);
-        end
-    else
-        %  Predefined folds (e.g. the runs of an fMRI experiment): at least
-        %  two folds, each of them including all the conditions. The
-        %  partition is fixed, so it is not repeated.
-        folds = folds(:);
-        foldids = unique(folds)';
-        if numel(foldids) < 2
-            error(['Cross-validated RDMs need at least 2 folds (e.g. 2 ' ...
-                'runs) and only %d was found.'],numel(foldids));
-        end
-        for k = 1 : numel(foldids)
-            missing = ~ismember(conds,Y(folds == foldids(k)));
-            if any(missing)
-                error(['Every cross-validation fold must include all ' ...
-                    'the conditions. Fold %s has no trials of the ' ...
-                    'conditions: %s.'],string(foldids(k)), ...
-                    strjoin(string(conds(missing)),', '));
-            end
-        end
-        nreps = 1;
-    end
-else
-    if strcmp(cfg.rsa.distance,'crossnobis')
-        error(['The crossnobis distance is cross-validated and requires ' ...
-            'cfg.rsa.nfolds > 1. Use cfg.rsa.distance = ''mahalanobis'' ' ...
-            'without cross-validation.']);
-    end
-    randpart = false;
-    folds = [];
-    foldids = 1;
-    nreps = 1;
-end
+nworkers = 0;
+if cfg.classmodel.parcomp && ntp > 1, nworkers = Inf; end
 
 %% Noise normalization:
 %  The Mahalanobis and crossnobis distances need the noise precision
@@ -138,17 +73,9 @@ if nreps > 1, fprintf(' Repetition: '); end
 
 %% Repeated cross-validation loop:
 for rep = 1 : nreps
-    %% Stratified random partition for cross-validation:
-    %  A new assignment of trials to folds in each repetition.
-
-    if randpart
-        strpar = cvpartition(Y,"KFold",cfg.rsa.nfolds);
-        folds = zeros(numel(Y),1);
-        for k = 1 : cfg.rsa.nfolds
-            folds(strpar.test(k)) = k;
-        end
-        foldids = 1 : cfg.rsa.nfolds;
-    end
+    %% Folds of this repetition (see mvpalab_rdmfolds):
+    foldsrep = folds(:,rep);
+    foldids = unique(foldsrep)';
 
     %% Iterate over folds
     %  rdms - [conditions x conditions x timepoints x folds] of this
@@ -159,7 +86,7 @@ for rep = 1 : nreps
         %  Fold k is the test set and the trials of the remaining folds are
         %  the training set:
 
-        dataset = mvpalab_datasplit(cfg,X,Y,folds,foldids(k));
+        dataset = mvpalab_datasplit(cfg,X,Y,foldsrep,foldids(k));
 
         %% Noise precision or whitening matrix from the training trials:
         %  Computed before averaging the trials by condition, if needed.
@@ -192,23 +119,15 @@ for rep = 1 : nreps
 
         %% Construct RDMs using the specified distance measure:
 
-        if cfg.classmodel.parcomp && ntp > 1
-            parfor tp = 1 : ntp
-                rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),[],prec);
-            end
-        else
-            for tp = 1 : ntp
-                rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),[],prec);
-            end
+        parfor (tp = 1 : ntp, nworkers)
+            rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),[],prec);
         end
     end
 
     %% Compute the mean of each fold:
     %  Each fold is used once as test set. As in MNE-RSA (compute_rdm_cv),
     %  the cross-validated RDM is the average of the RDMs of all the folds.
-    if cfg.rsa.nfolds > 1
-        rdms = mean(rdms,4);
-    end
+    rdms = mean(rdms,4);
 
     %% Accumulate the RDMs across repetitions:
     %  Only the sum is kept, so the memory does not grow with nreps.

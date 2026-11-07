@@ -4,16 +4,18 @@ function [cfg,res,permaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %  This function computes the fusion of the M/EEG and fMRI RDMs: the RDM of
 %  each region of interest is correlated with the M/EEG RDM at each
 %  timepoint (Spearman correlation, Fisher z-transformed, see
-%  mvpalab_computecorr). The subjects are combined as set in
-%  cfg.fusion.mode:
+%  mvpalab_spearmanz). The subjects are combined as set in
+%  cfg.fusion.mode (see mvpalab_fusionpairs):
 %
 %  - 'mean-fmri': the mean fMRI RDM of each region (mvpalab_meanrdm) with
-%    the RDM of each M/EEG subject (mvpalab_fusion_meanfmri).
-%  - 'mean-eeg': the mean M/EEG RDM with the RDM of each fMRI subject
-%    (mvpalab_fusion_meaneeg).
-%  - 'no-mean': each pair of an fMRI subject and an M/EEG subject
-%    (mvpalab_fusion_nomean). The observations are not independent, so the
-%    sign flip test (cfg.stats.signflip) is not available.
+%    the RDM of each M/EEG subject.
+%  - 'mean-eeg': the mean M/EEG RDM with the RDM of each fMRI subject.
+%  - 'no-mean': each pair of an fMRI subject and an M/EEG subject. The
+%    observations are not independent, so the sign flip test
+%    (cfg.stats.signflip) is not available.
+%
+%  The permuted maps permute the conditions of the M/EEG RDM in every
+%  mode (see mvpalab_rsapermidx).
 %
 %  With cfg.stats.flag the permutation test is run (mvpalab_permtest), with
 %  the permuted maps or, with cfg.stats.signflip, the maps of the sign flip
@@ -55,67 +57,53 @@ function [cfg,res,permaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %
 %  - {struct} - stats:
 %    Result of the permutation test (see mvpalab_permtest), empty without
-%    cfg.stats.flag. mvpalab_permtest receives the whole res, so the
-%    statistics are in
-%    stats.(cfg.fusion.distance).(cfg.fusion.distance).(region).
+%    cfg.stats.flag, in stats.(cfg.fusion.distance).(region), as res.
 
-%% Initialization;
-
+%% Initialization:
 cfg = mvpalab_checkcfg(cfg);
 mvpalab_savecfg(cfg);
+mvpalab_checkfusion(cfg);
+
+dist = cfg.fusion.distance;
+permuted = cfg.stats.flag && ~cfg.stats.signflip;
 permaps = struct();
 stats = struct();
 
-%% Check the statistics:
-%  In 'no-mean' each observation is a pair of subjects, so the observations
-%  are not independent and the signs cannot be flipped.
-
-mvpalab_checksignflip(cfg);
-if cfg.stats.signflip && strcmp(cfg.fusion.mode,'no-mean')
-    error('The sign flip test is not available in the ''no-mean'' fusion mode.');
-end
+nworkers = 0;
+if cfg.classmodel.parcomp, nworkers = Inf; end
 
 %% Compute fusion:
-%  Description:
+regions = fieldnames(fmri_rdms);
 
-if strcmp(cfg.fusion.mode,'mean-fmri')
-    [cfg,result] = mvpalab_fusion_meanfmri(cfg,fmri_rdms,eeg_rdms);
-    
-elseif strcmp(cfg.fusion.mode,'mean-eeg')
-    [cfg,result] = mvpalab_fusion_meaneeg(cfg,fmri_rdms,eeg_rdms);
-    
-elseif strcmp(cfg.fusion.mode,'no-mean')
-    [cfg,result] = mvpalab_fusion_nomean(cfg,fmri_rdms,eeg_rdms);
-    
+for roi = 1 : numel(regions)
+    region = regions{roi};
+    fprintf(['\n<strong> > Computing fusion: </strong>- Region: ' region '\n']);
+
+    [veeg,vfmri] = mvpalab_fusionpairs(cfg,eeg_rdms,fmri_rdms.(region));
+
+    for obs = 1 : numel(veeg)
+        pidx = mvpalab_rsapermidx(cfg,size(veeg{obs},2),permuted);
+        z = mvpalab_spearmanz(veeg{obs},vfmri{obs},pidx,nworkers);
+        res.(dist).(region)(1,:,obs) = z(:,1)';
+        if permuted
+            permaps.(dist).(region)(1,:,obs,:) = permute(z(:,2:end),[3 1 4 2]);
+        end
+    end
 end
 
 %% Save results:
-res.(cfg.fusion.distance) = result.res;
 mvpalab_save(cfg,res,'res');
 
-%% Compute permutation test:
-%  If needed:
-
+%% Compute permutation test if needed:
 if cfg.stats.flag
-    if cfg.stats.signflip
-        permaps = mvpalab_signmaps(res,0);
-    else
-        permaps.(cfg.fusion.distance) = result.permaps;
-    end
-    stats.(cfg.fusion.distance) = mvpalab_permtest(cfg,res,permaps);
-    
+    if cfg.stats.signflip, permaps = mvpalab_signmaps(res,0); end
+    stats = mvpalab_permtest(cfg,res,permaps);
 end
 
-%% Save permuted maps:
-%  If needed:
-
-if cfg.stats.flag && ~cfg.stats.signflip
-    mvpalab_save(cfg,permaps,'permaps');
-end
+%% Save permuted maps if needed:
+if permuted, mvpalab_save(cfg,permaps,'permaps'); end
 
 % Save the configuration with the fields set by the analysis:
 mvpalab_savecfg(cfg);
 
-
 end
-

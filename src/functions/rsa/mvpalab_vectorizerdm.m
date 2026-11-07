@@ -1,4 +1,4 @@
-function vrdm = mvpalab_vectorizerdm(cfg,rdm)
+function vrdm = mvpalab_vectorizerdm(rdm)
 %% MVPALAB_VECTORIZERDM
 %
 %  This function returns the vectorized version of a temporal series of
@@ -36,43 +36,23 @@ function vrdm = mvpalab_vectorizerdm(cfg,rdm)
 %
 %%  INPUT:
 %
-%  - {struct} cfg
-%    Description: Configuration structure.
-%
-%  - {4D-matrix} rdm
-%    Description: Representational Dissimilarity Matrices for each
-%    timepoint and model. - [trials x trials x timepoints x models]
+%  - {matrix} - rdm:
+%    RDMs [conditions x conditions x timepoints x models].
 %
 %%  OUTPUT:
 %
-%  - {3D-matrix} vrdm
-%    Description: Vectorized version of a temporal series of RDMs in the
-%    form: [timepoints x vectorizedrdm x models]
-%
+%  - {matrix} - vrdm:
+%    Vectorized RDMs [timepoints x pairs x models].
 
-for mdl = 1 : size(rdm,4)
+[n,~,ntp,nmodels] = size(rdm);
 
-    if cfg.classmodel.parcomp
-        parfor tp = 1 : size(rdm,3)
-            vrdm(tp,:,mdl) = uniquepairs(rdm(:,:,tp,mdl));
-        end
-    else
-        for tp = 1 : size(rdm,3)
-            vrdm(tp,:,mdl) = uniquepairs(rdm(:,:,tp,mdl));
-        end
-    end
+% Both directions of each pair:
+rdm = (rdm + permute(rdm,[2 1 3 4]))/2;
 
-end
-
-end
-
-function v = uniquepairs(rdm)
-%% Unique pairs of conditions:
-%  Average both directions, remove the diagonal and keep the lower
-%  triangle (squareform order).
-
-rdm = (rdm + rdm') / 2;
-rdm(logical(eye(size(rdm)))) = 0;
-v = squareform(rdm);
+% Lower triangle without the diagonal, in the order of squareform:
+pairs = tril(true(n),-1);
+vrdm = reshape(rdm,n*n,ntp*nmodels);
+vrdm = reshape(vrdm(pairs(:),:),[],ntp,nmodels);
+vrdm = permute(vrdm,[2 1 3]);
 
 end

@@ -1,4 +1,4 @@
-function pidx = mvpalab_permidx(cfg,nvec,nperm)
+function pidx = mvpalab_permidx(nvec,nperm)
 %% MVPALAB_PERMIDX
 %
 %  This function returns the permutation indexes used to compute the
@@ -11,9 +11,6 @@ function pidx = mvpalab_permidx(cfg,nvec,nperm)
 %  of the data and the cluster-based permutation test is not liberal.
 
 %%  INPUT:
-%
-%  - {struct} cfg
-%    Description: Configuration structure.
 %
 %  - {integer} nvec
 %    Description: Length of the vectorized RDM. The RDMs are vectorized by

@@ -48,18 +48,24 @@ function maps = mvpalab_signmaps(res,chance)
 %
 %  - {struct} - maps:
 %    Structure with the same fields, where each matrix gets a fourth
-%    dimension of size 2, as the permuted maps.
+%    dimension of size 2, as the permuted maps. Cell arrays, such as the
+%    RDMs or the confusion matrices, are not maps and are left out, and so
+%    are the structures that only contain them, such as the ROC curves and
+%    the feature weights (see mvpalab_permtest).
 
-% Fields without permutation test (see mvpalab_permtest):
-ommited_fields = {'confmat';'wvector';'roc';'rdms';'theo'};
-
-if isstruct(res)
-    fields = setdiff(fieldnames(res),ommited_fields,'stable');
-    for i = 1 : numel(fields)
-        maps.(fields{i}) = mvpalab_signmaps(res.(fields{i}),chance);
-    end
-else
+if ~isstruct(res)
     maps = cat(4,res,2*chance - res);
+    return
+end
+
+maps = struct();
+fields = fieldnames(res);
+for i = 1 : numel(fields)
+    field = res.(fields{i});
+    if iscell(field), continue; end
+    fieldmaps = mvpalab_signmaps(field,chance);
+    if isstruct(fieldmaps) && isempty(fieldnames(fieldmaps)), continue; end
+    maps.(fields{i}) = fieldmaps;
 end
 
 end

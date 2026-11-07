@@ -1,0 +1,44 @@
+function mvpalab_checkrsa(cfg)
+%% MVPALAB_CHECKRSA
+%
+%  This function checks the settings of a time-resolved RSA before it
+%  starts:
+%
+%  - cfg.rsa.modality is 'corr', 'regress' or 'multiple_regress'.
+%  - Each theoretical model (cfg.rsa.tmodels) has its own id, and the id
+%    is a valid field name other than 'rdms' and 'theo', the fields of the
+%    result that hold the RDMs: a model with one of these ids would lose
+%    its result without any error.
+%  - The values 3 and 4 of cfg.normdata are applied within the folds of
+%    the classifiers (see mvpalab_fitfold) and have no effect in RSA, so a
+%    warning is shown. The values 1 and 2 are applied to each trial or
+%    supertrial (see mvpalab_adjustclasses).
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure (cfg.rsa and cfg.normdata).
+
+mode = cfg.rsa.modality;
+if ~any(strcmp(mode,{'corr','regress','multiple_regress'}))
+    error(['RSA modality not recognized: ''%s''. Use ''corr'', ' ...
+        '''regress'' or ''multiple_regress''.'],mode);
+end
+
+ids = cellfun(@(model) model.id,cfg.rsa.tmodels,'UniformOutput',false);
+if numel(unique(ids)) < numel(ids)
+    error('Each model in cfg.rsa.tmodels needs its own id.');
+end
+invalid = find(~cellfun(@isvarname,ids) | ismember(ids,{'rdms','theo'}),1);
+if ~isempty(invalid)
+    error(['The id ''%s'' of cfg.rsa.tmodels cannot be used: it must be a ' ...
+        'valid field name other than ''rdms'' and ''theo''.'],ids{invalid});
+end
+
+if cfg.normdata >= 3
+    warning(['cfg.normdata = %d is only applied by the classifiers ' ...
+        '(MVPA and MVCC) and has no effect in RSA. Use cfg.normdata = 1 ' ...
+        'or 2 (applied to each trial or supertrial) or 0.'],cfg.normdata);
+end
+
+end

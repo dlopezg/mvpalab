@@ -24,14 +24,6 @@ function mvpalab_save(cfg,data,mode,folder)
 %    Description: Current folder name used for the recursive call. 
 %
 
-%% Unfiltered baseline of a sliding filter analysis:
-%  Intermediate results, saved by mvpalab_sfilter in diffMaps/other.
-%  Fusion and RSA ROI do not update the cfg, so the field may not exist.
-
-if isfield(cfg,'sf') && isfield(cfg.sf,'baseline') && cfg.sf.baseline
-    return
-end
-
 %% Initialize the recursive function:
 %  If this call is the initial one, initialize the recursive algorithm:
 
@@ -65,16 +57,12 @@ end
 %  Special case: In the stats structure we don't need to iterate over the
 %  last level. (This level includes fields such as 'sigmask')
 
-ommited_fields = {'roc'};
-
 if isstruct(data) && ~any(find(strcmp(fieldnames(data),'sigmask')))
     field_names = fieldnames(data);
     for i = 1 : length(field_names)
         fname = field_names{i};
         stats = data.(fname);
-        if ~any(find(strcmp(ommited_fields, fname)))
-            mvpalab_save(cfg,stats,mode,[folder filesep fname]);
-        end
+        mvpalab_save(cfg,stats,mode,[folder filesep fname]);
     end
 else
     %% Save the content of the current input:

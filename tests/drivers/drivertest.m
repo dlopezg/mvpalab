@@ -133,9 +133,10 @@ end
 
 function result = identitycases(root,work,datadir,filter)
 %% A permuted map with the identity as permutation is the observed map.
-%  mvpalab_checkcfg puts the toolbox back at the top of the path, so a
-%  function earlier on the path cannot replace mvpalab_permlabels: this
-%  check uses a copy of the toolbox where the function is replaced.
+%  The old versions put the toolbox back at the top of the path in
+%  mvpalab_checkcfg, so a function earlier on the path cannot replace
+%  mvpalab_permlabels: this check uses a copy of the toolbox where the
+%  function is replaced.
 
 result = struct();
 

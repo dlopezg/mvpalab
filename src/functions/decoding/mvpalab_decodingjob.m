@@ -36,7 +36,8 @@ function job = mvpalab_decodingjob(cfg,mode)
 %    - classes:  Field names of the maps of each class in each direction:
 %                those of the test dataset, and 'mean', the mean of the
 %                classes.
-%    - averaged: Metrics stored per timepoint, averaged across repetitions.
+%    - confmat:  True if the confusion matrices are stored.
+%    - wvector:  True if the feature weights are stored.
 %    - lastrep:  ROC curves, taken from the last repetition.
 %    - keep:     Outputs of mvpalab_evalfolds that are needed.
 %    - folders:  Subject folders of a sliding filter analysis.
@@ -85,18 +86,18 @@ ids = cellfun(@(id) id(~isspace(id)),cfg.study.conditionIdentifier,...
     'UniformOutput',false);
 nclass = size(cfg.study.dataFiles,2);
 job.classes.aa = [ids(1,1:nclass) {'mean'}];
-job.classes.ab = [ids(2,1:nclass) {'mean'}];
 job.classes.ba = job.classes.aa;
+if job.mvcc, job.classes.ab = [ids(2,1:nclass) {'mean'}]; end
 
-metrics = {};
-if ~job.permuted, metrics = {'confmat','wvector'}; end
-enabled = cellfun(@(metric) logical(cfg.classmodel.(metric)),metrics);
-job.averaged = metrics(enabled);
+job.confmat = ~job.permuted && cfg.classmodel.confmat;
+job.wvector = ~job.permuted && cfg.classmodel.wvector;
 
 job.lastrep = {};
 if ~job.permuted && cfg.classmodel.roc, job.lastrep = {'x','y','t'}; end
 
-job.keep = [job.numeric job.perclass job.averaged job.lastrep];
+optional = {'confmat','wvector'};
+job.keep = [job.numeric job.perclass job.lastrep ...
+    optional([job.confmat job.wvector])];
 
 if ~job.permuted
     job.savemode = 'res';

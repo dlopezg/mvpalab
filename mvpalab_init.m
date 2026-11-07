@@ -1,8 +1,9 @@
-function [ cfg ] = mvpalab_init(verbose)
+function [ cfg ] = mvpalab_init(verbose,updatepath)
 %% MVPALAB_INIT 
 %
 %  This function initializes the default configuration structure for
-%  MVPAlab.
+%  MVPAlab. It also adds the toolbox to the MATLAB path, unless updatepath
+%  is false, which only returns the default structure.
 
 cfg = [];
 
@@ -12,11 +13,13 @@ end
 
 %% UPDATE MATLAB PATH:
 
-loc = which('mvpalab');
-%  Hidden folders (names starting with a dot: .git, .claude, .vscode...)
-%  are excluded, so copies of the toolbox inside them (e.g. git worktrees)
-%  never shadow the functions of this folder.
-addpath(genpath_exclude(loc(1:end-9),{'\..*','demos'}));
+if nargin < 2 || updatepath
+    loc = which('mvpalab');
+    %  Hidden folders (names starting with a dot: .git, .claude, .vscode...)
+    %  are excluded, so copies of the toolbox inside them (e.g. git
+    %  worktrees) never shadow the functions of this folder.
+    addpath(genpath_exclude(loc(1:end-9),{'\..*','demos'}));
+end
 
 %% ANALYSIS TYPE:
 
@@ -320,7 +323,6 @@ cfg.rsa.meancenter = true;
 
 % Flag:
 cfg.sf.flag = 0;
-cfg.sf.baseline = false;  % Internal: unfiltered baseline in progress.
 cfg.sf.filesLocation = '';
 cfg.sf.savefdata = false;
 cfg.sf.metric = 'acc';

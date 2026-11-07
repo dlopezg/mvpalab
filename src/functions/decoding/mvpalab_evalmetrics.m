@@ -25,10 +25,11 @@ function perf = mvpalab_evalmetrics(cfg,pred)
 %%  OUTPUT:
 %
 %  - {struct} - perf:
-%    - x, y, t: Coordinates and thresholds of the ROC curve.
+%    - x, y, t: Coordinates and thresholds of the ROC curve, in cells
+%               [1 x ntp_].
 %    - auc:     Area under the curve.
 %    - acc:     Correct rate.
-%    - confmat: Confusion matrix.
+%    - confmat: Confusion matrix [classes x classes x ntp_].
 %    - precision, recall, f1score: Metrics of each class, in the third
 %      dimension [1 x ntp_ x classes].
 %    - wvector: Feature weights.
@@ -38,18 +39,20 @@ if cfg.classmodel.tempgen
         tests(tp_) = testmetrics(cfg,pred.truth,pred.labels{tp_},...
             pred.scores{tp_},pred.class);
     end
-    fields = fieldnames(tests);
-    for f = 1 : numel(fields)
-        perf.(fields{f}) = {tests.(fields{f})};
-    end
-    for f = {'auc','precision','recall','f1score'}
-        perf.(f{1}) = [tests.(f{1})];
-    end
     perf.acc = mean(pred.acc,1);
 else
-    perf = testmetrics(cfg,pred.truth,pred.labels,pred.scores,pred.class);
+    tests = testmetrics(cfg,pred.truth,pred.labels,pred.scores,pred.class);
     perf.acc = mean(pred.acc);
 end
+
+% One value per test timepoint, also in the time-resolved analyses:
+for f = {'x','y','t'}
+    perf.(f{1}) = {tests.(f{1})};
+end
+for f = {'auc','precision','recall','f1score'}
+    perf.(f{1}) = [tests.(f{1})];
+end
+perf.confmat = cat(3,tests.confmat);
 
 % Feature weights:
 perf.wvector = [];
@@ -64,7 +67,7 @@ function perf = testmetrics(cfg,truth,labels,scores,class)
 %% Metrics of the predictions at one test timepoint.
 
 perf.x = {}; perf.y = {}; perf.t = {}; perf.auc = NaN;
-perf.confmat = {}; perf.precision = []; perf.recall = []; perf.f1score = [];
+perf.confmat = []; perf.precision = []; perf.recall = []; perf.f1score = [];
 
 % Compute confusion matrix if needed:
 if cfg.classmodel.confmat || cfg.classmodel.precision ...

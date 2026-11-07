@@ -1,57 +1,59 @@
 function [cfg,diffMap,perdiffMap] = mvpalab_gendiffmap(cfg,acc,accmap,peracc,permaps)
+%% MVPALAB_GENDIFFMAP
+%
+%  This function computes the diffMaps of a sliding filter analysis: the
+%  filtered maps minus the unfiltered baseline, and the same with the
+%  permuted maps if they are provided.
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {matrix} - acc, peracc:
+%    Observed [1 x ntp x subjects] and permuted [1 x ntp x subjects x maps]
+%    baseline. In MVCC, fields ab and ba.
+%
+%  - {matrix} - accmap, permaps:
+%    Observed [1 x ntp x subjects x bands] and permuted
+%    [1 x ntp x subjects x maps x bands] maps of each band. In MVCC, fields
+%    ab and ba.
+%
+%%  OUTPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%  - {struct} - diffMap, perdiffMap:
+%    Field cfg.sf.metric with the observed [bands x ntp x subjects] and
+%    permuted [bands x ntp x subjects x maps] diffMaps. In MVCC, fields ab
+%    and ba.
 
 fprintf('<strong> > Generating diffmaps... </strong>');
 
-%% Generate diffMap for real data and permuted diffMaps for statistics:
-for freq = 1 : length(cfg.sf.freqvec)
-    if strcmp(cfg.analysis,'MVPA')
-        diffMap.(cfg.sf.metric)(freq,:,:) = squeeze(accmap(:,:,:,freq) - acc);
-    elseif strcmp(cfg.analysis,'MVCC')
-        diffMap.(cfg.sf.metric).ab(freq,:,:) = ...
-            squeeze(accmap.ab(:,:,:,freq) - acc.ab);
-        diffMap.(cfg.sf.metric).ba(freq,:,:) = ...
-            squeeze(accmap.ba(:,:,:,freq) - acc.ba);
-    end
-    
-    % Generate permuted diffMaps for statistics if nedeed:
-    if nargin > 3
-        for map = 1 : cfg.stats.nper
-            if strcmp(cfg.analysis,'MVPA')
-                perdiffMap.(cfg.sf.metric)(freq,:,:,map) = ...
-                    squeeze(permaps(:,:,:,map,freq)) - squeeze(peracc(:,:,:,map));
-            elseif strcmp(cfg.analysis,'MVCC')
-                perdiffMap.(cfg.sf.metric).ab(freq,:,:,map) = ...
-                    squeeze(permaps.ab(:,:,:,map,freq)) - squeeze(peracc.ab(:,:,:,map));
-                perdiffMap.(cfg.sf.metric).ba(freq,:,:,map) = ...
-                    squeeze(permaps.ba(:,:,:,map,freq)) - squeeze(peracc.ba(:,:,:,map));
-            end
-        end
-    end
+metric = cfg.sf.metric;
+mvcc = strcmp(cfg.analysis,'MVCC');
+
+%% Generate diffMap for real data:
+order = [4 2 3 1];
+if mvcc
+    diffMap.(metric).ab = permute(accmap.ab - acc.ab,order);
+    diffMap.(metric).ba = permute(accmap.ba - acc.ba,order);
+else
+    diffMap.(metric) = permute(accmap - acc,order);
 end
 
-% Bug fix: dimensionality problem for single subject analysis:
-% When only one subject is selected for the analysis the singleton
-% dimension is automatically squeezed by MATLAB causing dimensionality
-% problems. This problems are solved here.
-
-if strcmp(cfg.analysis,'MVPA') && size(diffMap.(cfg.sf.metric),2) == 1
-    diffMap.(cfg.sf.metric) = permute(diffMap.(cfg.sf.metric),[1 3 2]);
-elseif strcmp(cfg.analysis,'MVCC') && size(diffMap.(cfg.sf.metric).ab,2) == 1
-    diffMap.(cfg.sf.metric).ab = permute(diffMap.(cfg.sf.metric).ab,[1 3 2]);
-    diffMap.(cfg.sf.metric).ba = permute(diffMap.(cfg.sf.metric).ba,[1 3 2]);
-end
-
+%% Generate permuted diffMaps for statistics if nedeed:
 if nargin > 3
-    if strcmp(cfg.analysis,'MVPA') && size(perdiffMap.(cfg.sf.metric),2) == 1
-        perdiffMap.(cfg.sf.metric) = permute(perdiffMap.(cfg.sf.metric),[1 3 2 4]);
-    elseif strcmp(cfg.analysis,'MVCC') && size(perdiffMap.(cfg.sf.metric).ab,2) == 1
-        perdiffMap.(cfg.sf.metric).ab = permute(perdiffMap.(cfg.sf.metric).ab,[1 3 2 4]);
-        perdiffMap.(cfg.sf.metric).ba = permute(perdiffMap.(cfg.sf.metric).ba,[1 3 2 4]);
+    order = [5 2 3 4 1];
+    if mvcc
+        perdiffMap.(metric).ab = permute(permaps.ab - peracc.ab,order);
+        perdiffMap.(metric).ba = permute(permaps.ba - peracc.ba,order);
+    else
+        perdiffMap.(metric) = permute(permaps - peracc,order);
     end
 end
-
 
 fprintf('Done.\n');
 
 end
-

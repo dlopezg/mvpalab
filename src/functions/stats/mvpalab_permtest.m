@@ -2,9 +2,9 @@ function stats = mvpalab_permtest(cfg,results,permuted_maps,fname)
 %% MVPALAB_PERMTEST
 %
 % This function recursively iterates over the fields contained in the 
-% results and permuted_maps structures. If the selected field is not in the 
-% ommited list we make a recursive call and the permutation test is 
-% computed.
+% results and permuted_maps structures. If the selected field has permuted
+% maps we make a recursive call and the permutation test is computed. Cell
+% arrays are not maps: an RSA model can share its name with the RDMs.
 %
 %%  INPUT:
 %
@@ -21,12 +21,6 @@ function stats = mvpalab_permtest(cfg,results,permuted_maps,fname)
 %  - {string} fname
 %    Description: Current field name used for the recursive call. 
 %
-%% Ommited fields:
-%  Description: This list contains the field names that are not commpatible
-%  with a permutation analysis:
-
-ommited_fields = {'confmat';'wvector';'roc';'rdms';'theo'};
-
 %% Check if the current input is a struct:
 %  Description: If the current input is a struct, extract field names and
 %  iterate over fields.
@@ -37,7 +31,7 @@ if isstruct(results)
     for i = 1 : length(field_names)
         fname = field_names{i};
         
-        if ~any(find(strcmp(ommited_fields, fname))) && isfield(permuted_maps,fname)
+        if isfield(permuted_maps,fname) && ~iscell(results.(fname))
             res = results.(fname);
             pmap = permuted_maps.(fname);
             stats.(fname) = mvpalab_permtest(cfg,res,pmap,fname);

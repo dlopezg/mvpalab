@@ -9,7 +9,6 @@ cfg = mvpalab_checkcfg(cfg);
 if ~cfg.tm.tpstart_ && ~cfg.tm.tpend_
     cfg.tm.tpstart_ = cfg.tm.tpstart;
     cfg.tm.tpend_ = cfg.tm.tpend;
-    mvpalab_savecfg(cfg);
 end
 
 %% Select subject:

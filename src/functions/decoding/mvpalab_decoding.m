@@ -58,6 +58,7 @@ if nargin < 3, mode = 'observed'; end
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
+mvpalab_savecfg(cfg);
 
 % Check the classes of the analysis:
 mvpalab_checkclasses(cfg);
@@ -67,63 +68,18 @@ if strcmp(mode,'permuted')
     if cfg.stats.signflip
         error('The sign flip test has no permuted maps. Use mvpalab_nullmaps.');
     end
-    % Enable statistics:
-    cfg.stats.flag = 1;
 else
     mvpalab_checksignflip(cfg);
     % Feature weights are not available with non-linear kernels:
     mvpalab_checkwvector(cfg);
 end
 
-job = mvpalab_decodingjob(cfg,mode);
-mvpalab_decodingprint('start',cfg,job);
-
-res = struct();
-
-%% Subjects loop:
-for sub = 1 : job.nsub
-    job.sub = sub;
-    mvpalab_decodingprint('subject',cfg,job);
-
-    %% Frequencies loop:
-    for freq = 1 : job.nfreq
-        job.freq = freq;
-        mvpalab_decodingprint('band',cfg,job);
-
-        [data,cfg] = mvpalab_loadfv(cfg,fv,job);
-
-        %% Random draws of this band (see mvpalab_sfrng):
-        cfg = mvpalab_sfrng(cfg,job);
-
-        %% Maps loop:
-        for per = 1 : job.nper
-            job.per = per;
-
-            %% Labels of this map (see mvpalab_permlabels):
-            %  Drawn once per map, so the same labels are used at all the
-            %  folds, repetitions and timepoints. With supertrials they are
-            %  the labels of the single trials. In MVCC only the labels of
-            %  dataset A are permuted, and they are used in both directions.
-            mapdata = data;
-            if job.permuted || cfg.classmodel.permlab
-                mapdata.a.Y = mvpalab_permlabels(data.a.Y);
-            end
-
-            map = mvpalab_decodemap(cfg,mapdata,job);
-            res = mvpalab_storemap(res,map.numeric,cfg,job);
-            timepoints{sub,freq,per} = map.timepoints;
-
-            mvpalab_decodingprint('map',cfg,job);
-        end
-        mvpalab_decodingprint('bandend',cfg,job);
-    end
-    mvpalab_decodingprint('subjectend',cfg,job);
-end
-mvpalab_decodingprint('end',cfg,job);
-
-res = mvpalab_packres(res,timepoints,cfg,job);
+[res,cfg,job] = mvpalab_decodingmaps(cfg,fv,mode);
 
 % Save result:
 if ~cfg.sf.flag, mvpalab_save(cfg,res,job.savemode); end
+
+% Save the configuration with the fields set by the analysis:
+mvpalab_savecfg(cfg);
 
 end

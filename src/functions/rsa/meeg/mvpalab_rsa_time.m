@@ -1,6 +1,7 @@
 function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
+mvpalab_savecfg(cfg);
 mvpalab_checksignflip(cfg);
 
 %% Initialize
@@ -187,5 +188,8 @@ if cfg.stats.flag
     if cfg.stats.signflip, permaps = mvpalab_signmaps(res,0); end
     stats = mvpalab_permtest(cfg,res,permaps);
 end
+
+% Save the configuration with the fields set by the analysis:
+mvpalab_savecfg(cfg);
 
 end

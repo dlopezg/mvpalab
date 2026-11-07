@@ -45,8 +45,6 @@ if cfg.stats.signflip
     end
     classmetrics = intersect(fieldnames(res),{'precision','recall','f1score'});
     maps = mvpalab_signmaps(rmfield(res,classmetrics),chance);
-    % Enable statistics, as the permuted maps do:
-    cfg.stats.flag = 1;
 else
     [maps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
 end

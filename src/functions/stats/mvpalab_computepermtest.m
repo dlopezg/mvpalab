@@ -13,8 +13,7 @@ mvpalab_checksignflip(cfg);
 % Here we determine the map of each subject that has to be selected in each
 % permutation.
 nSubjects = size(performance,3);
-cfg.stats.sub = nSubjects;
-perm_idxs = randi(size(permuted_maps,4),cfg.stats.sub,cfg.stats.nperg,'single');
+perm_idxs = randi(size(permuted_maps,4),nSubjects,cfg.stats.nperg,'single');
 
 %% Generate permuted maps at group level:
 % One permuted map of each subject has to be randomly selected and group
@@ -23,8 +22,8 @@ perm_idxs = randi(size(permuted_maps,4),cfg.stats.sub,cfg.stats.nperg,'single');
 
 fprintf('   - Generating permuted maps at group level: ');
 for i = 1 : cfg.stats.nperg
-    for j = 1 : cfg.stats.sub
-        permaps(:,:,j) = squeeze(permuted_maps(:,:,j,perm_idxs(j,i)));
+    for j = 1 : nSubjects
+        permaps(:,:,j) = permuted_maps(:,:,j,perm_idxs(j,i));
     end
     gpermaps(:,:,i) = mean(permaps,3);
 end
@@ -36,9 +35,6 @@ fprintf(' - Done!\n');
 % associated to a p-value of 0.05 (95th percentile) for each timepoint and 
 % generate a threshold mask.
 
-% Check the cfg structure
-mvpalab_checkcfg(cfg); 
-
 % Define the distribution threshold
 threshold = cfg.stats.pgroup;
 
@@ -48,39 +44,27 @@ if (cfg.stats.tails == 2)
     threshold = cfg.stats.pgroup + tail;  
 end
 
+% Tails of the test:
+above = cfg.stats.tails ~= -1;
+below = cfg.stats.tails ~= 1;
+
 fprintf('   - Generating the null distribution and p-value thresholds:');
-for i = 1 : size(gpermaps,1)
-    for j = 1 : size(gpermaps,2)
-        if (cfg.stats.tails == 1) % One tail - above chance
-            pctval(i,j) = prctile(gpermaps(i,j,:),threshold);
-        elseif (cfg.stats.tails == -1)  % One tail - below chance   
-            pctval_(i,j) = prctile(gpermaps(i,j,:),100-threshold);
-        else % Two tails - above and below chance
-            pctval(i,j) = prctile(gpermaps(i,j,:),threshold);
-            pctval_(i,j) = prctile(gpermaps(i,j,:),100-threshold);
-        end
-    end
-end
+if above, pctval = percentiles(gpermaps,threshold); end
+if below, pctval_ = percentiles(gpermaps,100-threshold); end
 fprintf(' - Done!\n');
 
 %% Plot the null distribution of performance values:
-% Plot the null distribution of performance values for a specific timepoint
-% (i) and permuted map (j).
+% Plot the null distribution of performance values at the last position of
+% the maps.
 pvg = num2str((100 - cfg.stats.pgroup ) / 100);
 f1 = figure;
 subplot(2,2,[1 2]);
-h = histogram(gpermaps(i,j,:),'Normalization','probability');
+h = histogram(gpermaps(end,end,:),'Normalization','probability');
 h.FaceColor = [.5 .5 .5];
 h.EdgeColor = [.5 .5 .5];
 hold on
-if (cfg.stats.tails == 1) % One tail - above chance
-    vl = vline(double(pctval(i,j)),'r-',['Above chance threshold (p<' pvg ')']);
-elseif (cfg.stats.tails == -1) % One tail - below chance  
-    vl = vline(double(pctval_(i,j)),'r-',['Below chance threshold (p<' pvg ')']);
-else % Two tails - above and below chance
-    vl = vline(double(pctval(i,j)),'r-',['Above chance threshold (p<' pvg ')']);
-    vl = vline(double(pctval_(i,j)),'r-',['Below chance threshold (p<' pvg ')']);
-end
+if above, vline(double(pctval(end,end)),'r-',['Above chance threshold (p<' pvg ')']); end
+if below, vline(double(pctval_(end,end)),'r-',['Below chance threshold (p<' pvg ')']); end
 grid minor
 title('Permuted distribution (group level)')
 xlabel('Data distribution');
@@ -91,21 +75,8 @@ ylabel('Normalized histogram')
 % Clusters are defined using the pctval mask previously calculated.
 
 fprintf('   - Searching clusters in permuted maps:');
-for map = 1 : size(gpermaps,3)
-    if (cfg.stats.tails == 1) % One tail - above chance
-        thresmaps(:,:,map) = gpermaps(:,:,map) > pctval;
-        clustmaps{map} = bwconncomp(thresmaps(:,:,map));
-    elseif (cfg.stats.tails == -1) % One tail - below chance
-        thresmaps_(:,:,map) = gpermaps(:,:,map) < pctval_;
-        clustmaps_{map} = bwconncomp(thresmaps_(:,:,map));
-    else % Two tails - above and below chance
-        thresmaps(:,:,map) = gpermaps(:,:,map) > pctval;
-        clustmaps{map} = bwconncomp(thresmaps(:,:,map));
-        thresmaps_(:,:,map) = gpermaps(:,:,map) < pctval_;
-        clustmaps_{map} = bwconncomp(thresmaps_(:,:,map));
-    end
-end
-
+if above, clustmaps = searchclusters(gpermaps,pctval,@gt); end
+if below, clustmaps_ = searchclusters(gpermaps,pctval_,@lt); end
 fprintf(' - Done!\n');
 
 %% Generate cluster size distribution:
@@ -118,92 +89,14 @@ sizedist_ = [];
 maxdist = zeros(1,size(gpermaps,3));
 maxdist_ = zeros(1,size(gpermaps,3));
 
-for map = 1 : size(gpermaps,3)
-    if (cfg.stats.tails == 1)
-        for i = 1 : clustmaps{map}.NumObjects
-            sizedist(end+1) = numel(clustmaps{map}.PixelIdxList{i});
-            maxdist(map) = max(maxdist(map),sizedist(end));
-        end
-    elseif (cfg.stats.tails == -1)
-        for i = 1 : clustmaps_{map}.NumObjects
-            sizedist_(end+1) = numel(clustmaps_{map}.PixelIdxList{i});
-            maxdist_(map) = max(maxdist_(map),sizedist_(end));
-        end
-    else
-        for i = 1 : clustmaps{map}.NumObjects
-            sizedist(end+1) = numel(clustmaps{map}.PixelIdxList{i});
-            maxdist(map) = max(maxdist(map),sizedist(end));
-        end
-        for i = 1 : clustmaps_{map}.NumObjects
-            sizedist_(end+1) = numel(clustmaps_{map}.PixelIdxList{i});
-            maxdist_(map) = max(maxdist_(map),sizedist_(end));
-        end
-    end
-end
+if above, [sizedist,maxdist] = clustersizes(clustmaps); end
+if below, [sizedist_,maxdist_] = clustersizes(clustmaps_); end
 fprintf(' - Done!\n');
 
 %% Plot the null distribution of cluster sizes:
-% This code sholud be optimized...
 
-if (cfg.stats.tails == 1)
-    % Cluster size distribution - above chance level.
-    subplot(2,2,3);
-    hold on
-    h = histogram(...
-        sizedist,'Normalization','probability','BinMethod','integers');
-    hnorm = h.BinCounts/sum(h.BinCounts)';
-
-    set(gca, 'YScale', 'log')
-    h.FaceColor = [.5 .5 .5];
-    h.EdgeColor = [.5 .5 .5];
-    grid minor
-    xlabel('Cluster size');
-    ylabel('Normalized histogram (log scale)')
-    title('Cluster size null distribution (above chance)')
-elseif (cfg.stats.tails == - 1)
-    % Cluster size distribution - below chance level.
-    subplot(2,2,4);
-    hold on
-    h_ = histogram(...
-        sizedist_,'Normalization','probability','BinMethod','integers');
-    hnorm_ = h_.BinCounts/sum(h_.BinCounts)';
-    set(gca, 'YScale', 'log')
-    h_.FaceColor = [.5 .5 .5];
-    h_.EdgeColor = [.5 .5 .5];
-    grid minor
-    xlabel('Cluster size');
-    ylabel('Normalized histogram (log scale)')
-    title('Cluster size null distribution (below chance)')
-else
-    % Cluster size distribution - above chance level.
-    subplot(2,2,3);
-    hold on
-    h = histogram(...
-        sizedist,'Normalization','probability','BinMethod','integers');
-    hnorm = h.BinCounts/sum(h.BinCounts)';
-
-    set(gca, 'YScale', 'log')
-    h.FaceColor = [.5 .5 .5];
-    h.EdgeColor = [.5 .5 .5];
-    grid minor
-    xlabel('Cluster size');
-    ylabel('Normalized histogram (log scale)')
-    title('Cluster size null distribution (above chance)')
-    
-    % Cluster size distribution - below chance level.
-    subplot(2,2,4);
-    hold on
-    h_ = histogram(...
-        sizedist_,'Normalization','probability','BinMethod','integers');
-    hnorm_ = h_.BinCounts/sum(h_.BinCounts)';
-    set(gca, 'YScale', 'log')
-    h_.FaceColor = [.5 .5 .5];
-    h_.EdgeColor = [.5 .5 .5];
-    grid minor
-    xlabel('Cluster size');
-    ylabel('Normalized histogram (log scale)')
-    title('Cluster size null distribution (below chance)')
-end
+if above, plotsizes(sizedist,3,'above chance'); end
+if below, plotsizes(sizedist_,4,'below chance'); end
 
 %% Search clusters in real data:
 %  Clusters are detected in the group-mean performance map using the
@@ -217,15 +110,11 @@ thresdata_ = [];
 clusters   = struct('Connectivity',[],'ImageSize',[],'NumObjects',0,'PixelIdxList',{{}});
 clusters_  = struct('Connectivity',[],'ImageSize',[],'NumObjects',0,'PixelIdxList',{{}});
 
-if (cfg.stats.tails == 1)
+if above
     thresdata  = mean(performance,3) > pctval;
     clusters   = bwconncomp(thresdata);
-elseif (cfg.stats.tails == -1)
-    thresdata_ = mean(performance,3) < pctval_;
-    clusters_  = bwconncomp(thresdata_);
-else
-    thresdata  = mean(performance,3) > pctval;
-    clusters   = bwconncomp(thresdata);
+end
+if below
     thresdata_ = mean(performance,3) < pctval_;
     clusters_  = bwconncomp(thresdata_);
 end
@@ -240,32 +129,20 @@ fprintf(' - Done!\n');
 %  'max' - Null distribution of the maximum cluster size, FWER control
 %          (Maris & Oostenveld, 2007).
 
-clusters.sig      = [];
-clusters.sizes    = [];
-clusters.pvals    = [];
-clusters.fdr      = [];
-clusters.sig_idx  = [];
-clusters.maxdist  = [];
-
-clusters_.sig     = [];
-clusters_.sizes   = [];
-clusters_.pvals   = [];
-clusters_.fdr     = [];
-clusters_.sig_idx = [];
-clusters_.maxdist = [];
+for field = {'sig','sizes','pvals','fdr','sig_idx','maxdist'}
+    clusters.(field{1})  = [];
+    clusters_.(field{1}) = [];
+end
 
 % corrcsize / corrcsize_: minimum cluster size that survives the
 % correction in the above-chance / below-chance tail (Inf if none).
 corrcsize  = Inf;
 corrcsize_ = Inf;
 
-% Above-chance tail:
-if (cfg.stats.tails == 1) || (cfg.stats.tails == 2)
+if above
     [clusters,corrcsize] = mvpalab_clusterpvals(cfg,clusters,sizedist,maxdist);
 end
-
-% Below-chance tail:
-if (cfg.stats.tails == -1) || (cfg.stats.tails == 2)
+if below
     [clusters_,corrcsize_] = mvpalab_clusterpvals(cfg,clusters_,sizedist_,maxdist_);
 end
 
@@ -295,3 +172,52 @@ end
 
 end
 
+function values = percentiles(gpermaps,percentile)
+%% Percentile of the null distribution at each position of the maps.
+
+for i = 1 : size(gpermaps,1)
+    for j = 1 : size(gpermaps,2)
+        values(i,j) = prctile(gpermaps(i,j,:),percentile);
+    end
+end
+
+end
+
+function clustmaps = searchclusters(gpermaps,pctval,compare)
+%% Clusters of each permuted map, above (@gt) or below (@lt) the threshold.
+
+for map = 1 : size(gpermaps,3)
+    clustmaps{map} = bwconncomp(compare(gpermaps(:,:,map),pctval));
+end
+
+end
+
+function [sizedist,maxdist] = clustersizes(clustmaps)
+%% Sizes of all the clusters and largest cluster of each permuted map.
+
+sizedist = [];
+maxdist = zeros(1,numel(clustmaps));
+
+for map = 1 : numel(clustmaps)
+    sizes = cellfun(@numel,clustmaps{map}.PixelIdxList);
+    sizedist = [sizedist sizes]; %#ok<AGROW>
+    if ~isempty(sizes), maxdist(map) = max(sizes); end
+end
+
+end
+
+function plotsizes(sizedist,position,name)
+%% Histogram of the cluster sizes of one tail.
+
+subplot(2,2,position);
+hold on
+h = histogram(sizedist,'Normalization','probability','BinMethod','integers');
+set(gca,'YScale','log')
+h.FaceColor = [.5 .5 .5];
+h.EdgeColor = [.5 .5 .5];
+grid minor
+xlabel('Cluster size');
+ylabel('Normalized histogram (log scale)')
+title(['Cluster size null distribution (' name ')'])
+
+end

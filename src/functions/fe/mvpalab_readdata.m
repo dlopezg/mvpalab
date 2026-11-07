@@ -1,0 +1,124 @@
+function [cfg, data, fv] = mvpalab_readdata(cfg)
+%% MVPALAB_READDATA
+%
+%  This function reads the data of each subject and computes the feature
+%  vectors, without saving the configuration structure, so mvpalab_sfilter
+%  can read the unfiltered baseline (see mvpalab_import).
+%
+%%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure.
+%
+%%  OUTPUT:
+%
+%  - {struct} - cfg:
+%    Updated configuration structure.
+%
+%  - {cell array} - data:
+%    Data of each subject and dataset.
+%
+%  - {cell array} - fv:
+%    Feature vectors of each subject.
+
+%% Initialization
+nSubjects = length(cfg.study.dataFiles{1,1});
+nCtxt = 1;
+
+nfreq = 1;
+if cfg.sf.flag
+    nfreq = cfg.sf.nfreq;
+end
+
+% Prepare frequency contribution analysis:
+if cfg.sf.flag
+    % Check EEGlab:
+    mvpalab_checkeeglab();
+    % Prepare analysis:
+    cfg = mvpalab_preparesf(cfg);
+end
+
+% Prepare MVCC analysis if needed:
+if ~isempty(cfg.study.dataFiles{2,1}) && ~isempty(cfg.study.dataFiles{2,2})
+    cfg.analysis = 'MVCC';
+    nCtxt = 2;
+end
+
+% Check the settings of the sign flip test and the classes:
+mvpalab_checksignflip(cfg);
+mvpalab_checkclasses(cfg);
+
+%% Subjects loop:
+for sub = 1 : nSubjects
+    fprintf('\n');
+    fprintf('<strong> > Importing subject data </strong> - Subject: ');
+    fprintf([int2str(sub) '/' int2str(length(cfg.study.dataFiles{1,1}))]);
+    fprintf('\n');
+    
+    for freq = 1 : nfreq
+        
+        if cfg.sf.flag
+            fprintf('  <strong> > Filtering data: </strong>');
+            fprintf([int2str(freq) '/' int2str(nfreq) '\n\n']);
+        end
+        
+        for ctxt = 1 : nCtxt
+            for class = 1 : length(cfg.study.dataFiles)
+                
+                % Load subject data:
+                try
+                    if strcmp(cfg.study.dataFiles{ctxt,class}{sub}(end-3:end),'.mat')
+                        temp = load([cfg.study.dataPaths{ctxt,class} ...
+                            cfg.study.dataFiles{ctxt,class}{sub}]);
+                    elseif strcmp(cfg.study.dataFiles{ctxt,class}{sub}(end-3:end),'.set')
+                        mvpalab_checkeeglab();
+                        temp.data = pop_loadset(cfg.study.dataFiles{ctxt,class}{sub},cfg.study.dataPaths{ctxt,class});
+                    else
+                        error('Only .mat and .set files are supported.');
+                    end
+                    
+                catch loaderror
+                    error('Unable to load %s: %s',[cfg.study.dataPaths{ctxt,class} ...
+                        cfg.study.dataFiles{ctxt,class}{sub}],loaderror.message);
+                end
+                
+                % Read and prepare input data for MVPAlab:
+                [cfg,EEG] = mvpalab_dataformat(cfg,temp);
+                
+                % Sliding filter analysis if needed.
+                if cfg.sf.flag
+                    EEG.data = mvpalab_filterdata(EEG,freq,cfg);
+                end
+                
+                % Remove spaces to avoid errors:
+                id = cfg.study.conditionIdentifier{ctxt,class};
+                id = id(~isspace(id));
+                
+                classes.(id) = EEG.data;
+            end
+            data{sub,ctxt} = classes;
+            clear classes;
+        end
+        
+        if cfg.sf.flag
+            [fv{sub},cfg] = mvpalab_fext(cfg,data(sub,:),sub);
+            cfg.tm.times = EEG.times;
+            cfg.tm.rtimes = EEG.times;
+            cfg = mvpalab_timing(cfg);
+            mvpalab_savesfdata(cfg,data(sub,:),fv{sub},sub,freq);
+        else
+            [fv{sub},cfg] = mvpalab_fext(cfg,data(sub,:),sub);
+        end
+    end
+end
+
+%% Save times vector:
+cfg.tm.times = EEG.times;
+cfg.tm.rtimes = EEG.times;
+cfg = mvpalab_timing(cfg);
+
+%% Save channels location:
+cfg.channels.chanloc = EEG.chanlocs;
+
+end
+

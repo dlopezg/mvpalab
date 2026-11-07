@@ -17,14 +17,13 @@ function map = mvpalab_averagereps(perf,job)
 %%  OUTPUT:
 %
 %  - {struct} - map:
-%    Performance of each direction (aa or ab and ba):
-%    - map.numeric.(direction).(metric): Metrics in job.numeric and
-%      job.perclass, matrices [ntp x 1] or, in temporal generalization,
-%      [ntp x ntp_], with the classes in the third dimension.
-%    - map.timepoints.(direction).(metric): Metrics in job.averaged and
-%      job.lastrep, cell arrays with the value at each timepoint.
+%    Performance of each direction, map.(direction).(metric):
+%    - Metrics in job.numeric and job.perclass: Matrices [ntp x 1] or, in
+%      temporal generalization, [ntp x ntp_], with the classes in the third
+%      dimension.
+%    - confmat and metrics in job.lastrep: Cell arrays of the same size.
+%    - wvector: Fields raw and haufe_corrected, [channels x ntp].
 
-map.timepoints = struct();
 perf = reshape([perf{:}],size(perf));
 
 for d = 1 : numel(job.dirs)
@@ -34,21 +33,16 @@ for d = 1 : numel(job.dirs)
     numeric = [job.numeric job.perclass];
     for m = 1 : numel(numeric)
         metric = numeric{m};
-        map.numeric.(way).(metric) = meannumeric(reps,metric);
-    end
-
-    for m = 1 : numel(job.averaged)
-        metric = job.averaged{m};
-        for tp = 1 : size(reps,1)
-            map.timepoints.(way).(metric){tp} = ...
-                mvpalab_meanreps({reps(tp,:).(metric)});
-        end
+        map.(way).(metric) = meannumeric(reps,metric);
     end
 
     for m = 1 : numel(job.lastrep)
         metric = job.lastrep{m};
-        map.timepoints.(way).(metric) = {reps(:,end).(metric)};
+        map.(way).(metric) = vertcat(reps(:,end).(metric));
     end
+
+    if job.confmat, map.(way).confmat = meanconfmat(reps); end
+    if job.wvector, map.(way).wvector = meanweights(reps); end
 end
 
 end
@@ -62,5 +56,32 @@ for rep = 1 : size(reps,2)
 end
 
 values = mean(values,4);
+
+end
+
+function cells = meanconfmat(reps)
+%% Mean confusion matrix at each timepoint and test timepoint, in one cell.
+
+for rep = 1 : size(reps,2)
+    for tp = 1 : size(reps,1)
+        values(:,:,:,tp,rep) = reps(tp,rep).confmat;
+    end
+end
+
+cells = permute(num2cell(mean(values,5),[1 2]),[4 3 1 2]);
+
+end
+
+function weights = meanweights(reps)
+%% Mean feature weights: one column per timepoint, one page per repetition.
+
+perrep = reshape([reps.wvector],size(reps));
+
+for f = {'raw','haufe_corrected'}
+    for rep = 1 : size(perrep,2)
+        values(:,:,rep) = [perrep(:,rep).(f{1})];
+    end
+    weights.(f{1}) = mean(values,3);
+end
 
 end

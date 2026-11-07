@@ -3,6 +3,7 @@ function [cfg,res,permaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %% Initialization;
 
 cfg = mvpalab_checkcfg(cfg);
+mvpalab_savecfg(cfg);
 permaps = struct();
 stats = struct();
 
@@ -52,6 +53,9 @@ end
 if cfg.stats.flag && ~cfg.stats.signflip
     mvpalab_save(cfg,permaps,'permaps');
 end
+
+% Save the configuration with the fields set by the analysis:
+mvpalab_savecfg(cfg);
 
 
 end

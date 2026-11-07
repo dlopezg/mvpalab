@@ -351,7 +351,7 @@ cfg.sf.hfreq = 40;  % Analysis superior limit (Hz).
 cfg.sf.ftype = 'bandstop';      % Filter type.
 cfg.sf.wtype = 'blackman';      % Window type.
 cfg.sf.bw    = 2;               % Filter bandwidth (Hz).
-cfg.sf.hbw   = cfg.sf.bw/2;     % Halfband width (Hz).
+cfg.sf.hbw   = cfg.sf.bw/2;     % Halfband width (Hz), set from bw (see mvpalab_genfreqvec).
 cfg.sf.order = 1408;            % Filter order.
 
 % Frequency steps:

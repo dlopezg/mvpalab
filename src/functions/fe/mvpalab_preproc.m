@@ -1,14 +1,16 @@
-function [ data ] = mvpalab_preproc( cfg, data )
+function data = mvpalab_preproc(cfg,data)
 %% MVPALAB_PREPROC
 %
-%  This function smooths the data of one class with the method in
-%  cfg.smoothdata.method (see mvpalab_smoothdata), unless it is 'none',
-%  and returns it with the trials in the first dimension.
+%  This function computes the features of one class: the power envelope if
+%  cfg.feature = 'envelope' (see mvpalab_powenvelope) and the smoothing
+%  with the method in cfg.smoothdata.method (see mvpalab_smoothdata),
+%  unless it is 'none'. It returns them with the trials in the first
+%  dimension.
 %
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Configuration structure (cfg.smoothdata).
+%    Configuration structure (cfg.feature, cfg.powenv and cfg.smoothdata).
 %
 %  - {matrix} - data:
 %    Data of one class [channels x timepoints x trials].
@@ -16,7 +18,12 @@ function [ data ] = mvpalab_preproc( cfg, data )
 %%  OUTPUT:
 %
 %  - {matrix} - data:
-%    Data of the class [trials x channels x timepoints].
+%    Features of the class [trials x channels x timepoints].
+
+%% Power envelope as a feature if needed:
+if strcmp(cfg.feature,'envelope')
+    data = mvpalab_powenvelope(cfg,data);
+end
 
 %% Smooth data:
 if ~strcmp(cfg.smoothdata.method,'none')
@@ -30,4 +37,3 @@ data = permute(data,[3 1 2]);
 fprintf('       # Done.\n');
 
 end
-

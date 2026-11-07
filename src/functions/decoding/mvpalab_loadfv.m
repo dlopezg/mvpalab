@@ -2,9 +2,8 @@ function [data,cfg] = mvpalab_loadfv(cfg,fv,job)
 %% MVPALAB_LOADFV
 %
 %  This function returns the datasets of the current subject and frequency
-%  band, ready for the decoding analysis. With supertrials (cfg.trialaver)
-%  the datasets contain the single trials with all the channels (see
-%  mvpalab_repdata).
+%  band, ready for the decoding analysis. The datasets keep all the
+%  channels: they are selected in each repetition (see mvpalab_repdata).
 %
 %%  INPUT:
 %
@@ -29,10 +28,7 @@ function [data,cfg] = mvpalab_loadfv(cfg,fv,job)
 
 %% Load data if needed:
 if cfg.sf.flag
-    subject = job.folders(job.sub);
-    folder = [subject.folder filesep subject.name];
-    files = dir([folder filesep 'ffv_*.mat']);
-    band = load([folder filesep files(job.freq).name],'fv');
+    band = load(mvpalab_sffile(cfg,'fv',job.sub,job.freq),'fv');
     fv = band.fv;
 else
     fv = fv{job.sub};
@@ -45,19 +41,13 @@ if strcmp(cfg.cv.method,'loo')
     cfg.cv.nfolds = cfg.cv.loo(job.sub);
 end
 
-%% Electrode selection:
-[data.a.X,cfg] = mvpalab_chanselection(fv.X.a,cfg);
+%% Datasets:
+data.a.X = fv.X.a;
 data.a.Y = fv.Y.a;
 
 if job.mvcc
-    [data.b.X,cfg] = mvpalab_chanselection(fv.X.b,cfg);
+    data.b.X = fv.X.b;
     data.b.Y = fv.Y.b;
-end
-
-%  With supertrials the channels are selected in each repetition:
-if cfg.trialaver.flag
-    data.a.X = fv.X.a;
-    if job.mvcc, data.b.X = fv.X.b; end
 end
 
 end

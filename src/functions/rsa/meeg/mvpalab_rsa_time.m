@@ -14,8 +14,9 @@ function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 %  - 'multiple_regress': one general linear model with all the theoretical
 %    models as regressors (mvpalab_fitglm).
 %
-%  The values 3 and 4 of cfg.normdata have no effect in RSA (a warning is
-%  shown). With cfg.stats.flag the permuted maps are computed and the
+%  The RDMs use the channels of cfg.channels.selected (all of them if it is
+%  empty). The values 3 and 4 of cfg.normdata have no effect in RSA (a
+%  warning is shown). With cfg.stats.flag the permuted maps are computed and the
 %  permutation test is run (mvpalab_permtest); with cfg.stats.signflip the
 %  sign flip test is used instead (mvpalab_signmaps).
 %
@@ -102,7 +103,7 @@ for sub = 1 : nsub
     mvpalab_checkfv(cfg,fv{sub});
     data.a.X = fv{sub}.X.a; data.a.Y = fv{sub}.Y.a;
     data = mvpalab_supertrials(cfg,data);
-    X = data.a.X; Y = data.a.Y;
+    X = mvpalab_chanselection(data.a.X,cfg); Y = data.a.Y;
     X = X(:,:,cfg.tm.tpoints);
 
     %% Generate neural Representational Dissimilarity Matrices:
@@ -220,6 +221,10 @@ for sub = 1 : nsub
         end
     end
 end
+
+% Locations of the selected channels, once every subject has passed the
+% check of the selection (see mvpalab_chanselection):
+cfg = mvpalab_updatechanloc(cfg.channels.selected,cfg);
 
 %% Save RSA data:
 %  Only the RDM matrices are saved (numeric [conditions x conditions x

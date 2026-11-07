@@ -83,7 +83,8 @@ end
 
 %% MVPA analysis:
 
-% Time-resolved MVPA (unfiltered baseline):
+% Time-resolved MVPA (unfiltered baseline). Without cfg.sf.flag the maps
+% are computed from fv and not from the bands on disk:
 cfg.sf.flag = false;
 [cfg,~,fv] = mvpalab_readdata(cfg);
 

@@ -1,42 +1,32 @@
-function [X, cfg] = mvpalab_chanselection(X,cfg)
-
+function X = mvpalab_chanselection(X,cfg)
 %% MVPALAB_CHANSELECTION
 %
-%  This function extracs the selected electrodes from the entire dataset
-%  
-%  INPUT:
+%  This function returns the channels of cfg.channels.selected of a data
+%  matrix, or all of them if the selection is empty. It gives an error if
+%  the selection has a channel that the data does not have. The locations
+%  of the selected channels are set by mvpalab_updatechanloc.
 %
-%  - cfg: (STRUCT) Configuration estructure. 
+%%  INPUT:
 %
-%  - X :  (3D-MATRIX) Data matrix [trials x electrodes x timepoint]
+%  - {matrix} - X:
+%    Data matrix [trials x channels x timepoints].
 %
-%  OUTPUT:
+%  - {struct} - cfg:
+%    Configuration structure (cfg.channels.selected).
 %
-%  - X :  (3D-MATRIX) Data matrix including the selected electrodes:
-%         [trials x electrodes x timepoint]
-%  - cfg: (STRUCT) Updated cfg structure.
+%%  OUTPUT:
 %
+%  - {matrix} - X:
+%    Data matrix with the selected channels [trials x channels x
+%    timepoints].
 
-%% Initialization:
-
-% Define the selected electrodes location:
-cfg.channels.selectedchanloc = cfg.channels.chanloc;
 selected = cfg.channels.selected;
+if isempty(selected), return; end
 
-%% Electrode selection:
-
-% Check if the selected channel vector is not empty
-if ~isempty(selected)
-    % Check dimension mismatch:
-    if max(selected) <= size(X,2)
-        % Update data matrix:
-        X = X(:,selected,:);
-        % Update selected electrodes location:
-        cfg = mvpalab_updatechanloc(selected, cfg);
-        
-    else
-        error('Channel selection fails: the data has %d channels.',size(X,2));
-    end
-end
+if max(selected) > size(X,2)
+    error('Channel selection fails: the data has %d channels.',size(X,2));
 end
 
+X = X(:,selected,:);
+
+end

@@ -48,7 +48,7 @@ end
 fv = mvpalab_adjustclasses(cfg,fv);
 
 %% Data and labels:
-[X,Y] = mvpalab_datalabels(cfg,fv);
+[X,Y] = mvpalab_datalabels(fv);
 
 for ctxt = 1 : numel(sets)
     data.(sets{ctxt}).X = X.(sets{ctxt});

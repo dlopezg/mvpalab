@@ -1,69 +1,33 @@
-function [X,Y,cfg] = mvpalab_datalabels(cfg,fv)
-%% MVPALAB_DATALABELS 
+function [X,Y] = mvpalab_datalabels(fv)
+%% MVPALAB_DATALABELS
 %
-%  This function generates and returns the label vector and the data matrix 
-%  by concatenating data from all the classes included in the feature 
-%  vector (fv).
-%  
-%  INPUT:
+%  This function concatenates the classes of each dataset in one data
+%  matrix and returns the label of each observation: the index of its
+%  class, as a categorical array. The first row of fv is dataset A and the
+%  second one, in MVCC, dataset B.
 %
-%  - cfg: (STRUCT) Configuration estructure. 
+%%  INPUT:
 %
-%  - fv : (CELL ARRAY) Feature vector array. Each position contains the 
-%         data matrix of a single class. [trials x electrodes x timepoint]
-%         The second row of this cell array is reserver for
-%         cross-classification analysis.
+%  - {cell array} - fv:
+%    Data of each class {datasets x classes}, matrices
+%    [observations x channels x timepoints].
 %
-%  OUTPUT:
+%%  OUTPUT:
 %
-%  - X  : (STRUCT) Data matrix for an individual subject containing 
-%         observations all the classes. Data for decoding analyses or RSA  
-%         is stored in X.a while data for cross-classification analyses is 
-%         stored in X.b.
+%  - {struct} - X:
+%    Data matrix of each dataset (fields a and, in MVCC, b),
+%    [observations x channels x timepoints].
 %
-%  - Y  : (CATEGORICAL) Label vector for an individual subject.
-%
-%  - cfg: (STRUCT) Label vector for an individual subject.
+%  - {struct} - Y:
+%    Labels of each dataset (fields a and, in MVCC, b), categorical
+%    [observations x 1].
 
-%%  Initialization:
-X.a = []; Y.a = []; nctxt = 1;
-  
-%%  Check MVPA or MVCC:
-%   Data fields X.b and Y.b are reserved for cross-classification purposes.
-%   Only if the size of the feature vector matrix is larger than two and
-%   these cells are not empty we initialize X.b and Y.b fields and set the
-%   number of context to two.
+sets = {'a','b'};
 
-if (size(fv,1) > 1) && ~sum(cellfun(@isempty,fv(2,:)))
-    nctxt = 2;
-    X.b = []; Y.b = [];
+for ctxt = 1 : size(fv,1)
+    nobs = cellfun(@(class) size(class,1),fv(ctxt,:));
+    X.(sets{ctxt}) = cat(1,fv{ctxt,:});
+    Y.(sets{ctxt}) = categorical(repelem(1:size(fv,2),nobs)');
 end
 
-%% Generate data structure and labels:
-%  For each context and class the label vector Y is generated. If the 
-%  number of the class is even/odd the associated level will be true/false.
-%  The data matrix is also generated concatenating data from different
-%  conditions.
-
-for ctxt = 1 : nctxt
-    for class = 1 : size(fv,2)
-
-        labels = class*ones(size(fv{ctxt,class},1),1);
-
-        if ctxt < 2
-            X.a = [X.a; fv{ctxt,class}];
-            Y.a = [Y.a; labels];
-        else
-            X.b = [X.b; fv{ctxt,class}];
-            Y.b = [Y.b; labels];
-        end
-    end
-end
-
-% Transform labels to categorical:
-if nctxt < 2
-    Y.a = categorical(Y.a);
-else
-    Y.a = categorical(Y.a);
-    Y.b = categorical(Y.b);
 end

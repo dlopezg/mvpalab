@@ -73,6 +73,10 @@ for sub = 1 : job.nsub
 end
 mvpalab_decodingprint('end',cfg,job);
 
+% Locations of the selected channels, once every subject has passed the
+% check of the selection (see mvpalab_chanselection):
+cfg = mvpalab_updatechanloc(cfg.channels.selected,cfg);
+
 res = mvpalab_packres(res,job);
 
 end

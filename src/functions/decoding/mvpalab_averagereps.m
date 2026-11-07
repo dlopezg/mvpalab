@@ -18,8 +18,9 @@ function map = mvpalab_averagereps(perf,job)
 %
 %  - {struct} - map:
 %    Performance of each direction (aa or ab and ba):
-%    - map.numeric.(direction).(metric): Metrics in job.numeric, matrices
-%      [ntp x 1] or, in temporal generalization, [ntp x ntp_].
+%    - map.numeric.(direction).(metric): Metrics in job.numeric and
+%      job.perclass, matrices [ntp x 1] or, in temporal generalization,
+%      [ntp x ntp_], with the classes in the third dimension.
 %    - map.timepoints.(direction).(metric): Metrics in job.averaged and
 %      job.lastrep, cell arrays with the value at each timepoint.
 
@@ -30,8 +31,9 @@ for d = 1 : numel(job.dirs)
     way = job.dirs{d};
     reps = reshape([perf.(way)],size(perf));
 
-    for m = 1 : numel(job.numeric)
-        metric = job.numeric{m};
+    numeric = [job.numeric job.perclass];
+    for m = 1 : numel(numeric)
+        metric = numeric{m};
         map.numeric.(way).(metric) = meannumeric(reps,metric);
     end
 
@@ -52,12 +54,13 @@ end
 end
 
 function values = meannumeric(reps,metric)
-%% Mean of a numeric metric: one row per timepoint, one page per repetition.
+%% Mean of a numeric metric: one row per timepoint, the classes in the third
+%  dimension and the repetitions in the fourth.
 
 for rep = 1 : size(reps,2)
-    values(:,:,rep) = vertcat(reps(:,rep).(metric));
+    values(:,:,:,rep) = vertcat(reps(:,rep).(metric));
 end
 
-values = mean(values,3);
+values = mean(values,4);
 
 end

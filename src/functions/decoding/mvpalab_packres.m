@@ -22,10 +22,12 @@ function res = mvpalab_packres(res,timepoints,cfg,job)
 %%  OUTPUT:
 %
 %  - {struct} - res:
-%    The same structure with the fields:
+%    The same structure without the direction aa of MVPA, and with the
+%    fields:
 %    - roc, confmat: See mvpalab_reorganize_.
-%    - precision, recall, f1score: See mvpalab_reorganize.
 %    - wvector: See mvpalab_reorganize_weights. In MVCC, fields ab and ba.
+
+if ~job.mvcc, res = structfun(@(m) m.aa,res,'UniformOutput',false); end
 
 for m = 1 : numel(job.lastrep)
     metric = job.lastrep{m};
@@ -36,14 +38,6 @@ end
 if any(strcmp(job.averaged,'confmat'))
     args = directions(timepoints,'confmat',job);
     res.confmat = mvpalab_reorganize_(cfg,args{:});
-end
-
-metrics = {'precision','recall','f1score'};
-for m = 1 : numel(metrics)
-    if any(strcmp(job.averaged,metrics{m}))
-        args = directions(timepoints,metrics{m},job);
-        res.(metrics{m}) = mvpalab_reorganize(cfg,args{:});
-    end
 end
 
 if any(strcmp(job.averaged,'wvector'))

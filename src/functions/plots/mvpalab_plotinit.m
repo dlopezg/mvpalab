@@ -27,6 +27,9 @@ graph.ylim = [0 1];
 
 if nargin > 0
     graph.xlim = [cfg.tm.tpstart cfg.tm.tpend];
+    if any(strcmp(cfg.analysis,{'MVPA','MVCC'}))
+        graph.chanlvl = 1/size(cfg.study.dataFiles,2);
+    end
 end
 
 %% Diagonal plots:

@@ -31,6 +31,11 @@ function job = mvpalab_decodingjob(cfg,mode)
 %    - nreps:    Number of repetitions: k-fold, or MVCC without
 %                cross-validation if each repetition draws new supertrials.
 %    - numeric:  Metrics stored in numeric maps: 'acc' and 'auc'.
+%    - perclass: Metrics stored in one numeric map per class: 'precision',
+%                'recall' and 'f1score'.
+%    - classes:  Field names of the maps of each class in each direction:
+%                those of the test dataset, and 'mean', the mean of the
+%                classes.
 %    - averaged: Metrics stored per timepoint, averaged across repetitions.
 %    - lastrep:  ROC curves, taken from the last repetition.
 %    - keep:     Outputs of mvpalab_evalfolds that are needed.
@@ -72,14 +77,26 @@ job.numeric = {'acc'};
 if cfg.classmodel.auc, job.numeric = {'acc','auc'}; end
 
 metrics = {'precision','recall','f1score'};
-if ~job.permuted, metrics = [{'confmat'} metrics {'wvector'}]; end
+enabled = cellfun(@(metric) logical(cfg.classmodel.(metric)),metrics);
+job.perclass = metrics(enabled);
+
+% Class names, without spaces as in mvpalab_import:
+ids = cellfun(@(id) id(~isspace(id)),cfg.study.conditionIdentifier,...
+    'UniformOutput',false);
+nclass = size(cfg.study.dataFiles,2);
+job.classes.aa = [ids(1,1:nclass) {'mean'}];
+job.classes.ab = [ids(2,1:nclass) {'mean'}];
+job.classes.ba = job.classes.aa;
+
+metrics = {};
+if ~job.permuted, metrics = {'confmat','wvector'}; end
 enabled = cellfun(@(metric) logical(cfg.classmodel.(metric)),metrics);
 job.averaged = metrics(enabled);
 
 job.lastrep = {};
 if ~job.permuted && cfg.classmodel.roc, job.lastrep = {'x','y','t'}; end
 
-job.keep = [job.numeric job.averaged job.lastrep];
+job.keep = [job.numeric job.perclass job.averaged job.lastrep];
 
 if ~job.permuted
     job.savemode = 'res';

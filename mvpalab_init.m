@@ -350,6 +350,11 @@ cfg.study.conditionIdentifier = {
     'condition_c','condition_d'  % Context 2
     };
 
+% Decoding with more than two classes: each class is a column of
+% cfg.study.dataPaths, cfg.study.dataFiles and cfg.study.conditionIdentifier.
+% cfg.classmodel.wvector, .auc and .roc need two classes, and accuracy has a
+% chance level of one over the number of classes.
+
 %% SOFTWARE VERSION:
 
 cfg.version = mvpalab_getversion();

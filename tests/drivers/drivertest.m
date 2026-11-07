@@ -165,9 +165,12 @@ analyses = {'mvpa',@mvpalab_mvpa,@mvpalab_permaps;
             'mvcc',@mvpalab_mvcc,@mvpalab_cpermaps};
 for a = 1 : size(analyses,1)
     for tempgen = 0 : 1
-        for super = 0 : 1
+        for variant = 0 : 3
+            super = mod(variant,2);
+            three = variant > 1;
             name = sprintf('identity_%s_tg%d',analyses{a,1},tempgen);
             if super, name = [name '_super']; end %#ok<AGROW>
+            if three, name = [name '_three']; end %#ok<AGROW>
             if isempty(regexp(name,filter,'once')), continue; end
             loc = fullfile(work,'run');
             cfg = basecfg(loc,datadir);
@@ -179,13 +182,23 @@ for a = 1 : size(analyses,1)
             cfg.cv.nreps = 2;
             cfg.stats.nper = 1;
             if a == 2, cfg = secondset(cfg,datadir,{'c','d'}); end
+            if three
+                cfg = setthree(cfg,datadir);
+                cfg.classmodel.auc = false;
+            end
             if super, cfg = setsuper(cfg,2,'rand'); end
-            [~,cfg,~,fv] = evalc('mvpalab_import(cfg)');
-            rng(7,'twister');
-            [~,res,cfg] = evalc('analyses{a,2}(cfg,fv)');
-            rng(7,'twister');
-            [~,permaps] = evalc('analyses{a,3}(cfg,fv)');
-            result.(name) = isequaln(res,permaps);
+            try
+                [~,cfg,~,fv] = evalc('mvpalab_import(cfg)');
+                rng(7,'twister');
+                [~,res,cfg] = evalc('analyses{a,2}(cfg,fv)');
+                rng(7,'twister');
+                [~,permaps] = evalc('analyses{a,3}(cfg,fv)');
+                result.(name) = isequaln(res,permaps);
+            catch failure
+                % A version without more than two classes:
+                if ~three, rethrow(failure); end
+                result.(name) = false;
+            end
             fprintf('%s: %d\n',name,result.(name));
         end
     end
@@ -214,7 +227,12 @@ errors = {'direct_oldfv_mvpa','already contain supertrials';
           'direct_mvpa_flag0fdr','clustcorr';
           'direct_mvcc_flag0fdr','clustcorr';
           'direct_mvpa_flag0loo','leave-one-out';
-          'direct_mvpa_flag0late','clustcorr'};
+          'direct_mvpa_flag0late','clustcorr';
+          'three_mvpa_wvector','wvector';
+          'three_mvpa_auc','auc';
+          'three_mvpa_roc','roc';
+          'three_mvpa_sameid','conditionIdentifier';
+          'three_mvcc_noclass','dataset B'};
 
 result = struct();
 for i = 1 : size(errors,1)
@@ -265,6 +283,27 @@ end
 
 if isfield(record,'rsa_flipname')
     result.flip_model_name = isfield(record.rsa_flipname.stats.corr.pearson,'recall');
+end
+
+% The class metrics keep all the classes:
+for name = {'three_mvpa_tg0_class','three_mvpa_tg1_class'}
+    if isfield(record,name{1}) && isfield(record.(name{1}),'result')
+        result.([name{1} '_fields']) = isfield(record.(name{1}).result.recall,'condition_e');
+    end
+end
+for name = {'three_mvcc_tg0_class','three_mvcc_tg1_class'}
+    if isfield(record,name{1}) && isfield(record.(name{1}),'result')
+        recall = record.(name{1}).result.recall;
+        result.([name{1} '_fields']) = isfield(recall.ab,'condition_f') && ...
+            isfield(recall.ba,'condition_e') && isfield(recall.mean,'condition_e');
+    end
+end
+
+% A name shared by datasets A and B keeps both directions:
+if isfield(record,'three_mvcc_sharedid') && isfield(record.three_mvcc_sharedid,'result')
+    recall = record.three_mvcc_sharedid.result.recall;
+    result.three_mvcc_sharedid_fields = isfield(recall.ab,'condition_a') && ...
+        isfield(recall.ba,'condition_a') && ~isequal(recall.ab.condition_a,recall.ba.condition_a);
 end
 
 if isfield(record,'mvpa_tg1_flip')
@@ -594,6 +633,55 @@ for analysis = {'mvpa','mvcc'}
     end
 end
 
+% More than two classes:
+threemods = {
+    'min',   @(c,d) setthree(c,d);
+    'class', @(c,d) classmetrics(setthree(c,d));
+    'super', @(c,d) setreps(setsuper(setthree(c,d),2,'rand'),2);
+    'flip',  @(c,d) setflip(setsuper(setthree(c,d),2,'rand'))};
+for analysis = {'mvpa','mvcc'}
+    for tempgen = 0 : 1
+        for m = 1 : size(threemods,1)
+            c.name = sprintf('three_%s_tg%d_%s',analysis{1},tempgen,threemods{m,1});
+            c.build = decodingbuild(threemods{m,2},analysis{1},tempgen,false);
+            c.controller = 'analysisController;';
+            c.seed = 1000 + numel(cases);
+            c.parallel = false;
+            c.noconsole = false;
+            cases(end+1) = c; %#ok<AGROW>
+        end
+    end
+end
+
+three = {
+    'three_mvpa_da',     @(c,d) setkernel(setthree(c,d),'da','linear'),'mvpa',false;
+    'three_mvpa_rbf',    @(c,d) setkernel(setthree(c,d),'svm','rbf'),'mvpa',false;
+    'three_mvpa_loo',    @(c,d) setcv(setthree(c,d),'loo'),'mvpa',true;
+    'three_mvcc_none',   @(c,d) setcv(setthree(c,d),'none'),'mvcc',false;
+    'three_mvpa_wvector',@(c,d) setmetric(setthree(c,d),'wvector'),'mvpa',false;
+    'three_mvpa_auc',    @(c,d) setmetric(setthree(c,d),'auc'),'mvpa',false;
+    'three_mvpa_roc',    @(c,d) setmetric(setthree(c,d),'roc'),'mvpa',false;
+    'three_mvpa_sameid', @(c,d) sameid(setthree(c,d)),'mvpa',false;
+    'three_mvcc_noclass',@(c,d) noclass(setthree(c,d)),'mvcc',false;
+    'three_mvcc_sharedid',@(c,d) sharedid(setthree(c,d)),'mvcc',false};
+for d = 1 : size(three,1)
+    c.name = three{d,1};
+    c.build = decodingbuild(three{d,2},three{d,3},0,three{d,4});
+    c.controller = 'analysisController;';
+    c.seed = 1000 + numel(cases);
+    c.parallel = false;
+    c.noconsole = false;
+    cases(end+1) = c; %#ok<AGROW>
+end
+
+c.name = 'three_sf_mvpa';
+c.build = @(cfg) setthreesf(sfcfg(cfg,'MVPA',1,1));
+c.controller = 'sfilterController;';
+c.seed = 1000 + numel(cases);
+c.parallel = false;
+c.noconsole = false;
+cases(end+1) = c;
+
 cases = pairseeds(cases);
 
 end
@@ -734,6 +822,49 @@ end
 
 function cfg = setnorm(cfg,normdata)
 cfg.normdata = normdata;
+end
+
+function cfg = setthree(cfg,datadir)
+
+files = cfg.study.dataFiles{1,1};
+cfg.study.dataPaths{1,3} = [datadir filesep 'g' filesep];
+cfg.study.dataFiles{1,3} = files;
+cfg.study.conditionIdentifier{1,3} = 'condition_e';
+if ~isempty(cfg.study.dataFiles{2,1})
+    cfg.study.dataPaths{2,3} = [datadir filesep 'i' filesep];
+    cfg.study.dataFiles{2,3} = files;
+    cfg.study.conditionIdentifier{2,3} = 'condition_f';
+end
+
+end
+
+function cfg = setthreesf(cfg)
+
+cfg.study.dataPaths{1,3} = strrep(cfg.study.dataPaths{1,1},'sfa','sfc');
+cfg.study.dataFiles{1,3} = cfg.study.dataFiles{1,1};
+cfg.study.conditionIdentifier{1,3} = 'condition_e';
+
+end
+
+function cfg = sameid(cfg)
+cfg.study.conditionIdentifier{1,1} = 'condition_ e';
+end
+
+function cfg = noclass(cfg)
+cfg.study.dataFiles{2,3} = {};
+end
+
+function cfg = sharedid(cfg)
+cfg.study.conditionIdentifier{2,1} = cfg.study.conditionIdentifier{1,1};
+cfg.classmodel.recall = true;
+end
+
+function cfg = classmetrics(cfg)
+
+for metric = {'confmat','precision','recall','f1score'}
+    cfg = setmetric(cfg,metric{1});
+end
+
 end
 
 function cfg = setflip(cfg)

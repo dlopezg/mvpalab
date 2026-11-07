@@ -29,7 +29,8 @@ function perf = mvpalab_evalmetrics(cfg,pred)
 %    - auc:     Area under the curve.
 %    - acc:     Correct rate.
 %    - confmat: Confusion matrix.
-%    - precision, recall, f1score: Metrics of each class.
+%    - precision, recall, f1score: Metrics of each class, in the third
+%      dimension [1 x ntp_ x classes].
 %    - wvector: Feature weights.
 
 if cfg.classmodel.tempgen
@@ -41,7 +42,9 @@ if cfg.classmodel.tempgen
     for f = 1 : numel(fields)
         perf.(fields{f}) = {tests.(fields{f})};
     end
-    perf.auc = [tests.auc];
+    for f = {'auc','precision','recall','f1score'}
+        perf.(f{1}) = [tests.(f{1})];
+    end
     perf.acc = mean(pred.acc,1);
 else
     perf = testmetrics(cfg,pred.truth,pred.labels,pred.scores,pred.class);
@@ -61,7 +64,7 @@ function perf = testmetrics(cfg,truth,labels,scores,class)
 %% Metrics of the predictions at one test timepoint.
 
 perf.x = {}; perf.y = {}; perf.t = {}; perf.auc = NaN;
-perf.confmat = {}; perf.precision = {}; perf.recall = {}; perf.f1score = {};
+perf.confmat = {}; perf.precision = []; perf.recall = []; perf.f1score = [];
 
 % Compute confusion matrix if needed:
 if cfg.classmodel.confmat || cfg.classmodel.precision ...
@@ -71,17 +74,17 @@ end
 
 % Compute precision if needed:
 if cfg.classmodel.precision
-    perf.precision = mvpalab_precision(perf.confmat');
+    perf.precision = shiftdim(mvpalab_precision(perf.confmat'),-2);
 end
 
 % Compute recall if needed:
 if cfg.classmodel.recall
-    perf.recall = mvpalab_recall(perf.confmat');
+    perf.recall = shiftdim(mvpalab_recall(perf.confmat'),-2);
 end
 
 % Compute F1-score if needed:
 if cfg.classmodel.f1score
-    perf.f1score = mvpalab_f1score(perf.confmat');
+    perf.f1score = shiftdim(mvpalab_f1score(perf.confmat'),-2);
 end
 
 % Receiver operating characteristic (ROC curve) if needed:

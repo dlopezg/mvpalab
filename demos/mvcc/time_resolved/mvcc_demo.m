@@ -22,10 +22,6 @@ run cfg_file;
 [permaps,cfg] = mvpalab_nullmaps(cfg,fv,result);
 stats = mvpalab_permtest(cfg,result,permaps);
 
-%% Save cfg file:
-
-mvpalab_savecfg(cfg);
-
 %% Plot the results:
 
 run mvcc_plot;

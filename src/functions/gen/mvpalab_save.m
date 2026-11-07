@@ -1,91 +1,65 @@
-function mvpalab_save(cfg,data,mode,folder)
+function mvpalab_save(cfg,data,mode)
 %% MVPALAB_SAVE
 %
-% This function recursively iterates over the fields of the input data 
-% structure and saves the content of each field in the results folder.
-% This function is compatible with the following data structures:
-%  - Results.
-%  - Permuted maps.
-%  - Statistics.
+%  This function saves a structure of results, permuted maps or statistics
+%  in cfg.location/results: each field is saved in a folder with its name,
+%  so the folders follow the fields of the structure, and each leaf is a
+%  file with the data and cfg. The statistics of one map (a structure with
+%  the field sigmask) are one leaf.
+%
+%  The first folder is time_resolved or temporal_generalization in MVPA
+%  and MVCC, and cfg.analysis in the other analyses.
 %
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Description: Configuration structure.
+%    Configuration structure.
 %
-%  - {struct} data
-%    Description: Data structure containing the data to save for each 
-%    measure.
+%  - {struct} - data:
+%    Structure to save.
 %
-%  - {string} mode
-%    Description: Save modality: 'stats' - 'res' - 'permaps'
-%
-%  - {string} folder
-%    Description: Current folder name used for the recursive call. 
-%
+%  - {string} - mode:
+%    'res' (result.mat, variable result), 'permaps' (permaps.mat, variable
+%    permaps) or 'stats' (stats.mat, variable stats).
 
-%% Initialize the recursive function:
-%  If this call is the initial one, initialize the recursive algorithm:
-
-if nargin < 4
-    
-    % Show information to the user:
-    if strcmp(mode,'stats')
-        fprintf('<strong> > Saving stats: </strong>');
-    elseif strcmp(mode,'res')
-        fprintf('<strong> > Saving results: </strong>');
-    elseif strcmp(mode,'permaps')
-        fprintf('<strong> > Saving permuted maps: </strong>');
-    end
-    
-    % Initialize the saving folder:
-    if strcmp(cfg.analysis,'MVPA') || strcmp(cfg.analysis,'MVCC')
-        if cfg.classmodel.tempgen
-            folder = 'temporal_generalization';
-        else
-            folder = 'time_resolved';
-        end
-    else
-        folder = cfg.analysis;
-    end
-    
+modes.res = struct('message','results','variable','result');
+modes.permaps = struct('message','permuted maps','variable','permaps');
+modes.stats = struct('message','stats','variable','stats');
+if ~isfield(modes,mode)
+    error('The mode of mvpalab_save must be ''res'', ''permaps'' or ''stats''.');
 end
+kind = modes.(mode);
 
-%% Check if the current input is a struct:
-%  Description: If the current input is a struct we extract its field names
-%  and make a recursive call for each field. 
-%  Special case: In the stats structure we don't need to iterate over the
-%  last level. (This level includes fields such as 'sigmask')
-
-if isstruct(data) && ~any(find(strcmp(fieldnames(data),'sigmask')))
-    field_names = fieldnames(data);
-    for i = 1 : length(field_names)
-        fname = field_names{i};
-        stats = data.(fname);
-        mvpalab_save(cfg,stats,mode,[folder filesep fname]);
-    end
-else
-    %% Save the content of the current input:
-    %  Description: If the current input is not a structure or is a stats
-    %  structure we save the content in the requiered location.
-
-    save_folder = [cfg.location filesep 'results' filesep folder];
-    mvpalab_mkdir(save_folder);
-    
-    if strcmp(mode,'stats')
-        stats = data;
-        save([save_folder filesep 'stats.mat'], 'stats','cfg','-v7.3');
-    elseif strcmp(mode,'res')
-        result = data;
-        save([save_folder filesep 'result.mat'], 'result','cfg','-v7.3');
-    elseif strcmp(mode,'permaps')
-        permaps = data;
-        save([save_folder filesep 'permaps.mat'], 'permaps','cfg','-v7.3');
-    end
-    
-end
-
-if nargin < 4, fprintf(' - Done! \n\n'); end
+fprintf(['<strong> > Saving ' kind.message ': </strong>']);
+savefields(cfg,data,fullfile(cfg.location,'results',resultsfolder(cfg)),kind);
+fprintf(' - Done! \n\n');
 
 end
 
+function folder = resultsfolder(cfg)
+%% First folder of the results of the analysis.
+
+folder = cfg.analysis;
+if any(strcmp(cfg.analysis,{'MVPA','MVCC'}))
+    folder = 'time_resolved';
+    if cfg.classmodel.tempgen, folder = 'temporal_generalization'; end
+end
+
+end
+
+function savefields(cfg,data,folder,kind)
+%% Each field in a folder with its name, and each leaf in one file.
+
+if isstruct(data) && ~isfield(data,'sigmask')
+    for field = fieldnames(data)'
+        savefields(cfg,data.(field{1}),fullfile(folder,field{1}),kind);
+    end
+    return
+end
+
+mvpalab_mkdir(folder);
+content.(kind.variable) = data;
+content.cfg = cfg;
+save(fullfile(folder,[kind.variable '.mat']),'-struct','content','-v7.3');
+
+end

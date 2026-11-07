@@ -5,9 +5,9 @@ function [ mdl , w ] = mvpalab_train(train_X,train_Y,cfg)
 %  and returns its feature weights:
 %
 %  - 'svm': support vector machine (fitcsvm) with the kernel in
-%    cfg.classmodel.kernel. With the 'rbf' or 'gaussian' kernel and
-%    without hyperparameter optimization, the kernel scale is
-%    sqrt(features * var(train_X(:))), the same as gamma = 'scale' in
+%    cfg.classmodel.kernel. With the 'rbf' or 'gaussian' kernel, unless
+%    the hyperparameter search covers the kernel scale, the kernel scale
+%    is sqrt(features * var(train_X(:))), the same as gamma = 'scale' in
 %    scikit-learn. With more than two classes, one binary SVM per pair of
 %    classes is combined by fitcecoc.
 %  - 'da': discriminant analysis (fitcdiscr) with the discriminant type in
@@ -38,13 +38,22 @@ function [ mdl , w ] = mvpalab_train(train_X,train_Y,cfg)
 %  - {matrix} - w:
 %    Feature weights [features x 1], NaN when they are not defined.
 
+% Hyperparameter search if needed:
+optimize = {};
+if cfg.classmodel.optimize.flag
+    optimize = {'OptimizeHyperparameters',cfg.classmodel.optimize.params,...
+        'HyperparameterOptimizationOptions',cfg.classmodel.optimize.opt};
+end
+
 if strcmp(cfg.classmodel.method,'svm')
     kernel = {'KernelFunction',cfg.classmodel.kernel};
-    optimize = {};
-    if cfg.classmodel.optimize.flag
-        optimize = {'OptimizeHyperparameters',cfg.classmodel.optimize.params,...
-            'HyperparameterOptimizationOptions',cfg.classmodel.optimize.opt};
-    elseif any(strcmp(cfg.classmodel.kernel,{'rbf','gaussian'}))
+    % The search covers the kernel scale with 'KernelScale', 'auto' or
+    % 'all', and maybe with optimizableVariable objects:
+    params = cfg.classmodel.optimize.params;
+    names = ischar(params) || iscellstr(params);
+    searched = cfg.classmodel.optimize.flag && (~names || ...
+        any(ismember(cellstr(params),{'KernelScale','auto','all'})));
+    if ~searched && any(strcmp(cfg.classmodel.kernel,{'rbf','gaussian'}))
         % Same kernel scale as gamma = 'scale' in scikit-learn. It depends
         % on the number of features, unlike the default value of fitcsvm:
         scale = sqrt(size(train_X,2)*var(train_X(:)));
@@ -66,15 +75,8 @@ if strcmp(cfg.classmodel.method,'svm')
     end
     
 elseif strcmp(cfg.classmodel.method,'da')
-    if cfg.classmodel.optimize.flag
-        mdl = fitcdiscr(train_X,train_Y,...
-            'DiscrimType',cfg.classmodel.kernel,...
-            'OptimizeHyperparameters',cfg.classmodel.optimize.params,...
-            'HyperparameterOptimizationOptions',cfg.classmodel.optimize.opt);
-    else
-        mdl = fitcdiscr(train_X,train_Y,...
-            'DiscrimType',cfg.classmodel.kernel);
-    end
+    mdl = fitcdiscr(train_X,train_Y,'DiscrimType',cfg.classmodel.kernel,...
+        optimize{:});
     
     % Linear coefficients, with the same sign as mdl.Beta in the SVM.
     % Feature weights are only defined for the linear discriminant:

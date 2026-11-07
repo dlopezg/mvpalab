@@ -26,10 +26,10 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %
 %  Limitation: the permutation also removes the decoding within dataset A.
 %  If datasets A and B contain decoding effects that are not shared, the
-%  null distribution is still narrower than the distribution of the
-%  cross-decoding between them (0.073 vs 0.189 with synthetic data, a strong
-%  effect in each dataset, cfg.cv.nreps = 5 and supertrials of 4 trials), so
-%  the test can be liberal in that case.
+%  null distribution can be narrower than the distribution of the
+%  cross-decoding between them, so the test can be liberal. The sign flip
+%  test (cfg.stats.signflip) does not permute labels, so it is recommended
+%  for MVCC (see mvpalab_signmaps).
 %
 %%  INPUT:
 %

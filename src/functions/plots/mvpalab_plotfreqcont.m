@@ -1,4 +1,4 @@
-function [] = mvpalab_plotfreqcont(graph,cfg,data,stats )
+function mvpalab_plotfreqcont(graph,cfg,data,stats)
 %% MVPALAB_PLOTFREQCONT
 %
 %  This function plots the frequency contribution map of a sliding filter
@@ -10,8 +10,9 @@ function [] = mvpalab_plotfreqcont(graph,cfg,data,stats )
 %  With stats, the contours of the significant clusters above
 %  (graph.stats.above) and below (graph.stats.below) chance are drawn.
 %  If graph.caxis is zero, the color limits are the minimum and maximum
-%  of the map. With cfg.sf.fspac = 'log', the frequency axis is in log
-%  scale.
+%  of the map (see mvpalab_mapstyle). The time axis is the timepoints of
+%  the analysis (cfg.tm.times) and the frequency axis the high cutoff of
+%  each band, in log scale with cfg.sf.fspac = 'log'.
 %
 %%  INPUT:
 %
@@ -25,8 +26,10 @@ function [] = mvpalab_plotfreqcont(graph,cfg,data,stats )
 %    Frequency contribution map [bands x timepoints x subjects].
 %
 %  - {struct} - stats (optional):
-%    Statistics of the map, with stats.clusters, stats.clusters_,
-%    stats.sigmask and stats.sigmask_ (see mvpalab_computepermtest).
+%    Statistics of the map, with stats.sigmask and stats.sigmask_ (see
+%    mvpalab_computepermtest), or empty.
+
+if nargin < 4, stats = []; end
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
@@ -39,62 +42,18 @@ end
 data = mvpalab_selectsub(graph,data);
 
 %% Plot the results:
-x = linspace(cfg.tm.tpstart,cfg.tm.tpend,size(data,2));
-y = cfg.sf.freqvec+cfg.sf.hbw;
-acc_map = mean(data,3);
-contourf(x,y,acc_map,30,'LineStyle','none')
+x = cfg.tm.times;
+y = cfg.sf.freqvec + cfg.sf.hbw;
+map = mean(data,3);
+contourf(x,y,map,30,'LineStyle','none')
 hold on
-set(gca, 'YDir','normal')
-
-if strcmp(cfg.sf.fspac,'log')
-    set(gca,'YScale','log')
-end
-
-if exist('stats','var')
-    if ~isempty(stats.clusters) && graph.stats.above
-        contour(x,y,stats.sigmask,1,...
-            'LineWidth',graph.clusterLineWidth,...
-            'LineColor',graph.clusterLineColor);
-    end
-    if ~isempty(stats.clusters_) && graph.stats.below
-        contour(x,y,stats.sigmask_,1,...
-            'LineWidth',graph.clusterLineWidth_,...
-            'LineColor',graph.clusterLineColor_);
-    end
-end
+set(gca,'YDir','normal')
+if strcmp(cfg.sf.fspac,'log'), set(gca,'YScale','log'); end
+mvpalab_plotclusters(graph,x,y,stats);
 
 %% Configure plot appearance:
-title(graph.title);
-xlabel(graph.xlabel);
-ylabel(graph.ylabel);
-xlim(graph.xlim);
-ylim(graph.ylim);
-colorbar('Eastoutside');
-
-set(gca,'XMinorTick','on','YMinorTick','on');
-set(gca,'XTickLabelRotation',90);
-set(gca,'YAxisLocation','origin');
-set(gca,'XAxisLocation','origin');
-set(gca,'YColor','k');
-set(gca,'XColor','k');
-set(gca,'FontSize',graph.fontsize);
-set(gca,'Layer','top');
-
-set(gca,'XTick',graph.xlim(1):100:graph.xlim(2))
-
-for i = 1 : length(cfg.sf.fcutoff)
-    v(i) = round(cfg.sf.fcutoff{i}(2),2);
-end
-
-set(gca,'YTick',v);
-
-if graph.caxis == 0
-    caxis([min(min(acc_map)) max(max(acc_map))]);
-else
-    caxis(graph.caxis);
-end
-
-colormap(graph.colorMap);
+mvpalab_mapstyle(graph,map);
+set(gca,'XTick',graph.xlim(1):100:graph.xlim(2));
+set(gca,'YTick',round(y,2));
 
 end
-

@@ -1,6 +1,3 @@
-%% Save cfg state:
-mvpalab_savecfg(cfg);
-
 %% Import data:
 cfg = mvpalab_import(cfg);
 

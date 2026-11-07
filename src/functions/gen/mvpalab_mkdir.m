@@ -1,14 +1,14 @@
-function [] = mvpalab_mkdir(dir)
+function mvpalab_mkdir(folder)
 %% MVPALAB_MKDIR
 %
-%  This function creates a folder if it doesn't exist.
+%  This function creates a folder, with its parent folders, if it does not
+%  exist.
 %
 %%  INPUT:
 %
-%  - {string} - dir:
+%  - {string} - folder:
 %    Path of the folder.
 
-    if isdir(dir) == false
-        mkdir(dir);
-    end
+if ~isfolder(folder), mkdir(folder); end
+
 end

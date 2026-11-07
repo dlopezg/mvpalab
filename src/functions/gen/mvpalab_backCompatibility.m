@@ -1,13 +1,11 @@
 function cfg = mvpalab_backCompatibility(cfg)
 %% MVPALAB_BACKCOMPATIBILITY
 %
-%  This function updates a configuration structure of an older version of
-%  MVPAlab, and shows a warning for each change:
-%
-%  - Without cfg.feature, it adds cfg.feature = 'voltage' and the default
-%    values of cfg.powenv.
-%  - The field cfg.chanloc is moved to cfg.channels.chanloc and
-%    cfg.channels.selectedchanloc, with cfg.channels.selected empty.
+%  This function updates the renamed fields of a configuration structure of
+%  an older version of MVPAlab, with a warning: the field cfg.chanloc is
+%  moved to cfg.channels.chanloc and cfg.channels.selectedchanloc, with
+%  cfg.channels.selected empty. The missing fields are added by
+%  mvpalab_checkcfg.
 %
 %%  INPUT:
 %
@@ -19,15 +17,6 @@ function cfg = mvpalab_backCompatibility(cfg)
 %  - {struct} - cfg:
 %    Updated configuration structure.
 
-    %% Envelope as feature:
-    if ~isfield(cfg,'feature')
-        cfg.feature = 'voltage';
-        cfg.powenv.method   = 'analytic';
-        cfg.powenv.uplow = 'upper';
-        cfg.powenv.length   = 5;
-        warning('CFG structure updated > Features');
-    end
-    
     %% Channels:
     % The cfg.chanloc variable has been moved to cfg.channels.chanloc
     if isfield(cfg,'chanloc')

@@ -19,10 +19,6 @@ cfg.classmodel.parcomp = 0;
 
 [res,stats,cfg] = mvpalab_rsa_time(cfg,data);
 
-%% Save cfg file:
-
-mvpalab_savecfg(cfg);
-
 %% Plot the results:
 
 run plots/rsa_time_resolved.m;

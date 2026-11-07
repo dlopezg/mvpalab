@@ -1,16 +1,14 @@
 function v = mvpalab_getversion()
 %% MVPALAB_GETVERSION
 %
-%  This function returns the version of MVPAlab stored in the variable
-%  mvpalab_version of mvpalab_version.mat (see mvpalab_updateversion).
+%  This function returns the version of MVPAlab. The version is written
+%  here, so it changes in the commit of each release.
 %
 %%  OUTPUT:
 %
 %  - {string} - v:
 %    Version of MVPAlab, for example 'v1.2.2'.
 
-load('mvpalab_version','mvpalab_version');
-v = mvpalab_version;
+v = 'v1.2.2';
 
 end
-

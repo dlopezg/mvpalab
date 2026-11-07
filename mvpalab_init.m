@@ -34,7 +34,7 @@ if nargin < 2 || updatepath
     %  Hidden folders (names starting with a dot: .git, .claude, .vscode...)
     %  are excluded, so copies of the toolbox inside them (e.g. git
     %  worktrees) never shadow the functions of this folder.
-    addpath(genpath_exclude(loc(1:end-9),{'\..*','demos'}));
+    addpath(genpath_exclude(fileparts(loc),{'\..*','demos'}));
 end
 
 %% ANALYSIS TYPE:
@@ -49,7 +49,7 @@ cfg.analysis = 'MVPA';
 cfg.feature = 'voltage';
 
 % cfg.feature = 'voltage'  - Raw voltage as feature.
-% cfg.feature = 'envelope' - Power evelope as feature.
+% cfg.feature = 'envelope' - Power envelope as feature.
 
 cfg.powenv.method = 'analytic';
 cfg.powenv.uplow  = 'upper';
@@ -68,7 +68,7 @@ cfg.trialaver.ntrials  = 0;
 cfg.trialaver.order    = 'rand';
 
 % cfg.trialaver.order = 'rand' - Random order.
-% cfg.trialaver.order = 'seq'  - Secuential order.
+% cfg.trialaver.order = 'seq'  - Sequential order.
 %
 % The classifiers build new supertrials in each cross-validation repetition
 % (see mvpalab_supertrials and cfg.cv.nreps), so the result depends less on
@@ -93,7 +93,7 @@ cfg.classsize.matchkfold = false;
 
 %% DIMENSION REDUCTION:
 
-% cfg.dimred.method = 'none' - Diemnsion reduction disabled.
+% cfg.dimred.method = 'none' - Dimension reduction disabled.
 % cfg.dimred.method = 'pca'  - Principal Component Analysis.
 
 cfg.dimred.method = 'none';
@@ -163,8 +163,10 @@ cfg.classmodel.kernel = 'linear';
 
 cfg.classmodel.optimize.flag = false;
 cfg.classmodel.optimize.params = {'BoxConstraint'};
+% Without a validation field (Kfold, Holdout or CVPartition), MATLAB uses a
+% 5-fold cross-validation, so any of them can be added to the options.
 cfg.classmodel.optimize.opt = struct('Optimizer','gridsearch',...
-    'ShowPlots',false,'Verbose',0,'Kfold', 5);
+    'ShowPlots',false,'Verbose',0);
 
 %% PERFORMANCE METRICS:
 
@@ -190,7 +192,7 @@ else
     cfg.classmodel.parcomp = false;
 end
 
-%% CROSS-VALIDATIONN PROCEDURE:
+%% CROSS-VALIDATION PROCEDURE:
 
 % cfg.cv.method = 'kfold' - K-Fold cross-validation.
 % cfg.cv.method = 'loo'   - Leave-one-out cross-validation.
@@ -243,8 +245,7 @@ cfg.cv.nreps   = 1;
 %                               and enough subjects, needs cfg.stats.clustcorr
 %                               = 'max', and only tests accuracy and AUC.
 %                               Available for MVPA (not with leave-one-out,
-%                               also in the sliding filter), MVCC, RSA,
-%                               sliding filter and
+%                               also in the sliding filter), MVCC, RSA and
 %                               the fusion modes 'mean-fmri' and 'mean-eeg'.
 
 cfg.stats.flag   = 0;
@@ -324,8 +325,6 @@ cfg.stats.shownulldis = 0;
 %                      the Pearson distance (true = Pearson correlation,
 %                      false = cosine similarity).
 
-cfg.rsa.flag = 0;
-cfg.rsa.nclass = 0;
 cfg.rsa.modality = 'corr';
 cfg.rsa.distance = 'pearson';
 cfg.rsa.trialwise = true;
@@ -357,7 +356,7 @@ cfg.sf.order = 1408;            % Filter order.
 cfg.sf.fspac = 'log';  % Linear or logarithmic (lin/log.)
 cfg.sf.nfreq = 1;      % Number of steps - log (Hz).
 
-%% DATAFILES, PATHS AND CONDITIONN :
+%% DATAFILES, PATHS AND CONDITIONS :
 
 cfg.study.dataPaths = {{},{};{},{}};
 cfg.study.dataFiles = {{},{};{},{}};

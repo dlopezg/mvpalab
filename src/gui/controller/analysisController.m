@@ -1,9 +1,3 @@
-%% Save cfg state:
-mvpalab_savecfg(cfg);
-
-%% Create result and stats folder
-mvpalab_mkdir([cfg.location '/results']);
-
 %% Load data, generate conditions and feature extraction:
 [cfg,~,fv] = mvpalab_import(cfg);
 
@@ -18,9 +12,6 @@ if cfg.stats.flag
     % Compute the permutation based analysis:
     stats = mvpalab_permtest(cfg,result,permaps);
 end
-
-%% Save cfg file:
-mvpalab_savecfg(cfg);
 
 %% Extract diag:
 if cfg.classmodel.tempgen && cfg.classmodel.extdiag

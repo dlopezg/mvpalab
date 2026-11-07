@@ -18,10 +18,6 @@ cfg = mvpalab_import(cfg);
 
 [cfg,diffMap,stats] = mvpalab_sfilter(cfg);
 
-%% Save cfg file:
-
-mvpalab_savecfg(cfg);
-
 %% Plot the results:
 
 run sf_plot;

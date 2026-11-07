@@ -4,16 +4,18 @@ function mvpalab_plotfeatcont(graph,cfg,weights,result)
 %  This function plots the feature contribution analysis: the topography
 %  of the feature weights with topoplot from EEGLAB and, next to it, the
 %  decoding performance with the selected temporal window. It opens new
-%  figures and does nothing if cfg.channels.selectedchanloc is empty.
-%  EEGLAB is checked with mvpalab_checkeeglab.
+%  figures, and shows a warning without plotting if
+%  cfg.channels.selectedchanloc is empty. EEGLAB is checked with
+%  mvpalab_checkeeglab.
 %
 %  The weights are averaged across subjects, or one subject is selected
 %  (graph.weights.sub), between graph.weights.start and
-%  graph.weights.end. With graph.weights.anim, one topography per
-%  timepoint is shown as an animation (graph.weights.speed), which
-%  starts when a key is pressed; otherwise the mean topography of the
-%  window is shown, and a second figure shows the weights of the features
-%  sorted. The chance level line is at 0.5.
+%  graph.weights.end. In a sliding filter analysis the first band is
+%  used. With graph.weights.anim, one topography per timepoint of the
+%  window is shown as an animation (graph.weights.speed), which starts
+%  when a key is pressed; otherwise the mean topography of the window is
+%  shown, and a second figure shows the weights of the features sorted.
+%  The chance level line is at graph.chanlvl.
 %
 %%  INPUT:
 %
@@ -24,176 +26,157 @@ function mvpalab_plotfeatcont(graph,cfg,weights,result)
 %    Configuration structure (cfg.channels.selectedchanloc and cfg.tm).
 %
 %  - {cell array} - weights:
-%    Feature weights of each subject {subjects,1}, with matrices
-%    [channels x ntp] (see mvpalab_storemap).
+%    Feature weights of each subject and band {subjects,bands}, with
+%    matrices [channels x ntp] (see mvpalab_storemap).
 %
 %  - {matrix} - result:
 %    Decoding performance [1 x ntp x subjects] or, in temporal
 %    generalization, [ntp x ntp_ x subjects], where the diagonal is
-%    used. If it is empty or a struct, the performance is not plotted.
+%    used. If it is empty, the performance is not plotted.
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
 
 if isempty(cfg.channels.selectedchanloc)
-    
-else
-    
-    % Check if EEGlab is installed:
-    mvpalab_checkeeglab();
-    
-    if ~isfield(graph,'xlim')
-        graph.xlim = [cfg.tm.times(1),cfg.tm.times(end)];
-    end
-    
-    % Select subject, type and temporal window:
-    subject = graph.weights.sub;
-    start_time = graph.weights.start;
-    end_time = graph.weights.end;
-    
-    %% Find closest points in the time vector:
-    [~,startidx] = min(abs(cfg.tm.times-start_time));
-    [~,endidx] = min(abs(cfg.tm.times-end_time));
-    
-    %% Select weights to plot:
-    if ~subject
-        for i = 1 : length(weights)
-            weights_to_plot(:,:,i) = weights{i,1}(:,startidx:endidx);
-        end
-        weights_to_plot = mean(weights_to_plot,3);
-    else
-        weights_to_plot = weights{subject,1}(:,startidx:endidx);
-    end
-    
-    %% Check if plot performance:
-    resultToPlot = [];
-    if ~isempty(result) && ~isstruct(result)
-        if size(result,1) > 1
-            if ~subject
-                for i = 1 : size(result,3)
-                    resultToPlot(1,:,i) = diag(result(:,:,i));
-                end
-                resultToPlot = mean(resultToPlot,3);
-            else
-                resultToPlot = diag(result(:,:,subject));
-            end
-        else
-            if ~subject
-                resultToPlot = mean(result,3);
-            else
-                resultToPlot = result(:,:,subject);
-            end
-        end
-        
-        if max(resultToPlot)+.1 > 1
-            ylimit = [min(resultToPlot)-.1,1];
-        else
-            ylimit = [min(resultToPlot)-.1, max(resultToPlot)+.1];
-        end
-        windowToPlot = zeros(1,length(cfg.tm.times));
-        windowToPlot(1,startidx:endidx) = 1;
-    end
-    
-    %% Plot the weight analysis:
-    chancelevel = zeros(1,length(resultToPlot))+.5;
-    
-    if graph.weights.anim
-        figure;
-        disp('Please, press any key to start animation.');
-        pause
-        for i = 1 : size(weights_to_plot,2)-1
-            clf;
-            set(gca,'FontSize',graph.fontsize)
-            if ~isempty(resultToPlot)
-                subplot(1,2,1);
-                vline(cfg.tm.times(startidx+i),'r-');
-                hold on;
-                
-                plot(cfg.tm.times,chancelevel,'k','LineWidth',.5,'LineStyle',':');
-                plot(cfg.tm.times,resultToPlot,'k');
-                set(gca,'Color','w')
-                set(gca,'XGrid','on');
-                set(gca,'YAxisLocation','origin');
-                set(gca,'XMinorTick','on','YMinorTick','on')
-                title('Decoding performance');
-                xlabel('Time (ms)');
-                ylabel('Performance');
-                xlim(graph.xlim);
-                ylim(ylimit);
-                set(gca,'Layer','top')
-                
-                subplot(1,2,2);
-            end
-            
-            title(['Decoding time: ' int2str(cfg.tm.times(startidx+i)) ' ms'])
-            topoplot(weights_to_plot(:,i),cfg.channels.selectedchanloc,...
-                'colormap', graph.colorMap,...
-                'whitebk','on',...
-                'electrodes','labels');
-            pause(1/(graph.weights.speed*1000));
-        end
-    else
-        % Compute the mean and plot it:
-        weights_to_plot = mean(weights_to_plot,2);
-        
-        figure;
-        set(gca,'FontSize',graph.fontsize)
-        
-        if ~isempty(resultToPlot)
-            subplot(1,2,1);
-            h = area(cfg.tm.times,windowToPlot,'LineStyle','none');
-            h(1).FaceColor = [.8,.8,.8];
-            hold on;
-            plot(cfg.tm.times,chancelevel,'k','LineWidth',.5,'LineStyle',':');
-            plot(cfg.tm.times,resultToPlot,'k');
-            set(gca,'Color','w')
-            set(gca,'XGrid','on');
-            set(gca,'YAxisLocation','origin');
-            set(gca,'XMinorTick','on','YMinorTick','on')
-            title('Decoding performance');
-            xlabel('Time (ms)');
-            ylabel('Performance');
-            xlim(graph.xlim);
-            ylim(ylimit);
-            set(gca,'Layer','top')
-            
-            subplot(1,2,2);
-        end
-        
-        topoplot(weights_to_plot,cfg.channels.selectedchanloc,...
-            'colormap', graph.colorMap,...
-            'whitebk','on',...
-            'electrodes','labels');
-        title(['Decoding time: ' int2str(start_time) '-' int2str(end_time) ' ms'])
-        
-        % Sorted feature contribution plot:
-        
-        figure;
-        hold on;
-        [sorted,idx] = sort(weights_to_plot);
-        labels = extractfield(cfg.channels.selectedchanloc,'labels');
-        sortedLabels = labels(idx);
-        features = categorical(sortedLabels);
-        features = reordercats(features,sortedLabels);
-
-        b = bar(features,sorted,1,'FaceColor','flat');
-        
-        shift = floor(size(graph.colorMap,1)/length(sorted));
-        idx = 1;
-        for i = 1 : length(sorted)
-            b.CData(i,:) = graph.colorMap(idx,:);
-            idx = idx + shift;
-        end
-        
-        xlabel('List of features');
-        ylabel('Feature weights (a.u.)');
-        title('Feature contribution analysis');
-        
-        set(gca,'FontSize',graph.fontsize)
-        set(gca,'Color','w')
-        set(gca,'XGrid','on');
-        set(gca,'YAxisLocation','origin');
-        set(gca,'XMinorTick','on','YMinorTick','on')
-    end
+    warning('The feature weights need the channel locations (cfg.channels.selectedchanloc) to be plotted.');
+    return
 end
+
+% Check if EEGlab is installed:
+mvpalab_checkeeglab();
+
+if ~isfield(graph,'xlim'), graph.xlim = cfg.tm.times([1 end]); end
+
+%% Temporal window, weights and performance:
+[~,startidx] = min(abs(cfg.tm.times - graph.weights.start));
+[~,endidx] = min(abs(cfg.tm.times - graph.weights.end));
+window = startidx : endidx;
+
+w = selectweights(graph,weights,window);
+perf = performance(graph,result);
+
+%% Plot the weight analysis:
+if graph.weights.anim
+    figure;
+    disp('Please, press any key to start animation.');
+    pause
+    for i = 1 : numel(window)
+        clf;
+        t = cfg.tm.times(window(i));
+        plotpanels(graph,cfg,perf,w(:,i),@() vline(t,'r-'),...
+            ['Decoding time: ' int2str(t) ' ms']);
+        pause(1/(graph.weights.speed*1000));
+    end
+else
+    w = mean(w,2);
+    marker = zeros(size(cfg.tm.times));
+    marker(window) = 1;
+
+    figure;
+    plotpanels(graph,cfg,perf,w,@() area(cfg.tm.times,marker,...
+        'LineStyle','none','FaceColor',[.8 .8 .8]),...
+        ['Decoding time: ' int2str(graph.weights.start) '-' ...
+        int2str(graph.weights.end) ' ms']);
+
+    plotsorted(graph,cfg,w);
+end
+
+end
+
+function w = selectweights(graph,weights,window)
+%% Weights of the selected subject, or their mean, in the window
+%  [channels x timepoints]. The first band of a sliding filter analysis.
+
+w = cat(3,weights{:,1});
+if graph.weights.sub
+    w = w(:,:,graph.weights.sub);
+else
+    w = mean(w,3);
+end
+w = w(:,window);
+
+end
+
+function perf = performance(graph,result)
+%% Performance of the selected subject, or their mean [1 x ntp]: the
+%  diagonal in temporal generalization. Empty without a result.
+
+perf = [];
+if isempty(result), return; end
+
+result = result(:,:,:,1);
+if size(result,1) > 1
+    for sub = 1 : size(result,3)
+        perf(1,:,sub) = diag(result(:,:,sub));
+    end
+else
+    perf = result;
+end
+
+if graph.weights.sub
+    perf = perf(:,:,graph.weights.sub);
+else
+    perf = mean(perf,3);
+end
+
+end
+
+function plotpanels(graph,cfg,perf,w,marker,label)
+%% Topography of the weights and, if there is a performance, the
+%  performance with the temporal window on the left.
+
+if ~isempty(perf)
+    subplot(1,2,1);
+    marker();
+    hold on;
+    times = cfg.tm.times(1:numel(perf));
+    plot(times,zeros(size(times)) + graph.chanlvl,'k','LineWidth',.5,'LineStyle',':');
+    plot(times,perf,'k');
+    set(gca,'Color','w')
+    set(gca,'XGrid','on');
+    set(gca,'YAxisLocation','origin');
+    set(gca,'XMinorTick','on','YMinorTick','on')
+    set(gca,'FontSize',graph.fontsize)
+    title('Decoding performance');
+    xlabel('Time (ms)');
+    ylabel('Performance');
+    xlim(graph.xlim);
+    ylim([min(perf) - .1, min(max(perf) + .1,1)]);
+    set(gca,'Layer','top')
+
+    subplot(1,2,2);
+end
+
+topoplot(w,cfg.channels.selectedchanloc,...
+    'colormap', graph.colorMap,...
+    'whitebk','on',...
+    'electrodes','labels');
+set(gca,'FontSize',graph.fontsize)
+title(label)
+
+end
+
+function plotsorted(graph,cfg,w)
+%% Weights of the features sorted, in a new figure.
+
+figure;
+hold on;
+[sorted,idx] = sort(w);
+labels = {cfg.channels.selectedchanloc.labels};
+features = reordercats(categorical(labels(idx)),labels(idx));
+
+b = bar(features,sorted,1,'FaceColor','flat');
+shift = floor(size(graph.colorMap,1)/numel(sorted));
+b.CData = graph.colorMap(1 + (0:numel(sorted)-1)*shift,:);
+
+xlabel('List of features');
+ylabel('Feature weights (a.u.)');
+title('Feature contribution analysis');
+
+set(gca,'FontSize',graph.fontsize)
+set(gca,'Color','w')
+set(gca,'XGrid','on');
+set(gca,'YAxisLocation','origin');
+set(gca,'XMinorTick','on','YMinorTick','on')
+
 end

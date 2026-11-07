@@ -28,17 +28,17 @@ subplot(2,3,1);
 hold on;
 mvpalab_plottempogen(graph,cfg,result);
 
+graph.title = 'Demo plot B - A';
 load results/temporal_generalization/acc/ba/result.mat
 subplot(2,3,2);
 hold on;
 mvpalab_plottempogen(graph,cfg,result);
-graph.title = 'Demo plot B - A';
 
+graph.title = 'Demo plot mean';
 load results/temporal_generalization/acc/mean/result.mat
 subplot(2,3,3);
 hold on;
 mvpalab_plottempogen(graph,cfg,result);
-graph.title = 'Demo plot mean';
 
 %% Mean accuracy plot (statistical significance)
 
@@ -56,16 +56,16 @@ subplot(2,3,4);
 hold on;
 mvpalab_plottempogen(graph,cfg,result,stats);
 
+graph.title = 'Demo plot  B - A (significant clusters)';
 load results/temporal_generalization/acc/ba/result.mat
 load results/temporal_generalization/acc/ba/stats.mat
 subplot(2,3,5);
 hold on;
 mvpalab_plottempogen(graph,cfg,result,stats);
-graph.title = 'Demo plot  B - A (significant clusters)';
 
+graph.title = 'Demo plot mean (significant clusters)';
 load results/temporal_generalization/acc/mean/result.mat
 load results/temporal_generalization/acc/mean/stats.mat
 subplot(2,3,6);
 hold on;
 mvpalab_plottempogen(graph,cfg,result,stats);
-graph.title = 'Demo plot mean (significant clusters)';

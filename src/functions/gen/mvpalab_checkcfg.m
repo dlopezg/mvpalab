@@ -1,48 +1,43 @@
-function cfg_ = mvpalab_checkcfg(cfg_,cfg)
+function cfg = mvpalab_checkcfg(cfg)
 %% MVPALAB_CHECKCFG
 %
 %  This function completes a configuration structure with the fields of the
-%  current version of the toolbox. It does not save the structure (see
-%  mvpalab_savecfg): each analysis does it when it starts.
+%  current version of the toolbox (see mvpalab_init): each field that is
+%  missing gets its default value, with a warning that names it, and the
+%  structures that exist are completed in the same way. A field of the
+%  user that is not a structure is kept as it is. The renamed fields of
+%  older versions are updated first (see mvpalab_backCompatibility).
+%
+%  cfg.version is set to the version that runs the analysis, so the saved
+%  results say which version computed them. It does not save the
+%  structure (see mvpalab_savecfg): each analysis does it when it starts.
 %
 %%  INPUT:
 %
-%  - {struct} - cfg_:
-%    Configuration structure.
-%
 %  - {struct} - cfg:
-%    Only in the recursive calls, default values of the current field.
+%    Configuration structure.
 %
 %%  OUTPUT:
 %
-%  - {struct} - cfg_:
+%  - {struct} - cfg:
 %    Updated configuration structure.
 
-% Initialize algorithm:
-if nargin < 2
-    cfg = mvpalab_init(false,false);
-    
-    % Change fields names if needed (possible code refactoring)
-    cfg_ = mvpalab_backCompatibility(cfg_);
+cfg = mvpalab_backCompatibility(cfg);
+cfg = complete(cfg,mvpalab_init(false,false),'cfg');
+cfg.version = mvpalab_getversion();
+
 end
 
-if isstruct(cfg)
-    % If is a struct, extract fieldnames:
-    subfields = fieldnames(cfg);
-    
-    % Check if each subfield exists inside the old cfg structure. If not,
-    % add the new field to the old cfg structure and continue. If exists,
-    % recursive call.
-    for subfield = 1 : length(subfields)
-        if isfield(cfg_,subfields{subfield})
-            cfg_.(subfields{subfield}) = mvpalab_checkcfg(...
-                cfg_.(subfields{subfield}),...
-                cfg.(subfields{subfield}));
-        else
-            warning(['CFG structure updated > New field created: '...
-                subfields{subfield}])
-            cfg_.(subfields{subfield}) = cfg.(subfields{subfield});
-        end
+function cfg = complete(cfg,defaults,path)
+%% Missing fields of one structure, and its structures completed in turn.
+
+for field = fieldnames(defaults)'
+    name = field{1};
+    if ~isfield(cfg,name)
+        warning('CFG structure updated > New field created: %s.%s',path,name);
+        cfg.(name) = defaults.(name);
+    elseif isstruct(cfg.(name)) && isstruct(defaults.(name))
+        cfg.(name) = complete(cfg.(name),defaults.(name),[path '.' name]);
     end
 end
 

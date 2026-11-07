@@ -1,4 +1,4 @@
-function [] = mvpalab_plotdecoding(graph,cfg,data,stats)
+function mvpalab_plotdecoding(graph,cfg,data,stats)
 %% MVPALAB_PLOTDECODING
 %
 %  This function plots a time-resolved result in the current axes: the
@@ -9,8 +9,9 @@ function [] = mvpalab_plotdecoding(graph,cfg,data,stats)
 %
 %  With stats, the significant timepoints above (graph.stats.above) and
 %  below (graph.stats.below) chance are shown as a shade
-%  (graph.sigmode.shade) or as points at height graph.sigh
-%  (graph.sigmode.points).
+%  (graph.sigmode.shade: the band is grey and coloured at the significant
+%  timepoints) or as points at height graph.sigh (graph.sigmode.points).
+%  Without stats, or without a selected tail, the band is coloured.
 %
 %%  INPUT:
 %
@@ -26,98 +27,58 @@ function [] = mvpalab_plotdecoding(graph,cfg,data,stats)
 %  - {struct} - stats (optional):
 %    Statistics of the result, with the masks of the significant
 %    clusters stats.sigmask and stats.sigmask_ (see
-%    mvpalab_computepermtest).
+%    mvpalab_computepermtest), or empty.
+
+if nargin < 4 || ~(graph.stats.above || graph.stats.below), stats = []; end
 
 % Check cfg structure:
 cfg = mvpalab_checkcfg(cfg);
+times = cfg.tm.times;
 
 %% Select subject:
 data = mvpalab_selectsub(graph,data);
 
-%% Calculate the mean for each timepoint:
-datamean = squeeze(mean(data,3));
-datamean = datamean(:);
-chancelevel = zeros(1,length(datamean))+graph.chanlvl;
-
-%% Smooth the data for the representation if needed:
+%% Mean and STD/SEM, smoothed for the representation if needed:
+datamean = mean(data,3);
 if graph.smoothdata
-    datamean = smooth(datamean,graph.smoothdata);
-    for subject = 1 : size(data,3) 
+    datamean = smooth(datamean,graph.smoothdata)';
+    for subject = 1 : size(data,3)
         data(1,:,subject) = smooth(data(1,:,subject),graph.smoothdata);
     end
 end
 
-%% Compute the STD/SEM:
-if graph.stdsem
-    stdsem = nanstd(data,[],3);
+stdsem = nanstd(data,[],3);
+if ~graph.stdsem, stdsem = stdsem/sqrt(size(data,3)); end
+
+%% Error band and significant timepoints:
+shade = ~isempty(stats) && graph.sigmode.shade;
+points = ~isempty(stats) && graph.sigmode.points;
+
+if shade
+    plotband(times,datamean,stdsem,true(size(times)),[.7 .7 .7],.5);
+    segments = bwconncomp(sigmask(graph,stats));
+    for i = 1 : segments.NumObjects
+        plotband(times,datamean,stdsem,segments.PixelIdxList{i},...
+            graph.shadecolor,graph.shadealpha);
+    end
 else
-    stdsem = nanstd(data,[],3)/sqrt(size(data,3));
+    plotband(times,datamean,stdsem,true(size(times)),...
+        graph.shadecolor,graph.shadealpha);
 end
 
-
-%% Plots:
-if  exist('stats','var')
-    if graph.sigmode.shade
-        fill(...
-            [cfg.tm.times fliplr(cfg.tm.times)],...
-            [datamean'+stdsem fliplr(datamean'-stdsem)],...
-            [.7 .7 .7], 'FaceAlpha',...
-            .5,'linestyle','none');
-        
-        significant_vector = logical(...
-            ~stats.sigmask * graph.stats.above + ...
-            ~stats.sigmask_* graph.stats.below);
-        
-        segments = bwconncomp(significant_vector);
-        
-        for i = 1 : segments.NumObjects
-            times = cfg.tm.times(segments.PixelIdxList{i});
-            values = datamean(segments.PixelIdxList{i});
-            var = stdsem(segments.PixelIdxList{i});
-            
-            if significant_vector(segments.PixelIdxList{i})
-                fill(...
-                    [times fliplr(times)],...
-                    [values'+var fliplr(values'-var)],...
-                    graph.shadecolor, 'FaceAlpha',...
-                    graph.shadealpha,'linestyle','none');
-            end
-        end
-    end
-    if graph.sigmode.points
-        
-        fill(...
-            [cfg.tm.times fliplr(cfg.tm.times)],...
-            [datamean'+stdsem fliplr(datamean'-stdsem)],...
-            graph.shadecolor, 'FaceAlpha',...
-            graph.shadealpha,'linestyle','none');
-        
-        
-        stpoints = ones(1,length(datamean))*graph.sigh;
-        times = cfg.tm.times(logical(~stats.sigmask  * graph.stats.above ...
-            + ~stats.sigmask_ * graph.stats.below));
-        points = stpoints(logical(~stats.sigmask  * graph.stats.above ...
-            + ~stats.sigmask_ * graph.stats.below));
-        scatter(times,points,80,graph.sigc,'filled','s');
-        %scatter(cfg.tm.times,stpoints,80,'k','s');
-    end
-    
-else
-    fill(...
-        [cfg.tm.times fliplr(cfg.tm.times)],...
-        [datamean'+stdsem fliplr(datamean'-stdsem)],...
-        graph.shadecolor,...
-        'FaceAlpha',graph.shadealpha,'linestyle','none');
+if points
+    sig = sigmask(graph,stats);
+    scatter(times(sig),graph.sigh*ones(1,nnz(sig)),80,graph.sigc,'filled','s');
 end
 
 if graph.plotmean
-    plot(cfg.tm.times,datamean,...
+    plot(times,datamean,...
         'color',graph.shadecolor,...
         'linewidth',graph.linewidth,...
         'linestyle',graph.linestyle);
 end
 
-plot(cfg.tm.times,chancelevel,'k','LineWidth',.5,'LineStyle',':');
+plot(times,zeros(size(times)) + graph.chanlvl,'k','LineWidth',.5,'LineStyle',':');
 
 %%  Graph configuration:
 set(gca,'Color','w')
@@ -135,5 +96,22 @@ ylim(graph.ylim)
 xlim(graph.xlim)
 title(graph.title);
 set(gca,'Layer','top')
+
 end
 
+function sig = sigmask(graph,stats)
+%% Significant timepoints in the selected tails [1 x timepoints].
+
+sig = (~stats.sigmask & graph.stats.above) | (~stats.sigmask_ & graph.stats.below);
+
+end
+
+function plotband(times,datamean,stdsem,idx,color,alpha)
+%% Band of the mean plus and minus the STD/SEM at the timepoints idx.
+
+t = times(idx);
+upper = datamean(idx) + stdsem(idx);
+lower = datamean(idx) - stdsem(idx);
+fill([t fliplr(t)],[upper fliplr(lower)],color,'FaceAlpha',alpha,'linestyle','none');
+
+end

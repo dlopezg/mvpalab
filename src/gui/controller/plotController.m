@@ -1,35 +1,5 @@
 %% Plot MVPA and MVCC results:
+%  The GUI leaves the statistics in the workspace only if they were loaded.
 
-if ~cfg.sf.flag
-    if cfg.classmodel.tempgen
-        if (graph.stats.above || graph.stats.below) && exist('stats','var')
-            if ~graph.add, figure; end
-            hold on;
-            mvpalab_plottempogen(graph,cfg,result,stats);
-        else
-            if ~graph.add, figure; end
-            hold on;
-            mvpalab_plottempogen(graph,cfg,result);
-        end
-    else
-        if (graph.stats.above || graph.stats.below) && exist('stats','var')
-            if ~graph.add, figure; end
-            hold on;
-            mvpalab_plotdecoding(graph,cfg,result,stats);
-        else
-            if ~graph.add, figure; end
-            hold on;
-            mvpalab_plotdecoding(graph,cfg,result);
-        end
-    end
-else
-    if (graph.stats.above || graph.stats.below) && exist('stats','var')    
-        if ~graph.add, figure; end
-        hold on;
-        mvpalab_plotfreqcont(graph,cfg,result,stats);
-    else
-        if ~graph.add, figure; end
-        hold on;
-        mvpalab_plotfreqcont(graph,cfg,result);
-    end
-end
+if ~exist('stats','var'), stats = []; end
+mvpalab_plotresult(graph,cfg,result,stats);

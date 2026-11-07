@@ -30,6 +30,7 @@ graph.colorSch = sch.mvpalab;       % Default color scheme.
 
 %% General:
 graph.fontsize = 14;
+graph.add = false;     % True to plot in the current figure (see mvpalab_plotresult).
 graph.subject = 0;
 graph.chanlvl = .5;
 

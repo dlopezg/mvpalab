@@ -44,7 +44,7 @@ if cfg.stats.signflip
             'cfg.classsize.match if the classes have different sizes.'],chance);
     end
     classmetrics = intersect(fieldnames(res),{'precision','recall','f1score'});
-    maps = mvpalab_signmaps(rmfield(res,classmetrics),chance);
+    maps = mvpalab_signmaps(cfg,rmfield(res,classmetrics),chance);
 else
     [maps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
 end

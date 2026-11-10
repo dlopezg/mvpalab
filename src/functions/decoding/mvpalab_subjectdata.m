@@ -4,7 +4,9 @@ function data = mvpalab_subjectdata(cfg,fv,job)
 %  This function returns the datasets of the current subject and frequency
 %  band, ready for the decoding analysis. The datasets keep all the
 %  channels and they are not normalized: both are applied in each
-%  repetition (see mvpalab_preparedata).
+%  repetition (see mvpalab_preparedata). In a sliding filter analysis the
+%  feature vectors of the band are read from disk, where they are saved in
+%  single precision (see mvpalab_savesfdata), and converted to double.
 %
 %%  INPUT:
 %
@@ -26,8 +28,11 @@ function data = mvpalab_subjectdata(cfg,fv,job)
 
 %% Load data if needed:
 if cfg.sf.flag
+    % Saved in single precision (see mvpalab_savesfdata), computed in
+    % double precision:
     band = load(mvpalab_sffile(cfg,'fv',job.sub,job.freq),'fv');
     fv = band.fv;
+    fv.X = structfun(@double,fv.X,'UniformOutput',false);
 else
     fv = fv{job.sub};
 end

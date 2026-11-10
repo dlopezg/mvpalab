@@ -119,7 +119,7 @@ else
         cfg,performance.(cfg.sf.metric),...
         performance_maps.(cfg.sf.metric));
     % The diffMaps have no effect at 0:
-    if cfg.stats.flag, perdiffMap = mvpalab_signmaps(diffMap,0); end
+    if cfg.stats.flag, perdiffMap = mvpalab_signmaps(cfg,diffMap,0); end
 end
 
 result = diffMap.(cfg.sf.metric);

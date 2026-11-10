@@ -1,4 +1,4 @@
-function maps = mvpalab_signmaps(res,chance)
+function maps = mvpalab_signmaps(cfg,res,chance)
 %% MVPALAB_SIGNMAPS
 %
 %  This function returns the maps of the sign flip test: a one-sample test
@@ -36,7 +36,13 @@ function maps = mvpalab_signmaps(res,chance)
 %    to prevalence inference. NeuroImage, 141, 378-392.
 %    https://doi.org/10.1016/j.neuroimage.2016.07.040
 %
+%  It shows a warning if there are too few subjects for anything to be
+%  significant (see mvpalab_checksignflip).
+%
 %%  INPUT:
+%
+%  - {struct} - cfg:
+%    Configuration structure (cfg.stats).
 %
 %  - {struct} - res:
 %    Result structure, with the fields of mvpalab_permtest.
@@ -53,6 +59,14 @@ function maps = mvpalab_signmaps(res,chance)
 %    are the structures that only contain them, such as the ROC curves and
 %    the feature weights (see mvpalab_permtest).
 
+maps = reflect(res,chance);
+mvpalab_checksignflip(cfg,observations(maps));
+
+end
+
+function maps = reflect(res,chance)
+%% The maps of each field with their reflection around chance.
+
 if ~isstruct(res)
     maps = cat(4,res,2*chance - res);
     return
@@ -63,9 +77,20 @@ fields = fieldnames(res);
 for i = 1 : numel(fields)
     field = res.(fields{i});
     if iscell(field), continue; end
-    fieldmaps = mvpalab_signmaps(field,chance);
+    fieldmaps = reflect(field,chance);
     if isstruct(fieldmaps) && isempty(fieldnames(fieldmaps)), continue; end
     maps.(fields{i}) = fieldmaps;
 end
+
+end
+
+function n = observations(maps)
+%% Number of subjects: the third dimension of the first map.
+
+while isstruct(maps)
+    fields = fieldnames(maps);
+    maps = maps.(fields{1});
+end
+n = size(maps,3);
 
 end

@@ -99,7 +99,7 @@ mvpalab_save(cfg,res,'res');
 %% Compute permutation test if needed:
 if cfg.stats.flag
     nullmaps = permaps;
-    if cfg.stats.signflip, nullmaps = mvpalab_signmaps(res,0); end
+    if cfg.stats.signflip, nullmaps = mvpalab_signmaps(cfg,res,0); end
     stats = mvpalab_permtest(cfg,res,nullmaps);
 end
 

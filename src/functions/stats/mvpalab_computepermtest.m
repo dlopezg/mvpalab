@@ -5,7 +5,10 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps)
 %  performance map at group level (Stelzer et al., 2013):
 %
 %  - It builds cfg.stats.nperg permuted maps at group level, each one the
-%    mean of one permuted map of each subject selected at random.
+%    mean of one permuted map of each subject selected at random. They are
+%    computed in blocks, first of positions of the maps for the thresholds
+%    and then of permuted maps for the clusters, so the memory does not
+%    grow with cfg.stats.nperg.
 %  - At each position of the maps, the threshold is the percentile
 %    cfg.stats.pgroup of this null distribution. With cfg.stats.tails = 2
 %    the percentile is split between the two tails.
@@ -22,10 +25,11 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps)
 %  cfg.stats.tails selects the tails: 1 (above chance), -1 (below chance)
 %  or 2 (both). The function stops with an error if cfg.stats.tails is
 %  not one of them or if the settings of the sign flip test are not valid
-%  (see mvpalab_checksignflip). It opens a figure with the null
-%  distribution at the last position of the maps and the null
-%  distributions of the cluster sizes, which is closed if
-%  cfg.stats.shownulldis is false. It does not save any file.
+%  (see mvpalab_checksignflip). With cfg.stats.shownulldis it opens a
+%  figure with the null distribution at the last position of the maps and
+%  the null distribution of the cluster sizes used by the correction (all
+%  the clusters with 'fdr', the largest cluster of each permuted map with
+%  'max'). It does not save any file.
 %
 %  - Maris, E., & Oostenveld, R. (2007). Nonparametric statistical testing
 %    of EEG- and MEG-data. Journal of Neuroscience Methods, 164(1),
@@ -78,99 +82,69 @@ end
 
 mvpalab_checksignflip(cfg);
 
-%% Initilization - Generate permutation idx matrix:
-% Here we determine the map of each subject that has to be selected in each
-% permutation.
-nSubjects = size(performance,3);
-perm_idxs = randi(size(nullmaps,4),nSubjects,cfg.stats.nperg,'single');
-
-%% Generate permuted maps at group level:
-% One permuted map of each subject has to be randomly selected and group
-% averaged. Here we are using the previously determined permutation
-% indexes for each subject and permutation.
-
-fprintf('   - Generating permuted maps at group level: ');
-for i = 1 : cfg.stats.nperg
-    for j = 1 : nSubjects
-        permaps(:,:,j) = nullmaps(:,:,j,perm_idxs(j,i));
-    end
-    gpermaps(:,:,i) = mean(permaps,3);
-end
-fprintf(' - Done!\n');
-
-%% Generate the null distribution and p-value thresholds:
-% Generate the null distribution for each timepoint using the permuted
-% performanceuracy maps. Here we can define the performance level 
-% associated to a p-value of 0.05 (95th percentile) for each timepoint and 
-% generate a threshold mask.
-
-% Define the distribution threshold
-threshold = cfg.stats.pgroup;
-
-% Update de distribution threshold for two tail test.
-if (cfg.stats.tails == 2)
-    tail = ( 100 - cfg.stats.pgroup ) / 2;
-    threshold = cfg.stats.pgroup + tail;  
-end
-
 % Tails of the test:
 above = cfg.stats.tails ~= -1;
 below = cfg.stats.tails ~= 1;
 
-fprintf('   - Generating the null distribution and p-value thresholds:');
-if above, pctval = percentiles(gpermaps,threshold); end
-if below, pctval_ = percentiles(gpermaps,100-threshold); end
+%% Null maps at group level:
+%  Each one is the mean of one map of each subject, chosen at random. The
+%  maps of the subjects are the columns of pages, and page(:,i) are the
+%  columns of the null map i.
+
+[n1,n2,nsub,nmaps] = size(nullmaps);
+nperg = cfg.stats.nperg;
+
+fprintf('   - Generating permuted maps at group level: ');
+idx = randi(nmaps,nsub,nperg,'single');
+pages = reshape(nullmaps,n1*n2,nsub*nmaps);
+page = (1:nsub)' + nsub*(double(idx) - 1);
 fprintf(' - Done!\n');
 
-%% Plot the null distribution of performance values:
-% Plot the null distribution of performance values at the last position of
-% the maps.
-pvg = num2str((100 - cfg.stats.pgroup ) / 100);
-f1 = figure;
-subplot(2,2,[1 2]);
-h = histogram(gpermaps(end,end,:),'Normalization','probability');
-h.FaceColor = [.5 .5 .5];
-h.EdgeColor = [.5 .5 .5];
-hold on
-if above, vline(double(pctval(end,end)),'r-',['Above chance threshold (p<' pvg ')']); end
-if below, vline(double(pctval_(end,end)),'r-',['Below chance threshold (p<' pvg ')']); end
-grid minor
-title('Permuted distribution (group level)')
-xlabel('Data distribution');
-ylabel('Normalized histogram')
+%% Primary threshold at each position of the maps:
+%  The percentile cfg.stats.pgroup of the null distribution, split between
+%  the two tails with cfg.stats.tails = 2.
 
+threshold = cfg.stats.pgroup;
+if cfg.stats.tails == 2
+    threshold = cfg.stats.pgroup + (100 - cfg.stats.pgroup)/2;
+end
 
-%% Search clusters in permuted maps:
-% Clusters are defined using the pctval mask previously calculated.
+fprintf('   - Generating the null distribution and p-value thresholds:');
+pctval = zeros(n1,n2,'like',nullmaps);
+pctval_ = pctval;
+for block = blocks(n1*n2,nsub*nperg)
+    positions = block{1};
+    gnull = groupnull(pages,page,positions,1:nperg);
+    if above, pctval(positions) = prctile(gnull,threshold,2); end
+    if below, pctval_(positions) = prctile(gnull,100 - threshold,2); end
+end
+lastnull = gnull(end,:);
+fprintf(' - Done!\n');
+
+%% Null distributions of the cluster sizes:
+%  sizedist: sizes of all the clusters of all the null maps ('fdr').
+%  maxdist: size of the largest cluster of each null map ('max').
+
+sizedist = []; maxdist = zeros(1,nperg);
+sizedist_ = []; maxdist_ = zeros(1,nperg);
 
 fprintf('   - Searching clusters in permuted maps:');
-if above, clustmaps = searchclusters(gpermaps,pctval,@gt); end
-if below, clustmaps_ = searchclusters(gpermaps,pctval_,@lt); end
+found = {}; found_ = {};
+for block = blocks(nperg,n1*n2*nsub)
+    maps = block{1};
+    gnull = reshape(groupnull(pages,page,1:n1*n2,maps),n1,n2,numel(maps));
+    if above, found{end+1} = nullclusters(gnull > pctval,maps); end %#ok<AGROW>
+    if below, found_{end+1} = nullclusters(gnull < pctval_,maps); end %#ok<AGROW>
+end
 fprintf(' - Done!\n');
-
-%% Generate cluster size distribution:
-%  sizedist / sizedist_: sizes of all the clusters of all the permuted maps.
-%  maxdist / maxdist_: size of the largest cluster of each permuted map.
 
 fprintf('   - Generating cluster size distribution:');
-sizedist = [];
-sizedist_ = [];
-maxdist = zeros(1,size(gpermaps,3));
-maxdist_ = zeros(1,size(gpermaps,3));
-
-if above, [sizedist,maxdist] = clustersizes(clustmaps); end
-if below, [sizedist_,maxdist_] = clustersizes(clustmaps_); end
+if above, [sizedist,maxdist] = clustersizes(found,nperg); end
+if below, [sizedist_,maxdist_] = clustersizes(found_,nperg); end
 fprintf(' - Done!\n');
 
-%% Plot the null distribution of cluster sizes:
-
-if above, plotsizes(sizedist,3,'above chance'); end
-if below, plotsizes(sizedist_,4,'below chance'); end
-
-%% Search clusters in real data:
-%  Clusters are detected in the group-mean performance map using the
-%  primary (voxel-/timepoint-wise) threshold pctval / pctval_, exactly the
-%  same threshold used for the permuted maps.
+%% Clusters of the group mean of the real maps:
+%  With the same primary threshold as the null maps.
 
 fprintf('   - Searching clusters in real data:');
 
@@ -190,9 +164,7 @@ end
 
 fprintf(' - Done!\n');
 
-%% Cluster-level p-values and correction:
-%  Each observed cluster is accepted or rejected individually using the
-%  method selected in cfg.stats.clustcorr (see mvpalab_clusterpvals):
+%% Cluster-level p-values and correction (see mvpalab_clusterpvals):
 %  'fdr' - Null distribution of all the cluster sizes + Benjamini-Hochberg
 %          FDR (Stelzer et al., 2013).
 %  'max' - Null distribution of the maximum cluster size, FWER control
@@ -216,13 +188,13 @@ if below
 end
 
 % Significant clusters mask for representation.
-sigmask = ones(size(gpermaps,1),size(gpermaps,2));
+sigmask = ones(n1,n2);
 sigmask(clusters.sig) = 0;
 
-sigmask_ = ones(size(gpermaps,1),size(gpermaps,2));
+sigmask_ = ones(n1,n2);
 sigmask_(clusters_.sig) = 0;
 
-% Store results:
+%% Store results:
 stats.thresdata = thresdata;
 stats.thresdata_ = thresdata_;
 
@@ -235,58 +207,109 @@ stats.sigmask_ = sigmask_;
 stats.corrcsize  = corrcsize;
 stats.corrcsize_ = corrcsize_;
 
-if ~cfg.stats.shownulldis
-    close(f1);
-end
+%% Null distributions, if requested:
+if cfg.stats.shownulldis
+    figure;
+    pvg = num2str((100 - cfg.stats.pgroup)/100);
+    subplot(2,2,[1 2]);
+    plotnull(lastnull);
+    if above, vline(double(pctval(end,end)),'r-',['Above chance threshold (p<' pvg ')']); end
+    if below, vline(double(pctval_(end,end)),'r-',['Below chance threshold (p<' pvg ')']); end
 
-end
-
-function values = percentiles(gpermaps,percentile)
-%% Percentile of the null distribution at each position of the maps.
-
-for i = 1 : size(gpermaps,1)
-    for j = 1 : size(gpermaps,2)
-        values(i,j) = prctile(gpermaps(i,j,:),percentile);
+    if strcmp(cfg.stats.clustcorr,'max')
+        if above, plotsizes(maxdist,3,'Maximum cluster size','above chance'); end
+        if below, plotsizes(maxdist_,4,'Maximum cluster size','below chance'); end
+    else
+        if above, plotsizes(sizedist,3,'Cluster size','above chance'); end
+        if below, plotsizes(sizedist_,4,'Cluster size','below chance'); end
     end
 end
 
 end
 
-function clustmaps = searchclusters(gpermaps,pctval,compare)
-%% Clusters of each permuted map, above (@gt) or below (@lt) the threshold.
+function list = blocks(n,each)
+%% Blocks of 1:n, with about 2.5e7/each elements in each block, where each
+%  element needs each values, so a block of null maps takes about 200 MB.
 
-for map = 1 : size(gpermaps,3)
-    clustmaps{map} = bwconncomp(compare(gpermaps(:,:,map),pctval));
-end
-
-end
-
-function [sizedist,maxdist] = clustersizes(clustmaps)
-%% Sizes of all the clusters and largest cluster of each permuted map.
-
-sizedist = [];
-maxdist = zeros(1,numel(clustmaps));
-
-for map = 1 : numel(clustmaps)
-    sizes = cellfun(@numel,clustmaps{map}.PixelIdxList);
-    sizedist = [sizedist sizes]; %#ok<AGROW>
-    if ~isempty(sizes), maxdist(map) = max(sizes); end
-end
+step = max(1,floor(2.5e7/each));
+list = arrayfun(@(first) first : min(first + step - 1,n),1 : step : n,...
+    'UniformOutput',false);
 
 end
 
-function plotsizes(sizedist,position,name)
-%% Histogram of the cluster sizes of one tail.
+function gnull = groupnull(pages,page,positions,maps)
+%% Null maps at group level [positions x maps]: the mean of the maps of
+%  the subjects in page(:,maps), at the given positions.
+
+nsub = size(page,1);
+selected = pages(positions,page(:,maps));
+selected = reshape(selected,numel(positions),1,nsub,numel(maps));
+gnull = reshape(mean(selected,3),numel(positions),numel(maps));
+
+end
+
+function found = nullclusters(mask,maps)
+%% Size of each cluster of the null maps [n1 x n2 x maps] and the null map
+%  it belongs to (one of maps), in the order of the maps.
+
+[n1,n2,nmaps] = size(mask);
+
+if n1 == 1
+    % Time-resolved maps: the clusters are runs of consecutive timepoints,
+    % as bwconncomp finds them in a single row.
+    edges = diff([false(1,nmaps); reshape(mask,n2,nmaps); false(1,nmaps)]);
+    starts = find(edges == 1);
+    found.sizes = (find(edges == -1) - starts)';
+    found.map = maps(ceil(starts'/(n2 + 1)));
+    return
+end
+
+perm = cell(1,nmaps);
+for m = 1 : nmaps
+    cc = bwconncomp(mask(:,:,m));
+    perm{m} = cellfun(@numel,cc.PixelIdxList);
+end
+found.map = repelem(maps,cellfun(@numel,perm));
+found.sizes = [perm{:}];
+
+end
+
+function [sizedist,maxdist] = clustersizes(found,nmaps)
+%% Sizes of all the clusters and largest cluster of each null map.
+
+found = [found{:}];
+sizedist = [found.sizes];
+map = [found.map];
+maxdist = accumarray(map(:),sizedist(:),[nmaps 1],@max,0)';
+
+end
+
+function plotnull(values)
+%% Histogram of the null distribution at one position of the maps.
+
+h = histogram(values,'Normalization','probability');
+h.FaceColor = [.5 .5 .5];
+h.EdgeColor = [.5 .5 .5];
+hold on
+grid minor
+title('Null distribution (group level)')
+xlabel('Data distribution');
+ylabel('Normalized histogram')
+
+end
+
+function plotsizes(sizes,position,what,tail)
+%% Histogram of the null distribution of the cluster sizes of one tail.
 
 subplot(2,2,position);
 hold on
-h = histogram(sizedist,'Normalization','probability','BinMethod','integers');
+h = histogram(sizes,'Normalization','probability','BinMethod','integers');
 set(gca,'YScale','log')
 h.FaceColor = [.5 .5 .5];
 h.EdgeColor = [.5 .5 .5];
 grid minor
-xlabel('Cluster size');
+xlabel(what);
 ylabel('Normalized histogram (log scale)')
-title(['Cluster size null distribution (' name ')'])
+title([what ' null distribution (' tail ')'])
 
 end

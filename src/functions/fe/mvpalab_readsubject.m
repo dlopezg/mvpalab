@@ -32,9 +32,9 @@ nsets = 1 + strcmp(cfg.analysis,'MVCC');
 nclass = size(cfg.study.dataFiles,2);
 
 raw = cell(nsets,nclass);
-for ctxt = 1 : nsets
-    for class = 1 : nclass
-        raw{ctxt,class} = mvpalab_loadfile(cfg,ctxt,class,sub);
+for dataset = 1 : nsets
+    for condition = 1 : nclass
+        raw{dataset,condition} = mvpalab_loadfile(cfg,dataset,condition,sub);
     end
 end
 

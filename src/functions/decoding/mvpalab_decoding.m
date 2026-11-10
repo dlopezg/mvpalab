@@ -14,7 +14,7 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %
 %    Subjects > frequency bands > maps (one if observed, cfg.stats.nper if
 %    permuted) > repetitions (supertrials and partitions) > timepoints (see
-%    mvpalab_decodemap).
+%    mvpalab_evalmap).
 %
 %  In MVCC each permuted map uses one reassignment of the labels of dataset
 %  A in both directions (training labels in A - B, test labels in B - A),
@@ -48,7 +48,7 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %
 %  - {struct} - res:
 %    Result or permuted maps of each performance metric (see
-%    mvpalab_storemap and mvpalab_packres).
+%    mvpalab_storemap). In MVPA, without the level of the direction.
 %
 %  - {struct} - cfg:
 %    Updated configuration structure.
@@ -57,25 +57,13 @@ if nargin < 2, fv = []; end
 if nargin < 3, mode = 'observed'; end
 
 % Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 mvpalab_savecfg(cfg);
 
-% Check the classes and the methods of the analysis:
-mvpalab_checkclasses(cfg);
-mvpalab_checkmethods(cfg);
+% Check the settings of the analysis:
+mvpalab_checkdecoding(cfg,mode);
 
-if strcmp(mode,'permuted')
-    % The sign flip test has no permuted maps (see mvpalab_nullmaps):
-    if cfg.stats.signflip
-        error('The sign flip test has no permuted maps. Use mvpalab_nullmaps.');
-    end
-else
-    mvpalab_checksignflip(cfg);
-    % Feature weights are not available with non-linear kernels:
-    mvpalab_checkwvector(cfg);
-end
-
-[res,cfg,job] = mvpalab_decodingmaps(cfg,fv,mode);
+[res,cfg,job] = mvpalab_evalsubjects(cfg,fv,mode);
 
 % Save result:
 if ~cfg.sf.flag, mvpalab_save(cfg,res,job.savemode); end

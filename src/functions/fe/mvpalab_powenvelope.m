@@ -5,7 +5,7 @@ function data = mvpalab_powenvelope(cfg,data)
 %  envelope (MATLAB function envelope), computed with the method in
 %  cfg.powenv.method and the length in cfg.powenv.length. The upper
 %  envelope is kept if cfg.powenv.uplow is 'upper' and the lower envelope
-%  otherwise. It is used by mvpalab_preproc when cfg.feature = 'envelope'.
+%  otherwise. It is used by mvpalab_classfeatures when cfg.feature = 'envelope'.
 %
 %  The envelope uses the whole epoch of each trial, so post-stimulus
 %  information can reach the baseline (see mvpalab_init).

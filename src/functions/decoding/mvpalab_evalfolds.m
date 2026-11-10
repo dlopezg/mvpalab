@@ -10,7 +10,7 @@ function perf = mvpalab_evalfolds(cfg,train,test,part,tp,job)
 %  The model trained at timepoint tp is tested at the same timepoint or, in
 %  temporal generalization, at every test timepoint (cfg.tm.tpoints_). Each
 %  test set gets the transformation fitted on the training set of its fold
-%  (see mvpalab_fitfold).
+%  (see mvpalab_preparetrain).
 %
 %%  INPUT:
 %
@@ -55,7 +55,7 @@ haufe = [];
 for k = 1 : nfolds
     %% Train the model with the transformation of the fold:
     train_X = train.X(part.train(:,k),:,cfg.tm.tpoints(tp));
-    [train_X,fold] = mvpalab_fitfold(cfg,train_X);
+    [train_X,fold] = mvpalab_preparetrain(cfg,train_X);
     [mdl,weights] = mvpalab_train(train_X,train.Y(part.train(:,k)),cfg);
 
     % Feature weights in the channel space:
@@ -67,7 +67,7 @@ for k = 1 : nfolds
     %% Test the model at each test timepoint:
     truth{k} = test.Y(part.test(:,k));
     for j = 1 : numel(tps)
-        test_X = mvpalab_applyfold(test.X(part.test(:,k),:,tps(j)),fold);
+        test_X = mvpalab_preparetest(test.X(part.test(:,k),:,tps(j)),fold);
         [labels{k,j},scores{k,j}] = predict(mdl,test_X);
         acc(k,j) = sum(truth{k} == labels{k,j})/length(truth{k});
     end

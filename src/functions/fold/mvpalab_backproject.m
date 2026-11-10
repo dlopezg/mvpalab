@@ -17,7 +17,7 @@ function weights = mvpalab_backproject(weights,fold)
 %    Feature weights [features x 1].
 %
 %  - {struct} - fold:
-%    Transformation of the fold (see mvpalab_fitfold).
+%    Transformation of the fold (see mvpalab_preparetrain).
 %
 %%  OUTPUT:
 %

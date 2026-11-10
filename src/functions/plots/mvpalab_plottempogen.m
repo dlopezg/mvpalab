@@ -32,7 +32,7 @@ function mvpalab_plottempogen(graph,cfg,data,stats)
 if nargin < 4, stats = []; end
 
 % Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 
 %% Select subject:
 data = mvpalab_selectsub(graph,data);

@@ -1,9 +1,10 @@
-function X = mvpalab_applyfold(X,fold)
-%% MVPALAB_APPLYFOLD
+function X = mvpalab_preparetest(X,fold)
+%% MVPALAB_PREPARETEST
 %
 %  This function applies the transformation fitted on the training set of a
-%  fold (see mvpalab_fitfold) to a test set: the normalization and, with
-%  PCA, the projection on the principal components (see mvpalab_project).
+%  fold (see mvpalab_preparetrain) to a test set: the normalization and,
+%  with PCA, the projection on the principal components (see
+%  mvpalab_project).
 %
 %%  INPUT:
 %
@@ -11,7 +12,7 @@ function X = mvpalab_applyfold(X,fold)
 %    Test set [trials x features].
 %
 %  - {struct} - fold:
-%    Transformation of the fold (see mvpalab_fitfold).
+%    Transformation of the fold (see mvpalab_preparetrain).
 %
 %%  OUTPUT:
 %

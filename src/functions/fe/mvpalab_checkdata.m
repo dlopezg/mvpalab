@@ -25,8 +25,8 @@ tolerance = 0.5*1000/cfg.fs;
 times = cfg.tm.rtimes(:)';
 
 for i = 1 : numel(raw)
-    [ctxt,class] = ind2sub(size(raw),i);
-    file = cfg.study.dataFiles{ctxt,class}{sub};
+    [dataset,condition] = ind2sub(size(raw),i);
+    file = cfg.study.dataFiles{dataset,condition}{sub};
     EEG = raw{i};
 
     if EEG.srate ~= cfg.fs || numel(EEG.times) ~= numel(times) || ...

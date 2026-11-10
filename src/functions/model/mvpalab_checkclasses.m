@@ -25,8 +25,8 @@ function mvpalab_checkclasses(cfg)
 nclass = size(cfg.study.dataFiles,2);
 mvcc = strcmp(cfg.analysis,'MVCC');
 
-for ctxt = 1 : 1 + mvcc
-    ids = cfg.study.conditionIdentifier(ctxt,1:nclass);
+for dataset = 1 : 1 + mvcc
+    ids = cfg.study.conditionIdentifier(dataset,1:nclass);
     ids = cellfun(@(id) id(~isspace(id)),ids,'UniformOutput',false);
     if numel(unique(ids)) < nclass
         error('The names in cfg.study.conditionIdentifier must be different.');

@@ -5,7 +5,7 @@ function cfg = mvpalab_backCompatibility(cfg)
 %  an older version of MVPAlab, with a warning: the field cfg.chanloc is
 %  moved to cfg.channels.chanloc and cfg.channels.selectedchanloc, with
 %  cfg.channels.selected empty. The missing fields are added by
-%  mvpalab_checkcfg.
+%  mvpalab_updatecfg.
 %
 %%  INPUT:
 %

@@ -4,7 +4,7 @@ function data = mvpalab_classdata(cfg,raw)
 %  This function returns the data of each dataset of one subject in a
 %  structure with one field per class, named after
 %  cfg.study.conditionIdentifier without spaces. It is the format of the
-%  data returned by mvpalab_import and read by mvpalab_fext.
+%  data returned by mvpalab_import and read by mvpalab_featurevectors.
 %
 %%  INPUT:
 %
@@ -23,10 +23,10 @@ function data = mvpalab_classdata(cfg,raw)
 
 data = cell(1,size(raw,1));
 
-for ctxt = 1 : size(raw,1)
-    for class = 1 : size(raw,2)
-        id = cfg.study.conditionIdentifier{ctxt,class};
-        data{ctxt}.(id(~isspace(id))) = raw{ctxt,class}.data;
+for dataset = 1 : size(raw,1)
+    for condition = 1 : size(raw,2)
+        id = cfg.study.conditionIdentifier{dataset,condition};
+        data{dataset}.(id(~isspace(id))) = raw{dataset,condition}.data;
     end
 end
 

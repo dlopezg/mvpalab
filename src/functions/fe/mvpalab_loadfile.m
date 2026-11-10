@@ -1,4 +1,4 @@
-function EEG = mvpalab_loadfile(cfg,ctxt,class,sub)
+function EEG = mvpalab_loadfile(cfg,dataset,condition,sub)
 %% MVPALAB_LOADFILE
 %
 %  This function loads the file of one subject, dataset and class of
@@ -11,10 +11,10 @@ function EEG = mvpalab_loadfile(cfg,ctxt,class,sub)
 %  - {struct} - cfg:
 %    Configuration structure (cfg.study).
 %
-%  - {int} - ctxt:
+%  - {int} - dataset:
 %    Dataset: 1 (A) or 2 (B).
 %
-%  - {int} - class:
+%  - {int} - condition:
 %    Class.
 %
 %  - {int} - sub:
@@ -25,8 +25,8 @@ function EEG = mvpalab_loadfile(cfg,ctxt,class,sub)
 %  - {struct} - EEG:
 %    Data of the file (see mvpalab_dataformat).
 
-path = cfg.study.dataPaths{ctxt,class};
-file = cfg.study.dataFiles{ctxt,class}{sub};
+path = cfg.study.dataPaths{dataset,condition};
+file = cfg.study.dataFiles{dataset,condition}{sub};
 [~,~,ext] = fileparts(file);
 
 try

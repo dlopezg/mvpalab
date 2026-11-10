@@ -1,5 +1,5 @@
-function mvpalab_decodingprint(stage,cfg,job)
-%% MVPALAB_DECODINGPRINT
+function mvpalab_decodingprogress(stage,cfg,job)
+%% MVPALAB_DECODINGPROGRESS
 %
 %  This function shows the progress of a decoding analysis in the console.
 %  The observed analyses show the bands and repetitions of each subject,

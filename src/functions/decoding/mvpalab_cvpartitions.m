@@ -13,7 +13,7 @@ function part = mvpalab_cvpartitions(cfg,data,job)
 %    Configuration structure (cfg.cv).
 %
 %  - {struct} - data:
-%    Datasets of the repetition (see mvpalab_repdata).
+%    Datasets of the repetition (see mvpalab_preparedata).
 %
 %  - {struct} - job:
 %    Description of the analysis (see mvpalab_decodingjob).

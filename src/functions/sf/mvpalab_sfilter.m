@@ -7,7 +7,7 @@ function [cfg,diffMap,stats] = mvpalab_sfilter(cfg)
 %  bands must be in cfg.sf.filesLocation (see mvpalab_import with
 %  cfg.sf.flag enabled).
 %
-%  All the maps are computed with mvpalab_decodingmaps. The unfiltered
+%  All the maps are computed with mvpalab_evalsubjects. The unfiltered
 %  baseline is read again with mvpalab_readdata. The bands and the baseline
 %  share their random draws (see mvpalab_sfrng), except the draws of the
 %  hyperparameter search (cfg.classmodel.optimize), with a warning.
@@ -47,12 +47,12 @@ function [cfg,diffMap,stats] = mvpalab_sfilter(cfg)
 %    cfg.stats.flag is disabled.
 
 % Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 mvpalab_savecfg(cfg);
 
-% Check the settings of the sign flip test and the classes:
-mvpalab_checksignflip(cfg);
-mvpalab_checkclasses(cfg);
+% Check the settings of the analysis. The permuted maps follow the same
+% settings, and the sign flip test does not compute them:
+mvpalab_checkdecoding(cfg,'observed');
 
 % Only computed if cfg.stats.flag is enabled:
 stats = [];
@@ -69,14 +69,14 @@ end
 %% Sliding filter analysis:
 
 % Compute analysis for each frequency band:
-[performance_maps,cfg] = mvpalab_decodingmaps(cfg,[],'observed');
+[performance_maps,cfg] = mvpalab_evalsubjects(cfg,[],'observed');
 
 save([cfg.sf.savefolder 'other' filesep 'performance_maps.mat'],...
     'performance_maps','-v7.3');
 
 % Generate permuted maps for each frequency band if needed:
 if permuted
-    [permuted_maps,cfg] = mvpalab_decodingmaps(cfg,[],'permuted');
+    [permuted_maps,cfg] = mvpalab_evalsubjects(cfg,[],'permuted');
     save([cfg.sf.savefolder 'other' filesep 'permuted_maps.mat'],...
         'permuted_maps','-v7.3');
 end
@@ -88,7 +88,7 @@ end
 cfg.sf.flag = false;
 [cfg,~,fv] = mvpalab_readdata(cfg);
 
-[performance,cfg] = mvpalab_decodingmaps(cfg,fv,'observed');
+[performance,cfg] = mvpalab_evalsubjects(cfg,fv,'observed');
 
 save([cfg.sf.savefolder 'other' filesep 'performance.mat'],...
     'performance','-v7.3');
@@ -97,7 +97,7 @@ save([cfg.sf.savefolder 'other' filesep 'performance.mat'],...
 %  One permuted map of the unfiltered data for each permutation, so every
 %  permuted diffMap has its own baseline (see mvpalab_gendiffmap).
 if permuted
-    [permuted_performance,cfg] = mvpalab_decodingmaps(cfg,fv,'permuted');
+    [permuted_performance,cfg] = mvpalab_evalsubjects(cfg,fv,'permuted');
     save([cfg.sf.savefolder 'other' filesep 'permuted_performance.mat'],...
         'permuted_performance','-v7.3');
 end

@@ -1,12 +1,13 @@
-function map = mvpalab_decodemap(cfg,data,job)
-%% MVPALAB_DECODEMAP
+function map = mvpalab_evalmap(cfg,data,job)
+%% MVPALAB_EVALMAP
 %
 %  This function computes one performance map of the current subject and
 %  frequency band: the mean across the cross-validation repetitions of the
 %  performance at each timepoint.
 %
-%  The supertrials and the partitions are drawn once per repetition, before
-%  the timepoints loop, and they are used at all the timepoints.
+%  The data of each repetition (supertrials, normalization and channels,
+%  see mvpalab_preparedata) and its partitions are prepared once, before the
+%  timepoints loop, and they are used at all the timepoints.
 %
 %  The labels of a permuted map belong to the single trials and do not
 %  change across repetitions, so each repetition builds its supertrials
@@ -18,8 +19,8 @@ function map = mvpalab_decodemap(cfg,data,job)
 %    Configuration structure.
 %
 %  - {struct} - data:
-%    Datasets of the subject (see mvpalab_loadfv), with the labels of this
-%    map. Single trials if cfg.trialaver.flag is enabled.
+%    Datasets of the subject (see mvpalab_subjectdata), with the labels of
+%    this map. Single trials if cfg.trialaver.flag is enabled.
 %
 %  - {struct} - job:
 %    Description of the analysis (see mvpalab_decodingjob).
@@ -29,7 +30,7 @@ function map = mvpalab_decodemap(cfg,data,job)
 %  - {struct} - map:
 %    Performance of each direction (see mvpalab_averagereps).
 
-mvpalab_decodingprint('repetitions',cfg,job);
+mvpalab_decodingprogress('repetitions',cfg,job);
 
 perf = cell(cfg.tm.ntp,job.nreps);
 
@@ -37,24 +38,24 @@ perf = cell(cfg.tm.ntp,job.nreps);
 for rep = 1 : job.nreps
     job.rep = rep;
 
-    %% Supertrials of this repetition:
-    repdata = mvpalab_repdata(cfg,data);
+    %% Data of this repetition:
+    prepared = mvpalab_preparedata(cfg,data);
 
     %% Stratified partition for cross validation:
-    part = mvpalab_cvpartitions(cfg,repdata,job);
+    part = mvpalab_cvpartitions(cfg,prepared,job);
 
     %% Timepoints loop:
     if cfg.classmodel.parcomp
         parfor tp = 1 : cfg.tm.ntp
-            perf{tp,rep} = mvpalab_evaltp(cfg,repdata,part,tp,job);
+            perf{tp,rep} = mvpalab_evaltp(cfg,prepared,part,tp,job);
         end
     else
         for tp = 1 : cfg.tm.ntp
-            perf{tp,rep} = mvpalab_evaltp(cfg,repdata,part,tp,job);
+            perf{tp,rep} = mvpalab_evaltp(cfg,prepared,part,tp,job);
         end
     end
 
-    mvpalab_decodingprint('repetition',cfg,job);
+    mvpalab_decodingprogress('repetition',cfg,job);
 end
 
 %% Average metrics across repetitions:

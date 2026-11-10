@@ -1,8 +1,10 @@
-function [res,cfg,job] = mvpalab_decodingmaps(cfg,fv,mode)
-%% MVPALAB_DECODINGMAPS
+function [res,cfg,job] = mvpalab_evalsubjects(cfg,fv,mode)
+%% MVPALAB_EVALSUBJECTS
 %
-%  This function computes the maps of a decoding analysis, without checking
-%  or saving anything, so mvpalab_sfilter can compute the frequency bands and
+%  This function computes all the performance maps of a decoding analysis:
+%  for each subject and frequency band, the observed map or the
+%  cfg.stats.nper permuted maps (see mvpalab_evalmap). It does not check or
+%  save anything, so mvpalab_sfilter can compute the frequency bands and
 %  the unfiltered baseline. See the pipeline in mvpalab_decoding.
 %
 %%  INPUT:
@@ -20,7 +22,7 @@ function [res,cfg,job] = mvpalab_decodingmaps(cfg,fv,mode)
 %
 %  - {struct} - res:
 %    Result or permuted maps of each performance metric (see
-%    mvpalab_storemap and mvpalab_packres).
+%    mvpalab_storemap). In MVPA, without the level of the direction.
 %
 %  - {struct} - cfg:
 %    Updated configuration structure.
@@ -29,21 +31,21 @@ function [res,cfg,job] = mvpalab_decodingmaps(cfg,fv,mode)
 %    Description of the analysis (see mvpalab_decodingjob).
 
 job = mvpalab_decodingjob(cfg,mode);
-mvpalab_decodingprint('start',cfg,job);
+mvpalab_decodingprogress('start',cfg,job);
 
 res = struct();
 
 %% Subjects loop:
 for sub = 1 : job.nsub
     job.sub = sub;
-    mvpalab_decodingprint('subject',cfg,job);
+    mvpalab_decodingprogress('subject',cfg,job);
 
     %% Frequencies loop:
     for freq = 1 : job.nfreq
         job.freq = freq;
-        mvpalab_decodingprint('band',cfg,job);
+        mvpalab_decodingprogress('band',cfg,job);
 
-        data = mvpalab_loadfv(cfg,fv,job);
+        data = mvpalab_subjectdata(cfg,fv,job);
 
         %% Random draws of this band (see mvpalab_sfrng):
         cfg = mvpalab_sfrng(cfg,job);
@@ -62,21 +64,33 @@ for sub = 1 : job.nsub
                 mapdata.a.Y = mvpalab_permlabels(data.a.Y);
             end
 
-            map = mvpalab_decodemap(cfg,mapdata,job);
+            map = mvpalab_evalmap(cfg,mapdata,job);
             res = mvpalab_storemap(res,map,cfg,job);
 
-            mvpalab_decodingprint('map',cfg,job);
+            mvpalab_decodingprogress('map',cfg,job);
         end
-        mvpalab_decodingprint('bandend',cfg,job);
+        mvpalab_decodingprogress('bandend',cfg,job);
     end
-    mvpalab_decodingprint('subjectend',cfg,job);
+    mvpalab_decodingprogress('subjectend',cfg,job);
 end
-mvpalab_decodingprint('end',cfg,job);
+mvpalab_decodingprogress('end',cfg,job);
 
 % Locations of the selected channels, once every subject has passed the
 % check of the selection (see mvpalab_chanselection):
 cfg = mvpalab_updatechanloc(cfg.channels.selected,cfg);
 
-res = mvpalab_packres(res,job);
+%% MVPA has one direction, so its results do not keep that level:
+if ~job.mvcc, res = withoutdirection(res); end
+
+end
+
+function out = withoutdirection(in)
+%% The content of the field aa, at the level of the structure where it is.
+
+if isfield(in,'aa')
+    out = in.aa;
+else
+    out = structfun(@withoutdirection,in,'UniformOutput',false);
+end
 
 end

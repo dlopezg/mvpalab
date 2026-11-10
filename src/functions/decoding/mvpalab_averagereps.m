@@ -2,8 +2,10 @@ function map = mvpalab_averagereps(perf,job)
 %% MVPALAB_AVERAGEREPS
 %
 %  This function averages the performance of each direction across the
-%  cross-validation repetitions. The ROC curves are not averaged: they come
-%  from the last repetition.
+%  repetitions of the cross-validation (job.nreps, see mvpalab_evalmap).
+%  The folds of each repetition are already combined (see
+%  mvpalab_evalmetrics). The ROC curves are not averaged: they come from
+%  the last repetition.
 %
 %%  INPUT:
 %

@@ -32,7 +32,7 @@ function mvpalab_plotfreqcont(graph,cfg,data,stats)
 if nargin < 4, stats = []; end
 
 % Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 
 if length(cfg.sf.freqvec) < 2
     error('The frequency contribution map needs at least two frequency bands.');

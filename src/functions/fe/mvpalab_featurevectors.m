@@ -1,16 +1,17 @@
-function [out_data,cfg] = mvpalab_fext(cfg,data,sub)
-%% MVPALAB_FEXT
+function [out_data,cfg] = mvpalab_featurevectors(cfg,data,sub)
+%% MVPALAB_FEATUREVECTORS
 %
 %  This function generates the feature vectors of one subject from the
-%  data of each class: the features of each class (see mvpalab_preproc),
-%  the class sizes and the normalization (see mvpalab_adjustclasses) and
-%  the data matrix and the labels (see mvpalab_joinclasses).
+%  data of each class: the features of each class (see
+%  mvpalab_classfeatures), the class sizes (see mvpalab_trimclasses) and
+%  the data matrix and the labels (see mvpalab_joinclasses). The feature
+%  vectors are not normalized: cfg.normdata is applied in each repetition
+%  (see mvpalab_preparedata).
 %
 %  With supertrials (cfg.trialaver.flag) the feature vectors keep the
-%  single trials and the class sizes and the normalization are applied to
-%  the supertrials of each repetition (see mvpalab_supertrials). Then each
-%  class needs at least cfg.trialaver.ntrials trials; otherwise it gives an
-%  error.
+%  single trials and the class sizes are applied to the supertrials of each
+%  repetition (see mvpalab_supertrials). Then each class needs at least
+%  cfg.trialaver.ntrials trials; otherwise it gives an error.
 %
 %  It also stores in cfg.datalength(sub,:) the number of trials of each
 %  class in the feature vectors, first those of dataset A and then those
@@ -42,36 +43,37 @@ function [out_data,cfg] = mvpalab_fext(cfg,data,sub)
 %    Configuration structure, with the changes above.
 
 %% Features of each class:
-for ctxt = 1 : numel(data)
-    class_names = fieldnames(data{ctxt});
-    for class = 1 : numel(class_names)
+for dataset = 1 : numel(data)
+    names = fieldnames(data{dataset});
+    for condition = 1 : numel(names)
         fprintf('\n    <strong> - Generating feature vectors:</strong> ');
-        fprintf([class_names{class} '\n']);
-        fv{ctxt,class} = mvpalab_preproc(cfg,data{ctxt}.(class_names{class}));
-        if cfg.trialaver.flag && size(fv{ctxt,class},1) < cfg.trialaver.ntrials
+        fprintf([names{condition} '\n']);
+        fv{dataset,condition} = mvpalab_classfeatures(cfg,data{dataset}.(names{condition}));
+        if cfg.trialaver.flag && size(fv{dataset,condition},1) < cfg.trialaver.ntrials
             error('Class %s has fewer trials than cfg.trialaver.ntrials.',...
-                class_names{class});
+                names{condition});
         end
     end
 end
 
-%% Class sizes and normalization:
-%  With supertrials they are applied to the supertrials of each repetition
-%  (see mvpalab_supertrials) and the feature vectors keep the single trials.
+%% Class sizes:
+%  With supertrials they are applied to the supertrials of each
+%  repetition (see mvpalab_supertrials) and the feature vectors keep the
+%  single trials.
 if ~cfg.trialaver.flag
-    fv = mvpalab_adjustclasses(cfg,fv);
+    fv = mvpalab_trimclasses(cfg,fv);
 end
 
-nobs = cellfun(@(class) size(class,1),fv');
+nobs = cellfun(@(x) size(x,1),fv');
 cfg.datalength(sub,:) = nobs(:)';
 
 %% Data and labels, with the classes named '1', '2'...:
 sets = {'a','b'};
 classes = cellstr(string(1:size(fv,2)));
-for ctxt = 1 : size(fv,1)
-    dataset = mvpalab_joinclasses(fv(ctxt,:),classes);
-    out_data.X.(sets{ctxt}) = dataset.X;
-    out_data.Y.(sets{ctxt}) = dataset.Y;
+for dataset = 1 : size(fv,1)
+    joined = mvpalab_joinclasses(fv(dataset,:),classes);
+    out_data.X.(sets{dataset}) = joined.X;
+    out_data.Y.(sets{dataset}) = joined.Y;
 end
 
 %  mvpalab_checkfv needs to know that they are not supertrials:

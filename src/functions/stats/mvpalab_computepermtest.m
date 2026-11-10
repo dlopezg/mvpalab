@@ -1,4 +1,4 @@
-function stats = mvpalab_computepermtest(cfg,performance,permuted_maps)
+function stats = mvpalab_computepermtest(cfg,performance,nullmaps)
 %% MVPALAB_COMPUTEPERMTEST
 %
 %  This function computes the cluster-based permutation test of one
@@ -46,8 +46,11 @@ function stats = mvpalab_computepermtest(cfg,performance,permuted_maps)
 %    [ntp x ntp_ x subjects], with a single row in the time-resolved
 %    analyses.
 %
-%  - {matrix} - permuted_maps:
-%    Permuted maps of each subject [ntp x ntp_ x subjects x maps].
+%  - {matrix} - nullmaps:
+%    Maps of the null distribution of each subject
+%    [ntp x ntp_ x subjects x maps]: its permuted maps or, with
+%    cfg.stats.signflip, its result and its reflection around chance (see
+%    mvpalab_nullmaps).
 %
 %%  OUTPUT:
 %
@@ -67,7 +70,7 @@ function stats = mvpalab_computepermtest(cfg,performance,permuted_maps)
 %      (Inf if none or if the tail is not tested).
 
 % Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 
 if ~ismember(cfg.stats.tails,[-1 1 2])
     error('cfg.stats.tails must be 1 (above chance), -1 (below chance) or 2.');
@@ -79,7 +82,7 @@ mvpalab_checksignflip(cfg);
 % Here we determine the map of each subject that has to be selected in each
 % permutation.
 nSubjects = size(performance,3);
-perm_idxs = randi(size(permuted_maps,4),nSubjects,cfg.stats.nperg,'single');
+perm_idxs = randi(size(nullmaps,4),nSubjects,cfg.stats.nperg,'single');
 
 %% Generate permuted maps at group level:
 % One permuted map of each subject has to be randomly selected and group
@@ -89,7 +92,7 @@ perm_idxs = randi(size(permuted_maps,4),nSubjects,cfg.stats.nperg,'single');
 fprintf('   - Generating permuted maps at group level: ');
 for i = 1 : cfg.stats.nperg
     for j = 1 : nSubjects
-        permaps(:,:,j) = permuted_maps(:,:,j,perm_idxs(j,i));
+        permaps(:,:,j) = nullmaps(:,:,j,perm_idxs(j,i));
     end
     gpermaps(:,:,i) = mean(permaps,3);
 end

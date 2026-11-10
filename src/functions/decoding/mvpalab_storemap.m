@@ -26,7 +26,8 @@ function res = mvpalab_storemap(res,map,cfg,job)
 %
 %  - {struct} - res:
 %    The same structure with the metrics in fields per direction: aa, or ab,
-%    ba and their mean in MVCC (see mvpalab_packres):
+%    ba and their mean in MVCC. MVPA only has aa, so mvpalab_evalsubjects
+%    removes that level once all the maps are stored:
 %    - acc, auc: Observed maps [ntp x ntp_ x subjects x bands] or permuted
 %      maps [ntp x ntp_ x subjects x maps x bands], with a single row in
 %      the time-resolved analyses.
@@ -65,8 +66,8 @@ for d = 1 : numel(job.dirs)
         metric = job.perclass{m};
         maps = classmaps(map.(way).(metric),cfg);
         names = job.classes.(way);
-        for class = 1 : numel(names)
-            res.(metric).(way).(names{class})(idx{:}) = maps(:,:,class);
+        for condition = 1 : numel(names)
+            res.(metric).(way).(names{condition})(idx{:}) = maps(:,:,condition);
         end
     end
 
@@ -89,8 +90,8 @@ for m = 1 : numel(job.perclass)
     metric = job.perclass{m};
     maps = (classmaps(map.ab.(metric),cfg) + classmaps(map.ba.(metric),cfg))/2;
     names = job.classes.ba;
-    for class = 1 : numel(names)
-        res.(metric).mean.(names{class})(idx{:}) = maps(:,:,class);
+    for condition = 1 : numel(names)
+        res.(metric).mean.(names{condition})(idx{:}) = maps(:,:,condition);
     end
 end
 

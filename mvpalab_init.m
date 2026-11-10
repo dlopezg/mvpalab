@@ -107,11 +107,11 @@ cfg.dimred.ncomp  = 0;
 % cfg.normdata = 3 - z-score (across trials)
 % cfg.normdata = 4 - std_nor (across trials)
 %
-% Values 1 and 2 are applied to each trial when the data is imported or,
-% with supertrials, to each supertrial (see mvpalab_adjustclasses), so they
-% affect all the analyses, including RSA.
+% Values 1 and 2 are applied to each trial or, with supertrials, to each
+% supertrial, before the channel selection (see mvpalab_normtrials), so
+% they affect all the analyses, including RSA.
 % Values 3 and 4 are computed in the training set of each cross-validation
-% fold and applied to the test set (mvpalab_fitfold), so they are only
+% fold and applied to the test set (mvpalab_preparetrain), so they are only
 % used by the classifiers (MVPA and MVCC); RSA ignores them. fMRI data
 % imported with mvpalab_import_fmri is not normalized.
 %

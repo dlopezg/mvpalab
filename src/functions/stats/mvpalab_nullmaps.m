@@ -35,7 +35,7 @@ function [maps,cfg] = mvpalab_nullmaps(cfg,fv,res)
 %    Updated configuration structure.
 
 % Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 
 if cfg.stats.signflip
     chance = 1/size(cfg.study.dataFiles,2);

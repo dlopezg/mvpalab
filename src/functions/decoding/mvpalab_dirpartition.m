@@ -14,7 +14,7 @@ function part = mvpalab_dirpartition(cfg,Y,Yt,same)
 %
 %  The partitions are drawn once per cross-validation repetition, before
 %  the timepoints loop, and the same partitions are used at all the
-%  timepoints (see mvpalab_decodemap). A partition drawn at each timepoint
+%  timepoints (see mvpalab_evalmap). A partition drawn at each timepoint
 %  would give each timepoint independent cross-validation noise.
 %
 %%  INPUT:

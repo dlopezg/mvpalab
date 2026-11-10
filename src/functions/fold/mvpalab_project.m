@@ -2,10 +2,10 @@ function X = mvpalab_project(X,pca)
 %% MVPALAB_PROJECT
 %
 %  This function projects a test set on the principal components of the
-%  training set of a fold (see mvpalab_fitfold): the data is centered with
-%  the mean of the training set, solved for the coefficients, X / coeff',
-%  as the reconstruction rule X = scores * coeff', and the first ncomp
-%  components are kept.
+%  training set of a fold (see mvpalab_preparetrain): the data is centered
+%  with the mean of the training set, solved for the coefficients,
+%  X / coeff', as the reconstruction rule X = scores * coeff', and the
+%  first ncomp components are kept.
 %
 %%  INPUT:
 %

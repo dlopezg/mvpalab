@@ -1,9 +1,9 @@
-function [X,fold] = mvpalab_fitfold(cfg,X)
-%% MVPALAB_FITFOLD
+function [X,fold] = mvpalab_preparetrain(cfg,X)
+%% MVPALAB_PREPARETRAIN
 %
 %  This function fits the transformation of the data of one fold on its
 %  training set and returns the transformed training set. The same
-%  transformation is applied to each test set with mvpalab_applyfold:
+%  transformation is applied to each test set with mvpalab_preparetest:
 %
 %  1. Normalization (cfg.normdata = 3 or 4): each feature is z-scored with
 %     the mean and the standard deviation of the training set, normalized

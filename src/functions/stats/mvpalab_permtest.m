@@ -1,11 +1,11 @@
-function stats = mvpalab_permtest(cfg,results,permuted_maps,fname)
+function stats = mvpalab_permtest(cfg,results,nullmaps,fname)
 %% MVPALAB_PERMTEST
 %
 %  This function recursively iterates over the fields contained in the
-%  results and permuted_maps structures. If the selected field has permuted
-%  maps we make a recursive call and the permutation test is computed with
-%  mvpalab_computepermtest. Cell arrays are not maps: an RSA model can
-%  share its name with the RDMs.
+%  results and nullmaps structures. If the selected field has maps of the
+%  null distribution we make a recursive call and the permutation test is
+%  computed with mvpalab_computepermtest. Cell arrays are not maps: an RSA
+%  model can share its name with the RDMs.
 %
 %  The first call (without fname) saves the statistics with mvpalab_save,
 %  unless cfg.sf.flag is true.
@@ -19,9 +19,11 @@ function stats = mvpalab_permtest(cfg,results,permuted_maps,fname)
 %    Data structure containing the results for each measure, or one map
 %    in the recursive call.
 %
-%  - {struct} - permuted_maps:
-%    Data structure containing the permuted maps for each measure, or the
-%    permuted maps of one map in the recursive call.
+%  - {struct} - nullmaps:
+%    Maps of the null distribution for each measure (see
+%    mvpalab_nullmaps): the permuted maps or, with cfg.stats.signflip, the
+%    maps of the sign flip test. In the recursive call, the maps of one
+%    measure.
 %
 %  - {string} - fname:
 %    Optional. Current field name used for the recursive call.
@@ -29,7 +31,7 @@ function stats = mvpalab_permtest(cfg,results,permuted_maps,fname)
 %%  OUTPUT:
 %
 %  - {struct} - stats:
-%    The same fields as results that have permuted maps, with the output
+%    The same fields as results that have maps in nullmaps, with the output
 %    of mvpalab_computepermtest for each map.
 
 %% Check if the current input is a struct:
@@ -42,9 +44,9 @@ if isstruct(results)
     for i = 1 : length(field_names)
         fname = field_names{i};
         
-        if isfield(permuted_maps,fname) && ~iscell(results.(fname))
+        if isfield(nullmaps,fname) && ~iscell(results.(fname))
             res = results.(fname);
-            pmap = permuted_maps.(fname);
+            pmap = nullmaps.(fname);
             stats.(fname) = mvpalab_permtest(cfg,res,pmap,fname);
         end
     end
@@ -56,7 +58,7 @@ else
     
     if ~exist('fname','var'); fname = 'acc'; end
     fprintf(['\n<strong> > Permutation test (' fname '): </strong>\n']);
-    stats = mvpalab_computepermtest(cfg,results,permuted_maps);
+    stats = mvpalab_computepermtest(cfg,results,nullmaps);
     
 end
 

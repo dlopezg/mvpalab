@@ -35,7 +35,7 @@ function mvpalab_plotfeatcont(graph,cfg,weights,result)
 %    used. If it is empty, the performance is not plotted.
 
 % Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 
 if isempty(cfg.channels.selectedchanloc)
     warning('The feature weights need the channel locations (cfg.channels.selectedchanloc) to be plotted.');

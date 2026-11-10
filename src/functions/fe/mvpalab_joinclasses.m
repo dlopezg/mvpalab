@@ -21,7 +21,7 @@ function dataset = mvpalab_joinclasses(fv,classes)
 %    categorical labels (Y) [observations x 1], with the classes as
 %    categories in the same order.
 
-nobs = cellfun(@(class) size(class,1),fv);
+nobs = cellfun(@(x) size(x,1),fv);
 
 dataset.X = cat(1,fv{:});
 dataset.Y = categorical(repelem(classes(:),nobs(:)),classes);

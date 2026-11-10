@@ -1,4 +1,4 @@
-function [per,permaps,stats] = mvpalab_extractdiag(cfg,performance,permuted_maps)
+function [per,nulldiag,stats] = mvpalab_extractdiag(cfg,performance,nullmaps)
 %% MVPALAB_EXTRACTDIAG
 %
 %  This function extracts the diagonal of the temporal generalization maps
@@ -10,9 +10,11 @@ function [per,permaps,stats] = mvpalab_extractdiag(cfg,performance,permuted_maps
 %  MVPA, without fields per direction.
 %
 %  The results are saved with mvpalab_save in the time_resolved folder.
-%  With permuted maps, the permuted maps are saved too and the
-%  permutation test is computed and saved (see mvpalab_permtest). Only
-%  the metrics that have permuted maps are tested.
+%  With the maps of the null distribution, the permutation test is
+%  computed and saved (see mvpalab_permtest), and the diagonal of the
+%  permuted maps is saved too, but not that of the maps of the sign flip
+%  test (cfg.stats.signflip), as in the analyses. Only the metrics that
+%  have maps of the null distribution are tested.
 %
 %%  INPUT:
 %
@@ -24,25 +26,26 @@ function [per,permaps,stats] = mvpalab_extractdiag(cfg,performance,permuted_maps
 %    [ntp x ntp x subjects x bands] in each metric (precision, recall and
 %    f1score with one field per class, see mvpalab_storemap).
 %
-%  - {struct} - permuted_maps:
-%    Optional. Permuted maps of a temporal generalization analysis, with
-%    maps [ntp x ntp x subjects x maps x bands] in each metric.
+%  - {struct} - nullmaps:
+%    Optional. Maps of the null distribution of a temporal generalization
+%    analysis (see mvpalab_nullmaps), with maps
+%    [ntp x ntp x subjects x maps x bands] in each metric.
 %
 %%  OUTPUT:
 %
 %  - {struct} - per:
 %    Diagonal of each metric, with maps [1 x ntp x subjects x bands].
 %
-%  - {struct} - permaps:
-%    Diagonal of the permuted maps, with maps
-%    [1 x ntp x subjects x maps x bands]. Only with permuted_maps.
+%  - {struct} - nulldiag:
+%    Diagonal of the maps of the null distribution, with maps
+%    [1 x ntp x subjects x maps x bands]. Only with nullmaps.
 %
 %  - {struct} - stats:
 %    Statistics of the permutation test (see mvpalab_permtest). Only with
-%    permuted_maps.
+%    nullmaps.
 
 % Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 
 % The diagonal needs the same training and test timepoints:
 if ~isequal(cfg.tm.tpoints,cfg.tm.tpoints_)
@@ -61,8 +64,8 @@ for i = 1 : numel(fields)
     if find(strcmp(validfields, fields{i}))
         per.(fields{i}) = diagonal(performance.(fields{i}));
         % The sign flip test has no maps of the class metrics:
-        if nargin > 2 && isfield(permuted_maps,fields{i})
-            permaps.(fields{i}) = diagonal(permuted_maps.(fields{i}));
+        if nargin > 2 && isfield(nullmaps,fields{i})
+            nulldiag.(fields{i}) = diagonal(nullmaps.(fields{i}));
         end
     end
 end
@@ -73,8 +76,8 @@ fprintf('\n\n');
 %% Permutations tests and save result:
 mvpalab_save(cfg,per,'res');
 if nargin > 2
-    mvpalab_save(cfg,permaps,'permaps');
-    stats = mvpalab_permtest(cfg,per,permaps);
+    if ~cfg.stats.signflip, mvpalab_save(cfg,nulldiag,'permaps'); end
+    stats = mvpalab_permtest(cfg,per,nulldiag);
 end
 end
 

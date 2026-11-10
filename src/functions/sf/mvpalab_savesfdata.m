@@ -18,7 +18,7 @@ function [] = mvpalab_savesfdata(cfg,data,fv,sub,freq)
 %    field per class (see mvpalab_classdata).
 %
 %  - {struct} - fv:
-%    Feature vectors of the subject (see mvpalab_fext).
+%    Feature vectors of the subject (see mvpalab_featurevectors).
 %
 %  - {int} - sub:
 %    Index of the subject.

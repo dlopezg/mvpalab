@@ -55,7 +55,7 @@ end
 
 end
 
-function perf = testmetrics(job,truth,labels,scores,class)
+function perf = testmetrics(job,truth,labels,scores,positive)
 %% Metrics of the predictions at one test timepoint.
 
 keep = @(metrics) any(ismember(metrics,job.keep));
@@ -81,7 +81,7 @@ end
 
 % Receiver operating characteristic (ROC curve) if needed:
 if keep({'auc','x'})
-    [perf.x,perf.y,perf.t,perf.auc] = perfcurve(truth,scores(:,1),class);
+    [perf.x,perf.y,perf.t,perf.auc] = perfcurve(truth,scores(:,1),positive);
 end
 
 end

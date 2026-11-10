@@ -1,4 +1,4 @@
-function [cfg,res,permaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
+function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %% MVPALAB_FUSION
 %
 %  This function computes the fusion of the M/EEG and fMRI RDMs: the RDM of
@@ -49,24 +49,26 @@ function [cfg,res,permaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %    subject ('mean-fmri'), per fMRI subject ('mean-eeg') or per pair of
 %    subjects ('no-mean').
 %
-%  - {struct} - permaps:
-%    Permuted maps in permaps.(cfg.fusion.distance).(region)
-%    [1 x timepoints x observations x permutations], or the maps of the
-%    sign flip test [1 x timepoints x observations x 2]. Empty without
-%    cfg.stats.flag.
+%  - {struct} - nullmaps:
+%    Maps of the null distribution of the permutation test, in
+%    nullmaps.(cfg.fusion.distance).(region): the permuted maps
+%    [1 x timepoints x observations x permutations] or, with
+%    cfg.stats.signflip, the maps of the sign flip test
+%    [1 x timepoints x observations x 2]. Empty without cfg.stats.flag.
 %
 %  - {struct} - stats:
 %    Result of the permutation test (see mvpalab_permtest), empty without
 %    cfg.stats.flag, in stats.(cfg.fusion.distance).(region), as res.
 
 %% Initialization:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 mvpalab_savecfg(cfg);
 mvpalab_checkfusion(cfg);
 
 dist = cfg.fusion.distance;
 permuted = cfg.stats.flag && ~cfg.stats.signflip;
 permaps = struct();
+nullmaps = struct();
 stats = struct();
 
 nworkers = 0;
@@ -96,8 +98,9 @@ mvpalab_save(cfg,res,'res');
 
 %% Compute permutation test if needed:
 if cfg.stats.flag
-    if cfg.stats.signflip, permaps = mvpalab_signmaps(res,0); end
-    stats = mvpalab_permtest(cfg,res,permaps);
+    nullmaps = permaps;
+    if cfg.stats.signflip, nullmaps = mvpalab_signmaps(res,0); end
+    stats = mvpalab_permtest(cfg,res,nullmaps);
 end
 
 %% Save permuted maps if needed:

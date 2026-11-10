@@ -6,16 +6,15 @@ function data = mvpalab_supertrials(cfg,data)
 %
 %  The trials of each class are grouped in blocks of cfg.trialaver.ntrials
 %  (cfg.trialaver.order: random or consecutive trials) and each block is
-%  averaged. The remaining trials are not used. Then, the class sizes and
-%  the normalization of each observation are applied to the supertrials
-%  (see mvpalab_adjustclasses).
+%  averaged. The remaining trials are not used. Then, the class sizes are
+%  applied to the supertrials (see mvpalab_trimclasses).
 %
 %  The classes are defined by the labels of the datasets, so a permuted map
 %  averages trials of the same permuted class (see mvpalab_permlabels).
 %
-%  The decoding analyses call this function once per cross-validation
-%  repetition (see mvpalab_decodemap), so the result does not depend on one
-%  draw of the blocks, and RSA once per subject (see mvpalab_rsa_time).
+%  It is called once per cross-validation repetition in the decoding
+%  analyses, so the result does not depend on one draw of the blocks, and
+%  once per subject in RSA (see mvpalab_preparedata).
 %
 %%  INPUT:
 %
@@ -36,19 +35,19 @@ if ~cfg.trialaver.flag, return; end
 sets = fieldnames(data);
 
 %% Average the trials of each class:
-for ctxt = 1 : numel(sets)
-    [trials,classes{ctxt}] = mvpalab_splitclasses(data.(sets{ctxt}));
-    for class = 1 : numel(trials)
-        fv{ctxt,class} = averageclass(cfg,trials{class});
+for dataset = 1 : numel(sets)
+    [trials,classes{dataset}] = mvpalab_splitclasses(data.(sets{dataset}));
+    for condition = 1 : numel(trials)
+        fv{dataset,condition} = averageclass(cfg,trials{condition});
     end
 end
 
-%% Class sizes and normalization:
-fv = mvpalab_adjustclasses(cfg,fv);
+%% Class sizes:
+fv = mvpalab_trimclasses(cfg,fv);
 
 %% Data and labels, with the names of the classes:
-for ctxt = 1 : numel(sets)
-    data.(sets{ctxt}) = mvpalab_joinclasses(fv(ctxt,:),classes{ctxt});
+for dataset = 1 : numel(sets)
+    data.(sets{dataset}) = mvpalab_joinclasses(fv(dataset,:),classes{dataset});
 end
 
 end

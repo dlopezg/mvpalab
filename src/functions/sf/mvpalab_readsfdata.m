@@ -4,9 +4,9 @@ function cfg = mvpalab_readsfdata(cfg)
 %  This function reads the data of each subject of a sliding filter
 %  analysis once (see mvpalab_readsubject), filters it in each frequency
 %  band (see mvpalab_filterdata) and computes and saves the feature
-%  vectors of each band in cfg.sf.filesLocation (see mvpalab_fext and
-%  mvpalab_savesfdata). The data stays on disk, so only one subject is
-%  kept in memory.
+%  vectors of each band in cfg.sf.filesLocation (see
+%  mvpalab_featurevectors and mvpalab_savesfdata). The data stays on disk,
+%  so only one subject is kept in memory.
 %
 %%  INPUT:
 %
@@ -34,7 +34,7 @@ for sub = 1 : nsub
         end
 
         data = mvpalab_classdata(cfg,filtered);
-        [fv,cfg] = mvpalab_fext(cfg,data,sub);
+        [fv,cfg] = mvpalab_featurevectors(cfg,data,sub);
         mvpalab_savesfdata(cfg,data,fv,sub,freq);
     end
 end

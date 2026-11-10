@@ -32,7 +32,7 @@ function mvpalab_plotdecoding(graph,cfg,data,stats)
 if nargin < 4 || ~(graph.stats.above || graph.stats.below), stats = []; end
 
 % Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 times = cfg.tm.times;
 
 %% Select subject:

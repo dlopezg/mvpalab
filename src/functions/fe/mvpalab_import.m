@@ -3,7 +3,7 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 %
 %  This function starts an analysis: it checks the configuration structure
 %  and saves it, prepares the study (see mvpalab_preparestudy), checks its
-%  files before reading any of them (see mvpalab_checkstudy) and reads the
+%  settings before reading any file (see mvpalab_checkimport) and reads the
 %  data of each subject (see mvpalab_readdata). It saves the configuration
 %  again at the end, with the fields set by the import.
 %
@@ -24,24 +24,15 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 %    Data of each subject and dataset (see mvpalab_classdata).
 %
 %  - {cell array} - fv:
-%    Feature vectors of each subject (see mvpalab_fext).
+%    Feature vectors of each subject (see mvpalab_featurevectors).
 
 % Check cfg integrity and backwards compatibility:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 mvpalab_savecfg(cfg);
 
 % Settings of the study and checks before reading any file:
 cfg = mvpalab_preparestudy(cfg);
-mvpalab_checkstudy(cfg);
-mvpalab_checkmethods(cfg);
-mvpalab_checksignflip(cfg);
-mvpalab_checkclasses(cfg);
-
-% EEGLAB reads the .set files and filters the frequency bands:
-files = [cfg.study.dataFiles{:}];
-if cfg.sf.flag || any(endsWith(lower(files),'.set'))
-    mvpalab_checkeeglab();
-end
+mvpalab_checkimport(cfg);
 
 if cfg.sf.flag
     mvpalab_sffolders(cfg);

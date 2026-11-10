@@ -1,9 +1,10 @@
-function data = mvpalab_loadfv(cfg,fv,job)
-%% MVPALAB_LOADFV
+function data = mvpalab_subjectdata(cfg,fv,job)
+%% MVPALAB_SUBJECTDATA
 %
 %  This function returns the datasets of the current subject and frequency
 %  band, ready for the decoding analysis. The datasets keep all the
-%  channels: they are selected in each repetition (see mvpalab_repdata).
+%  channels and they are not normalized: both are applied in each
+%  repetition (see mvpalab_preparedata).
 %
 %%  INPUT:
 %

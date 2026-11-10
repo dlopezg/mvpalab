@@ -6,17 +6,17 @@
 
 %% If permutation analysis is enabled
 if cfg.stats.flag
-    % Generate permuted maps:
-    [permaps,cfg] = mvpalab_nullmaps(cfg,fv,result);
+    % Maps of the null distribution (permuted or sign flip):
+    [nullmaps,cfg] = mvpalab_nullmaps(cfg,fv,result);
 
     % Compute the permutation based analysis:
-    stats = mvpalab_permtest(cfg,result,permaps);
+    stats = mvpalab_permtest(cfg,result,nullmaps);
 end
 
 %% Extract diag:
 if cfg.classmodel.tempgen && cfg.classmodel.extdiag
     if cfg.stats.flag
-        [resultdiag,permapsdiag,statsdiag] = mvpalab_extractdiag(cfg,result,permaps);
+        [resultdiag,nullmapsdiag,statsdiag] = mvpalab_extractdiag(cfg,result,nullmaps);
     else
         resultdiag = mvpalab_extractdiag(cfg,result);
     end

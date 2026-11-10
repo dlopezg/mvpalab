@@ -10,7 +10,7 @@ function mvpalab_checkmethods(cfg)
 %    - cfg.dimred.method is 'none' or 'pca', and 'pca' needs a whole
 %      cfg.dimred.ncomp of at least 1.
 %
-%  mvpalab_import and mvpalab_decoding call it.
+%  mvpalab_checkimport and mvpalab_checkdecoding call it.
 %
 %%  INPUT:
 %

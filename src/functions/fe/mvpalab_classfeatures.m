@@ -1,5 +1,5 @@
-function data = mvpalab_preproc(cfg,data)
-%% MVPALAB_PREPROC
+function data = mvpalab_classfeatures(cfg,data)
+%% MVPALAB_CLASSFEATURES
 %
 %  This function computes the features of one class: the power envelope if
 %  cfg.feature = 'envelope' (see mvpalab_powenvelope) and the smoothing
@@ -34,6 +34,5 @@ end
 
 %% Generate input vectors:
 data = permute(data,[3 1 2]);
-fprintf('       # Done.\n');
 
 end

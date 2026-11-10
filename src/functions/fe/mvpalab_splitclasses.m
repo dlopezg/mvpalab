@@ -22,8 +22,8 @@ function [fv,classes] = mvpalab_splitclasses(dataset)
 classes = categories(dataset.Y);
 
 fv = cell(1,numel(classes));
-for class = 1 : numel(classes)
-    fv{class} = dataset.X(dataset.Y == classes{class},:,:);
+for condition = 1 : numel(classes)
+    fv{condition} = dataset.X(dataset.Y == classes{condition},:,:);
 end
 
 end

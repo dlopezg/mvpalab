@@ -1,12 +1,16 @@
-function cfg = mvpalab_checkcfg(cfg)
-%% MVPALAB_CHECKCFG
+function cfg = mvpalab_updatecfg(cfg)
+%% MVPALAB_UPDATECFG
 %
-%  This function completes a configuration structure with the fields of the
-%  current version of the toolbox (see mvpalab_init): each field that is
+%  This function updates a configuration structure to the current version
+%  of the toolbox. It does not check the settings of an analysis (see, for
+%  example, mvpalab_checkdecoding).
+%
+%  The renamed fields of older versions are updated first (see
+%  mvpalab_backCompatibility). Then the structure is completed with the
+%  fields of the current version (see mvpalab_init): each field that is
 %  missing gets its default value, with a warning that names it, and the
 %  structures that exist are completed in the same way. A field of the
-%  user that is not a structure is kept as it is. The renamed fields of
-%  older versions are updated first (see mvpalab_backCompatibility).
+%  user that is not a structure is kept as it is.
 %
 %  cfg.version is set to the version that runs the analysis, so the saved
 %  results say which version computed them. It does not save the

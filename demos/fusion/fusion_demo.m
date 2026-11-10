@@ -12,7 +12,7 @@ run cfg_file;
 
 %% Compute fusion
 
-[cfg,res,permaps,stats] = mvpalab_fusion(cfg,meeg_rdms,fmri_rdms);
+[cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,meeg_rdms,fmri_rdms);
 
 %% Plot the results:
 

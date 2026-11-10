@@ -2,8 +2,8 @@ function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 %% MVPALAB_RSA_TIME
 %
 %  This function computes the time-resolved representational similarity
-%  analysis of M/EEG data. For each subject it builds the supertrials
-%  (mvpalab_supertrials), the RDM at each timepoint of cfg.tm.tpoints
+%  analysis of M/EEG data. For each subject it prepares the data
+%  (mvpalab_preparedata), the RDM at each timepoint of cfg.tm.tpoints
 %  (mvpalab_rdm) and the theoretical RDMs (mvpalab_gentrdms), and compares
 %  them as set in cfg.rsa.modality:
 %
@@ -20,9 +20,10 @@ function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 %
 %  The RDMs use the channels of cfg.channels.selected (all of them if it is
 %  empty). The values 3 and 4 of cfg.normdata have no effect in RSA (a
-%  warning is shown). With cfg.stats.flag the permuted maps are computed and the
-%  permutation test is run (mvpalab_permtest); with cfg.stats.signflip the
-%  sign flip test is used instead (mvpalab_signmaps).
+%  warning is shown). With cfg.stats.flag the permuted maps are computed
+%  and the permutation test is run (mvpalab_permtest); with
+%  cfg.stats.signflip the sign flip test is used instead
+%  (mvpalab_signmaps).
 %
 %  The results and the permuted maps are saved with mvpalab_save and the
 %  statistics by mvpalab_permtest, except in a sliding filter analysis
@@ -61,9 +62,8 @@ function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 %    subject in cfg.rsa.bounds (see mvpalab_findbound).
 
 % Check cfg structure:
-cfg = mvpalab_checkcfg(cfg);
+cfg = mvpalab_updatecfg(cfg);
 mvpalab_savecfg(cfg);
-mvpalab_checksignflip(cfg);
 
 %% Initialize
 stats = struct();
@@ -85,13 +85,13 @@ for sub = 1 : nsub
 
     %%  Select datamatrix:
     %   Select subject data, labels and timepoints. The RDMs are computed
-    %   once, so the supertrials are also built once per subject.
+    %   once, so the data is prepared once per subject (see
+    %   mvpalab_preparedata), as one repetition of a decoding analysis.
 
     mvpalab_checkfv(cfg,fv{sub});
     data.a.X = fv{sub}.X.a; data.a.Y = fv{sub}.Y.a;
-    data = mvpalab_supertrials(cfg,data);
-    X = mvpalab_chanselection(data.a.X,cfg); Y = data.a.Y;
-    X = X(:,:,cfg.tm.tpoints);
+    data = mvpalab_preparedata(cfg,data);
+    X = data.a.X(:,:,cfg.tm.tpoints); Y = data.a.Y;
 
     %% Neural and theoretical RDMs:
     %  rdm.rdm - [conditions x conditions x timepoints], or trials with
@@ -142,8 +142,9 @@ end
 %  If needed. The correlations and the coefficients have no effect at 0.
 
 if cfg.stats.flag
-    if cfg.stats.signflip, permaps = mvpalab_signmaps(res,0); end
-    stats = mvpalab_permtest(cfg,res,permaps);
+    nullmaps = permaps;
+    if cfg.stats.signflip, nullmaps = mvpalab_signmaps(res,0); end
+    stats = mvpalab_permtest(cfg,res,nullmaps);
 end
 
 % Save the configuration with the fields set by the analysis:

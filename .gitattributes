@@ -1,0 +1,2 @@
+# MATLAB files use LF line endings in the repository (see review M25).
+*.m text eol=lf

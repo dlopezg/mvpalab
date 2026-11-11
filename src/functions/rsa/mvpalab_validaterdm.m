@@ -1,13 +1,11 @@
 function mvpalab_validaterdm(cfg,Y,folds)
 %% MVPALAB_VALIDATERDM
 %
-%  This function checks the settings of the RDMs of one subject before
-%  they are computed (see mvpalab_rdm):
+%  This function checks the data of the RDMs of one subject before they
+%  are computed (see mvpalab_rdm). The settings that do not depend on the
+%  data are checked before the analysis starts (see mvpalab_validatersa).
+%  With cross-validated RDMs (cfg.rsa.nfolds > 1):
 %
-%  - Cross-validated RDMs (cfg.rsa.nfolds > 1) compare the pattern of each
-%    condition in the training set with the pattern of each condition in
-%    the test set, so they need condition-wise RDMs: in trial-wise RDMs the
-%    training and test trials are different trials.
 %  - Every condition needs at least one trial in each fold. Otherwise its
 %    pattern is the mean of an empty set (NaN), which turns its row and
 %    column of the RDM into NaN (Euclidean and crossnobis) or into wrong
@@ -15,10 +13,7 @@ function mvpalab_validaterdm(cfg,Y,folds)
 %    places one trial of a condition in every fold if the condition has at
 %    least cfg.rsa.nfolds trials, and predefined folds must include all
 %    the conditions.
-%  - Predefined folds need at least two folds, and cfg.rsa.nreps must be a
-%    positive integer.
-%  - The crossnobis distance is cross-validated, so it needs
-%    cfg.rsa.nfolds > 1.
+%  - Predefined folds need at least two folds.
 %
 %%  INPUT:
 %
@@ -31,20 +26,7 @@ function mvpalab_validaterdm(cfg,Y,folds)
 %  - {1D-array} - folds:
 %    Predefined fold of each trial, or empty for a stratified partition.
 
-if cfg.rsa.nfolds <= 1
-    if strcmp(cfg.rsa.distance,'crossnobis')
-        error(['The crossnobis distance is cross-validated and requires ' ...
-            'cfg.rsa.nfolds > 1. Use cfg.rsa.distance = ''mahalanobis'' ' ...
-            'without cross-validation.']);
-    end
-    return
-end
-
-if cfg.rsa.trialwise
-    error(['Cross-validated RDMs (cfg.rsa.nfolds > 1) require ' ...
-        'condition-wise RDMs (cfg.rsa.trialwise = false). Set ' ...
-        'cfg.rsa.nfolds = 1 to compute trial-wise RDMs.']);
-end
+if cfg.rsa.nfolds <= 1, return; end
 
 conds = unique(Y);
 
@@ -57,11 +39,6 @@ if isempty(folds)
             'trials: %s. Set cfg.rsa.nfolds to at most %d.'], ...
             cfg.rsa.nfolds,strjoin(compose('%s (%d trials)', ...
             string(conds(few)),ntrials(few)),', '),min(ntrials));
-    end
-    nreps = cfg.rsa.nreps;
-    if ~(isscalar(nreps) && nreps >= 1 && nreps == round(nreps))
-        error(['cfg.rsa.nreps must be a positive integer (number of ' ...
-            'repeated cross-validations).']);
     end
     return
 end

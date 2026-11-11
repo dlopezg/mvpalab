@@ -22,8 +22,8 @@ function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 %  empty). The values 3 and 4 of cfg.normdata have no effect in RSA (a
 %  warning is shown). With cfg.stats.flag the permuted maps are computed
 %  and the permutation test is run (mvpalab_permtest); with
-%  cfg.stats.signflip the sign flip test is used instead
-%  (mvpalab_signmaps).
+%  cfg.stats.signflip the sign flip test around 0 is used instead (see
+%  mvpalab_selectnull).
 %
 %  The results and the permuted maps are saved with mvpalab_save and the
 %  statistics by mvpalab_permtest, except in a sliding filter analysis
@@ -144,8 +144,7 @@ end
 %  If needed. The correlations and the coefficients have no effect at 0.
 
 if cfg.stats.flag
-    nullmaps = permaps;
-    if cfg.stats.signflip, nullmaps = mvpalab_signmaps(cfg,res,0); end
+    nullmaps = mvpalab_selectnull(cfg,res,permaps,0);
     stats = mvpalab_permtest(cfg,res,nullmaps);
 end
 

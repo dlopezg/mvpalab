@@ -18,7 +18,7 @@ function [cfg,diffMap,stats] = mvpalab_sfilter(cfg)
 %  If cfg.stats.flag is enabled, it computes the permutation test of the
 %  diffMaps (see mvpalab_permtest). With cfg.stats.signflip the permuted
 %  maps are not computed, and the test uses the sign flip maps of the
-%  diffMaps (see mvpalab_signmaps).
+%  diffMaps around 0 (see mvpalab_selectnull).
 %
 %  It saves cfg (see mvpalab_savecfg) after checking it and again after
 %  computing the maps, and these files in cfg.savefolder,
@@ -128,8 +128,7 @@ else
     [cfg,diffMap] = mvpalab_gendiffmap(...
         cfg,performance.(cfg.sf.metric),...
         performance_maps.(cfg.sf.metric));
-    % The diffMaps have no effect at 0:
-    if cfg.stats.flag, perdiffMap = mvpalab_signmaps(cfg,diffMap,0); end
+    perdiffMap = [];
 end
 
 result = diffMap.(cfg.sf.metric);
@@ -137,6 +136,8 @@ save(fullfile(cfg.savefolder,'result.mat'),'result','cfg','-v7.3');
 
 %% Compute permutation test if needed:
 if cfg.stats.flag
+    % Permuted or sign flip diffMaps; the diffMaps have no effect at 0:
+    perdiffMap = mvpalab_selectnull(cfg,diffMap,perdiffMap,0);
     save(fullfile(cfg.savefolder,'other','perdiffMap.mat'),...
         'perdiffMap','-v7.3');
     stats = mvpalab_permtest(cfg,diffMap,perdiffMap);

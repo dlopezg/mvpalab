@@ -74,15 +74,11 @@ mode = cfg.rsa.modality;
 dist = cfg.rsa.distance;
 crossval = cfg.rsa.nfolds > 1;
 
-if ~crossval && strcmp(dist,'crossnobis')
-    error(['The crossnobis distance is cross-validated and requires ' ...
-        'cfg.rsa.nfolds > 1. Use cfg.rsa.distance = ''mahalanobis'' ' ...
-        'without cross-validation.']);
-end
-
-%  Leave-one-run-out RDMs are condition-wise:
+%  Leave-one-run-out RDMs are condition-wise. The settings are checked as
+%  they are used (see mvpalab_validatersa):
 cfgcv = cfg;
 cfgcv.rsa.trialwise = false;
+mvpalab_validatersa(cfgcv);
 
 %% Generate and vectorize the theoretical RD matrices:
 %  Based on the previously designed models.

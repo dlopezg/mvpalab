@@ -2,18 +2,15 @@ function [maps,cfg] = mvpalab_nullmaps(cfg,fv,res)
 %% MVPALAB_NULLMAPS
 %
 %  This function returns the maps of the statistical test of a decoding
-%  analysis, the input of mvpalab_permtest:
+%  analysis, the input of mvpalab_permtest. Without cfg.stats.signflip it
+%  computes the permuted maps of each subject (see mvpalab_decoding); with
+%  it, the maps of the sign flip test. mvpalab_selectnull chooses between
+%  them, as in the other analyses.
 %
-%  - cfg.stats.signflip = false: permuted maps of each subject (see
-%    mvpalab_decoding).
-%  - cfg.stats.signflip = true: the result of each subject and its
-%    reflection around chance (see mvpalab_signmaps). Chance is one over
-%    the number of classes for accuracy and 0.5 for AUC, which is only
-%    available with two classes, so the classes must have the same size.
-%    Precision, recall and F1-score are not tested: they depend on the bias
-%    of the classifier towards one class, which for example changes outside
-%    the diagonal in temporal generalization, so they are not symmetric
-%    around chance.
+%  The chance level of the sign flip test is one over the number of
+%  classes for accuracy and 0.5 for AUC, which is only available with two
+%  classes, so the classes must have the same size: a warning is shown if
+%  cfg.classsize.match is disabled.
 %
 %%  INPUT:
 %
@@ -37,16 +34,15 @@ function [maps,cfg] = mvpalab_nullmaps(cfg,fv,res)
 % Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
 
-if cfg.stats.signflip
-    chance = 1/size(cfg.study.dataFiles,2);
-    if ~cfg.classsize.match
-        warning(['The sign flip test assumes a chance level of %.3g. Enable ' ...
-            'cfg.classsize.match if the classes have different sizes.'],chance);
-    end
-    classmetrics = intersect(fieldnames(res),{'precision','recall','f1score'});
-    maps = mvpalab_signmaps(cfg,rmfield(res,classmetrics),chance);
-else
-    [maps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
+chance = 1/size(cfg.study.dataFiles,2);
+permaps = [];
+if ~cfg.stats.signflip
+    [permaps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
+elseif ~cfg.classsize.match
+    warning(['The sign flip test assumes a chance level of %.3g. Enable ' ...
+        'cfg.classsize.match if the classes have different sizes.'],chance);
 end
+
+maps = mvpalab_selectnull(cfg,res,permaps,chance);
 
 end

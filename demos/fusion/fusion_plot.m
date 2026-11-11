@@ -38,8 +38,8 @@ figure(1); hold on;
 
 % Load results:
 
-load ('results/fusion_target/pearson/bin_rwVVC_bilateral/result.mat');
-load ('results/fusion_target/pearson/bin_rwVVC_bilateral/stats.mat');
+load ('results/fusion_cue/bin_rwVVC_bilateral/result.mat');
+load ('results/fusion_cue/bin_rwVVC_bilateral/stats.mat');
 
 % Significant indicator:
 graph.sigh = -.2;
@@ -66,8 +66,8 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 %% ROI 2: M1
 
 % Load results:
-load ('results/fusion_target/pearson/bin_rwM1_bilateral/result.mat');
-load ('results/fusion_target/pearson/bin_rwM1_bilateral/stats.mat');
+load ('results/fusion_cue/bin_rwM1_bilateral/result.mat');
+load ('results/fusion_cue/bin_rwM1_bilateral/stats.mat');
 
 % Significant indicator:
 graph.sigh = -.25;

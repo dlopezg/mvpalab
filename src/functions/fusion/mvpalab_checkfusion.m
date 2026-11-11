@@ -6,6 +6,7 @@ function mvpalab_checkfusion(cfg,nconds)
 %
 %  - cfg.fusion.mode is 'mean-fmri' or 'mean-eeg'. The mode 'no-mean'
 %    was removed (see mvpalab_fusion).
+%  - The settings of the permutation test (see mvpalab_checkstats).
 %  - The sign flip test is not available: the observations share the
 %    averaged RDM, and flipping their signs does not remove what they
 %    share, so it is liberal. The fusion uses the shared permutation test (see
@@ -29,6 +30,8 @@ if ~any(strcmp(cfg.fusion.mode,{'mean-fmri','mean-eeg'}))
     error(['cfg.fusion.mode must be ''mean-fmri'' or ''mean-eeg'' ' ...
         '(the mode ''no-mean'' was removed).']);
 end
+
+mvpalab_checkstats(cfg);
 
 if cfg.stats.signflip
     error(['The sign flip test is not available in the fusion, because ' ...

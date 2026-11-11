@@ -73,20 +73,23 @@ function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %    Configuration structure.
 %
 %  - {struct} - res:
-%    Correlations in res.(cfg.fusion.distance).(region)
-%    [1 x timepoints x observations], with one observation per M/EEG
-%    subject ('mean-fmri') or per fMRI subject ('mean-eeg').
+%    Correlations in res.(region) [1 x timepoints x observations], with
+%    one observation per M/EEG subject ('mean-fmri') or per fMRI subject
+%    ('mean-eeg'). They are saved in cfg.savefolder,
+%    cfg.location/results/cfg.analysis/<region> (see mvpalab_save): use
+%    cfg.analysis to keep apart the fusions of RDMs computed with different
+%    distances.
 %
 %  - {struct} - nullmaps:
 %    Maps of the null distribution of the permutation test, in
-%    nullmaps.(cfg.fusion.distance).(region): the permuted maps
+%    nullmaps.(region): the permuted maps
 %    [1 x timepoints x observations x permutations], where map k of every
 %    observation uses the same permutation. Empty without
 %    cfg.stats.flag.
 %
 %  - {struct} - stats:
 %    Result of the permutation test (see mvpalab_permtest), empty without
-%    cfg.stats.flag, in stats.(cfg.fusion.distance).(region), as res.
+%    cfg.stats.flag, in stats.(region), as res.
 
 %% Initialization:
 cfg = mvpalab_updatecfg(cfg);
@@ -95,7 +98,6 @@ mvpalab_checkfusion(cfg,nconds);
 mvpalab_savecfg(cfg);
 cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis);
 
-dist = cfg.fusion.distance;
 permaps = struct();
 nullmaps = struct();
 stats = struct();
@@ -115,9 +117,9 @@ for roi = 1 : numel(regions)
 
     for obs = 1 : numel(veeg)
         z = mvpalab_spearmanz(veeg{obs},vfmri{obs},pidx);
-        res.(dist).(region)(1,:,obs) = z(:,1)';
+        res.(region)(1,:,obs) = z(:,1)';
         if cfg.stats.flag
-            permaps.(dist).(region)(1,:,obs,:) = permute(z(:,2:end),[3 1 4 2]);
+            permaps.(region)(1,:,obs,:) = permute(z(:,2:end),[3 1 4 2]);
         end
     end
 end

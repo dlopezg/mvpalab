@@ -6,7 +6,6 @@ cfg.location = pwd;
 %% FUSION:
 
 cfg.fusion.mode = 'mean-fmri';
-cfg.fusion.distance = 'pearson';
 
 %% Import RDMs FMRI:
 

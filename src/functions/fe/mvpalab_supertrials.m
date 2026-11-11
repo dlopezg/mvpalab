@@ -7,7 +7,10 @@ function data = mvpalab_supertrials(cfg,data)
 %  The trials of each class are grouped in blocks of cfg.trialaver.ntrials
 %  (cfg.trialaver.order: random or consecutive trials) and each block is
 %  averaged. The remaining trials are not used. The class sizes are
-%  applied afterwards (see mvpalab_preparedata).
+%  applied afterwards (see mvpalab_preparedata). It gives an error if a
+%  class has fewer than cfg.trialaver.ntrials trials, because it would be
+%  left without supertrials; the other settings are checked before the
+%  analysis starts (see mvpalab_checktrialaver).
 %
 %  The classes are defined by the labels of the datasets, so a permuted map
 %  averages trials of the same permuted class (see mvpalab_permlabels).
@@ -38,6 +41,11 @@ sets = fieldnames(data);
 for dataset = 1 : numel(sets)
     [trials,classes{dataset}] = mvpalab_splitclasses(data.(sets{dataset}));
     for condition = 1 : numel(trials)
+        if size(trials{condition},1) < cfg.trialaver.ntrials
+            error(['Class %s has %d trials, fewer than cfg.trialaver.ntrials ' ...
+                '= %d.'],classes{dataset}{condition},size(trials{condition},1),...
+                cfg.trialaver.ntrials);
+        end
         fv{dataset,condition} = averageclass(cfg,trials{condition});
     end
 end

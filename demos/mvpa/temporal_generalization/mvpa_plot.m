@@ -32,22 +32,25 @@ mvpalab_plottempogen(graph,cfg,result);
 
 
 %% Mean accuracy plot (statistical significance)
+%  Only if the permutation test was computed (cfg.stats.flag):
 
-% Load results and and statistics if needed:
-load results/temporal_generalization/acc/result.mat
-load results/temporal_generalization/acc/stats.mat
+if cfg.stats.flag
+    % Load results and and statistics if needed:
+    load results/temporal_generalization/acc/result.mat
+    load results/temporal_generalization/acc/stats.mat
 
-% Plot significant clusters (above and below chance):
-graph.stats.above = true;
-graph.stats.below = true;
+    % Plot significant clusters (above and below chance):
+    graph.stats.above = true;
+    graph.stats.below = true;
 
-% Significant indicator:
-graph.sigh = .4;
+    % Significant indicator:
+    graph.sigh = .4;
 
-% Title:
-graph.title = 'Demo plot (statistical significance)';
+    % Title:
+    graph.title = 'Demo plot (statistical significance)';
 
-% Plot results:
-subplot(1,2,2);
-hold on;
-mvpalab_plottempogen(graph,cfg,result,stats);
+    % Plot results:
+    subplot(1,2,2);
+    hold on;
+    mvpalab_plottempogen(graph,cfg,result,stats);
+end

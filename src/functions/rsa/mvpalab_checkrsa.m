@@ -14,7 +14,9 @@ function mvpalab_checkrsa(cfg)
 %    within the folds of the classifiers (see mvpalab_preparetrain) and
 %    have no effect in RSA, so a warning is shown. The values 1 and 2 are
 %    applied to each trial or supertrial (see mvpalab_normtrials).
-%  - The settings of the sign flip test (see mvpalab_checksignflip).
+%  - The settings of the supertrials (see mvpalab_checktrialaver).
+%  - The settings of the permutation test (see mvpalab_checkstats) and of
+%    the sign flip test (see mvpalab_checksignflip).
 %
 %%  INPUT:
 %
@@ -41,9 +43,11 @@ if ~isempty(invalid)
         'valid field name other than ''rdms'' and ''theo''.'],ids{invalid});
 end
 
+mvpalab_checktrialaver(cfg);
+mvpalab_checkstats(cfg);
 mvpalab_checksignflip(cfg);
 
-if ~ismember(cfg.normdata,0:4)
+if ~isscalar(cfg.normdata) || ~ismember(cfg.normdata,0:4)
     error('cfg.normdata must be 0, 1, 2, 3 or 4.');
 end
 if cfg.normdata >= 3

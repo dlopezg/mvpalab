@@ -7,7 +7,6 @@ function mvpalab_checkstudy(cfg)
 %  - Each class of each dataset that is read has one file per subject: as
 %    many files as cfg.study.dataFiles{1,1}.
 %  - The files are .mat or .set files.
-%  - With supertrials, cfg.trialaver.ntrials is at least 1.
 %  - A sliding filter analysis needs cfg.sf.filesLocation.
 %
 %%  INPUT:
@@ -34,11 +33,6 @@ for dataset = 1 : 1 + mvcc
                 files{dataset,condition}{unknown});
         end
     end
-end
-
-%% Supertrials:
-if cfg.trialaver.flag && cfg.trialaver.ntrials < 1
-    error('cfg.trialaver.ntrials must be at least 1 to average trials.');
 end
 
 %% Sliding filter:

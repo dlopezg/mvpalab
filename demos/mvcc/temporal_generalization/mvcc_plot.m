@@ -41,31 +41,34 @@ hold on;
 mvpalab_plottempogen(graph,cfg,result);
 
 %% Mean accuracy plot (statistical significance)
+%  Only if the permutation test was computed (cfg.stats.flag):
 
-% Plot significant clusters (above and below chance):
-graph.stats.above = true;
-graph.stats.below = true;
+if cfg.stats.flag
+    % Plot significant clusters (above and below chance):
+    graph.stats.above = true;
+    graph.stats.below = true;
 
-% Title:
-graph.title = 'Demo plot  A- B (significant clusters)';
+    % Title:
+    graph.title = 'Demo plot  A- B (significant clusters)';
 
-% Plot results:
-load results/temporal_generalization/acc/ab/result.mat
-load results/temporal_generalization/acc/ab/stats.mat
-subplot(2,3,4);
-hold on;
-mvpalab_plottempogen(graph,cfg,result,stats);
+    % Plot results:
+    load results/temporal_generalization/acc/ab/result.mat
+    load results/temporal_generalization/acc/ab/stats.mat
+    subplot(2,3,4);
+    hold on;
+    mvpalab_plottempogen(graph,cfg,result,stats);
 
-graph.title = 'Demo plot  B - A (significant clusters)';
-load results/temporal_generalization/acc/ba/result.mat
-load results/temporal_generalization/acc/ba/stats.mat
-subplot(2,3,5);
-hold on;
-mvpalab_plottempogen(graph,cfg,result,stats);
+    graph.title = 'Demo plot  B - A (significant clusters)';
+    load results/temporal_generalization/acc/ba/result.mat
+    load results/temporal_generalization/acc/ba/stats.mat
+    subplot(2,3,5);
+    hold on;
+    mvpalab_plottempogen(graph,cfg,result,stats);
 
-graph.title = 'Demo plot mean (significant clusters)';
-load results/temporal_generalization/acc/mean/result.mat
-load results/temporal_generalization/acc/mean/stats.mat
-subplot(2,3,6);
-hold on;
-mvpalab_plottempogen(graph,cfg,result,stats);
+    graph.title = 'Demo plot mean (significant clusters)';
+    load results/temporal_generalization/acc/mean/result.mat
+    load results/temporal_generalization/acc/mean/stats.mat
+    subplot(2,3,6);
+    hold on;
+    mvpalab_plottempogen(graph,cfg,result,stats);
+end

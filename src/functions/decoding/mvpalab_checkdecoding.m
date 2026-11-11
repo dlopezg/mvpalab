@@ -14,7 +14,9 @@ function mvpalab_checkdecoding(cfg,mode)
 %      mvpalab_evalmetrics compares the first class with the others, so its
 %      result would depend on the order of the classes. In a sliding filter
 %      analysis cfg.sf.metric = 'auc' enables cfg.classmodel.auc.
-%  - The methods of the analysis (see mvpalab_checkmethods).
+%  - The methods of the analysis (see mvpalab_checkmethods) and the
+%    supertrials (see mvpalab_checktrialaver).
+%  - The settings of the permutation test (see mvpalab_checkstats).
 %  - Observed maps: the settings of the sign flip test (see
 %    mvpalab_checksignflip) and the feature weights (see
 %    mvpalab_checkwvector). The sign flip test is not available with
@@ -43,6 +45,8 @@ if size(cfg.study.dataFiles,2) > 2 && any(enabled)
 end
 
 mvpalab_checkmethods(cfg);
+mvpalab_checktrialaver(cfg);
+mvpalab_checkstats(cfg);
 
 if strcmp(mode,'permuted')
     if cfg.stats.signflip

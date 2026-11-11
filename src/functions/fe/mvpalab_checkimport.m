@@ -6,6 +6,7 @@ function mvpalab_checkimport(cfg)
 %  after some subjects have been read:
 %
 %  - The files of the study (see mvpalab_checkstudy).
+%  - The feature extraction (see mvpalab_checkfeatures).
 %  - The settings of the sign flip test (see mvpalab_checksignflip).
 %  - The classes of the analysis (see mvpalab_checkclasses).
 %  - EEGLAB, if it reads the .set files or filters the frequency bands of
@@ -24,6 +25,7 @@ function mvpalab_checkimport(cfg)
 %    analysis (see mvpalab_preparesf).
 
 mvpalab_checkstudy(cfg);
+mvpalab_checkfeatures(cfg);
 mvpalab_checksignflip(cfg);
 mvpalab_checkclasses(cfg);
 

@@ -82,16 +82,14 @@ for i = 1 : nC
 end
 
 %% Significant clusters:
+%  cfg.stats.clustcorr is 'max' or 'fdr' (see mvpalab_checkstats):
 if strcmp(cfg.stats.clustcorr,'max')
     sig_idx = cpvals < alpha;
-elseif strcmp(cfg.stats.clustcorr,'fdr')
+else
     if nC > 0
         cfdr = mvpalab_bhfdr(cpvals);
     end
     sig_idx = cfdr < alpha;
-else
-    error(['Unknown cluster correction method (cfg.stats.clustcorr): ' ...
-        cfg.stats.clustcorr]);
 end
 
 clusters.sig = [];

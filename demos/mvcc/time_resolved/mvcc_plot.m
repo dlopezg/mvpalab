@@ -37,40 +37,43 @@ graph.shadecolor = graph.colors.mvpalab{1};
 mvpalab_plotdecoding(graph,cfg,result);
 
 %% Mean accuracy plot (statistical significance)
+%  Only if the permutation test was computed (cfg.stats.flag):
 
-% Plot significant clusters (above and below chance):
-graph.stats.above = true;
-graph.stats.below = true;
+if cfg.stats.flag
+    % Plot significant clusters (above and below chance):
+    graph.stats.above = true;
+    graph.stats.below = true;
 
-% Significant indicator:
-graph.sigh = .4;
+    % Significant indicator:
+    graph.sigh = .4;
 
-% Title:
-graph.title = 'Demo plot (statistical significance)';
+    % Title:
+    graph.title = 'Demo plot (statistical significance)';
 
-% Plot results:
-subplot(1,2,2);
-hold on
+    % Plot results:
+    subplot(1,2,2);
+    hold on
 
-% Colors A - B:
-load results/time_resolved/acc/ab/result.mat
-load results/time_resolved/acc/ab/stats.mat
-graph.shadecolor = graph.colors.mvpalab{10};
-graph.sigc = graph.colors.mvpalab{10};
-mvpalab_plotdecoding(graph,cfg,result,stats);
+    % Colors A - B:
+    load results/time_resolved/acc/ab/result.mat
+    load results/time_resolved/acc/ab/stats.mat
+    graph.shadecolor = graph.colors.mvpalab{10};
+    graph.sigc = graph.colors.mvpalab{10};
+    mvpalab_plotdecoding(graph,cfg,result,stats);
 
-% Colors B - A:
-load results/time_resolved/acc/ba/result.mat
-load results/time_resolved/acc/ba/stats.mat
-graph.sigh = .42;
-graph.shadecolor = graph.colors.mvpalab{6};
-graph.sigc = graph.colors.mvpalab{6};
-mvpalab_plotdecoding(graph,cfg,result,stats);
+    % Colors B - A:
+    load results/time_resolved/acc/ba/result.mat
+    load results/time_resolved/acc/ba/stats.mat
+    graph.sigh = .42;
+    graph.shadecolor = graph.colors.mvpalab{6};
+    graph.sigc = graph.colors.mvpalab{6};
+    mvpalab_plotdecoding(graph,cfg,result,stats);
 
-% Colors mean:
-load results/time_resolved/acc/mean/result.mat
-load results/time_resolved/acc/mean/stats.mat
-graph.sigh = .44;
-graph.shadecolor = graph.colors.mvpalab{1};
-graph.sigc = graph.colors.mvpalab{1};
-mvpalab_plotdecoding(graph,cfg,result,stats);
+    % Colors mean:
+    load results/time_resolved/acc/mean/result.mat
+    load results/time_resolved/acc/mean/stats.mat
+    graph.sigh = .44;
+    graph.shadecolor = graph.colors.mvpalab{1};
+    graph.sigc = graph.colors.mvpalab{1};
+    mvpalab_plotdecoding(graph,cfg,result,stats);
+end

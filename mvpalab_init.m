@@ -474,8 +474,11 @@ cfg.sl.radius = 4;
 %                                     RDM of each M/EEG subject.
 %                       'mean-eeg'  - Mean M/EEG RDM with the RDM of each
 %                                     fMRI subject.
-% cfg.fusion.distance - Name of the dissimilarity measure of the RDMs, the
-%                       first field of the results and their folder.
+%
+% The fusion always correlates the RDMs with the Spearman correlation. The
+% distance of the RDMs (cfg.rsa.distance of the analyses that computed
+% them) is not known by the fusion: use cfg.analysis to keep apart the
+% results of RDMs with different distances.
 %
 % The permutation test of the fusion is a shared permutation of the
 % conditions: the same permutations for all the observations, with one null
@@ -486,7 +489,6 @@ cfg.sl.radius = 4;
 % test is not available in the fusion.
 
 cfg.fusion.mode = 'mean-fmri';
-cfg.fusion.distance = 'pearson';
 
 %% SLIDING FILTER ANALYSIS CONFIGURATION:
 
@@ -516,7 +518,7 @@ cfg.sf.hbw   = cfg.sf.bw/2;     % Halfband width (Hz), set from bw (see mvpalab_
 cfg.sf.order = 1408;            % Filter order (even).
 
 % Frequency steps:
-cfg.sf.fspac = 'log';  % Linear or logarithmic (lin/log.)
+cfg.sf.fspac = 'log';  % Spacing of the bands: 'lin' or 'log'.
 cfg.sf.nfreq = 10;     % Number of frequency bands.
 
 %% DATAFILES, PATHS AND CONDITIONS :

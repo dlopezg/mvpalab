@@ -33,9 +33,8 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps,pairing)
 %    See mvpalab_clusterpvals.
 %
 %  cfg.stats.tails selects the tails: 1 (above chance), -1 (below chance)
-%  or 2 (both). The function stops with an error if cfg.stats.tails is
-%  not one of them or if the settings of the sign flip test are not valid
-%  (see mvpalab_checksignflip). With cfg.stats.shownulldis it opens a
+%  or 2 (both). The function stops with an error if the settings of the
+%  test are not valid (see mvpalab_checkstats and mvpalab_checksignflip). With cfg.stats.shownulldis it opens a
 %  figure with the null distribution at the last position of the maps and
 %  the null distribution of the cluster sizes used by the correction (all
 %  the clusters with 'fdr', the largest cluster of each permuted map with
@@ -95,10 +94,7 @@ if ~any(strcmp(pairing,{'random','shared'}))
     error('The pairing of the permuted maps must be ''random'' or ''shared''.');
 end
 
-if ~ismember(cfg.stats.tails,[-1 1 2])
-    error('cfg.stats.tails must be 1 (above chance), -1 (below chance) or 2.');
-end
-
+mvpalab_checkstats(cfg);
 mvpalab_checksignflip(cfg);
 
 % Tails of the test:

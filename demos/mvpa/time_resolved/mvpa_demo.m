@@ -19,8 +19,10 @@ run cfg_file;
 
 %% Compute permutation maps and run statistical analysis:
 
-[nullmaps,cfg] = mvpalab_nullmaps(cfg,fv,result);
-stats = mvpalab_permtest(cfg,result,nullmaps);
+if cfg.stats.flag
+    [nullmaps,cfg] = mvpalab_nullmaps(cfg,fv,result);
+    stats = mvpalab_permtest(cfg,result,nullmaps);
+end
 
 %% Plot the results:
 

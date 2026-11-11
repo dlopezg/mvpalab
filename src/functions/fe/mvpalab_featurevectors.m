@@ -1,4 +1,4 @@
-function [out_data,cfg] = mvpalab_featurevectors(cfg,data,sub)
+function out_data = mvpalab_featurevectors(cfg,data)
 %% MVPALAB_FEATUREVECTORS
 %
 %  This function generates the feature vectors of one subject from the
@@ -13,10 +13,6 @@ function [out_data,cfg] = mvpalab_featurevectors(cfg,data,sub)
 %  repetition (see mvpalab_supertrials). Then each class needs at least
 %  cfg.trialaver.ntrials trials; otherwise it gives an error.
 %
-%  It also stores in cfg.datalength(sub,:) the number of trials of each
-%  class in the feature vectors, first those of dataset A and then those
-%  of dataset B.
-%
 %%  INPUT:
 %
 %  - {struct} - cfg:
@@ -28,9 +24,6 @@ function [out_data,cfg] = mvpalab_featurevectors(cfg,data,sub)
 %    cfg.study.conditionIdentifier without spaces, with the data
 %    [channels x timepoints x trials].
 %
-%  - {int} - sub:
-%    Subject.
-%
 %%  OUTPUT:
 %
 %  - {struct} - out_data:
@@ -38,9 +31,6 @@ function [out_data,cfg] = mvpalab_featurevectors(cfg,data,sub)
 %    in MVCC, b (see mvpalab_joinclasses). X: [trials x channels x
 %    timepoints]. With supertrials, also singletrials = true (see
 %    mvpalab_checkfv).
-%
-%  - {struct} - cfg:
-%    Configuration structure, with the changes above.
 
 %% Features of each class:
 for dataset = 1 : numel(data)
@@ -63,9 +53,6 @@ end
 if ~cfg.trialaver.flag
     fv = mvpalab_trimclasses(cfg,fv);
 end
-
-nobs = cellfun(@(x) size(x,1),fv');
-cfg.datalength(sub,:) = nobs(:)';
 
 %% Data and labels, with the classes named '1', '2'...:
 sets = {'a','b'};

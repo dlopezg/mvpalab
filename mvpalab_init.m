@@ -37,12 +37,23 @@ if nargin < 2 || updatepath
     addpath(genpath_exclude(fileparts(loc),{'\..*','demos'}));
 end
 
-%% ANALYSIS TYPE:
+%% ANALYSIS TYPE AND STUDY FOLDER:
 
 cfg.analysis = 'MVPA';
+cfg.location = pwd;
 
 % cfg.analysis = 'MVPA' - Multivariate Pattern Analysis.
 % cfg.analysis = 'MVCC' - Multivariate Cross-Classification.
+%
+% The import sets 'MVCC' if every class of dataset B has its files (see
+% mvpalab_preparestudy). RSA and fusion do not use it to decide anything:
+% any name can be used, and it is the name of the folder of their results
+% (see mvpalab_save).
+%
+% cfg.location - Folder of the study: cfg.mat, the results in
+%                cfg.location/results (see mvpalab_save and
+%                mvpalab_savecfg) and the differences of the sliding
+%                filter analysis. The current folder by default.
 
 %% FEATURE EXTRACTION:
 
@@ -132,6 +143,19 @@ cfg.smoothdata.window   = 1;
 
 %% ANALYSIS TIMING:
 
+% cfg.tm.tpstart, cfg.tm.tpend   - First and last time of the analysis
+%                                  (training window), in the units of the
+%                                  time vector of the data (ms in EEGLAB
+%                                  files). Both 0: the whole epoch.
+% cfg.tm.tpstart_, cfg.tm.tpend_ - Testing window of the temporal
+%                                  generalization. Both 0: the training
+%                                  window.
+% cfg.tm.tpsteps                 - One of every tpsteps timepoints is
+%                                  analyzed.
+%
+% The import adds the selected timepoints and the time vectors (see
+% mvpalab_timing).
+
 cfg.tm.tpstart   = 0;
 cfg.tm.tpend     = 0;
 cfg.tm.tpstart_  = 0;
@@ -139,6 +163,16 @@ cfg.tm.tpend_    = 0;
 cfg.tm.tpsteps   = 1;
 
 %% ELECTRODE SELECTION:
+
+% cfg.channels.selected        - Indices of the channels of the analysis
+%                                (all of them if empty, see
+%                                mvpalab_chanselection).
+% cfg.channels.chanloc         - Locations of the channels of the data,
+%                                read by the import from the EEGLAB files.
+% cfg.channels.selectedchanloc - Locations of the selected channels, set by
+%                                the analysis and used to plot the feature
+%                                weights (see mvpalab_updatechanloc).
+
 cfg.channels.selected = [];
 cfg.channels.chanloc = [];
 cfg.channels.selectedchanloc = [];
@@ -170,6 +204,20 @@ cfg.classmodel.optimize.opt = struct('Optimizer','gridsearch',...
 
 %% PERFORMANCE METRICS:
 
+% The accuracy is always computed. The other metrics are computed only if
+% they are enabled:
+% cfg.classmodel.roc       - ROC curve.
+% cfg.classmodel.auc       - Area under the ROC curve.
+% cfg.classmodel.confmat   - Confusion matrix.
+% cfg.classmodel.precision - Precision of each class.
+% cfg.classmodel.recall    - Recall of each class.
+% cfg.classmodel.f1score   - F1-score of each class.
+% cfg.classmodel.wvector   - Feature weights, raw and Haufe corrected
+%                            (linear models only, see mvpalab_checkwvector).
+%
+% All of them use the predictions of all the folds together (see
+% mvpalab_evalmetrics).
+
 cfg.classmodel.roc       = false;
 cfg.classmodel.auc       = false;
 cfg.classmodel.confmat   = false;
@@ -179,6 +227,19 @@ cfg.classmodel.f1score   = false;
 cfg.classmodel.wvector   = false;
 
 %% EXTRA CONFIGURATION:
+
+% cfg.classmodel.tempgen - Temporal generalization: the model trained at
+%                          each timepoint is tested at every timepoint of
+%                          the testing window (cfg.tm.tpstart_ and
+%                          cfg.tm.tpend_).
+% cfg.classmodel.extdiag - With temporal generalization, the GUI also
+%                          extracts the diagonal of the result (see
+%                          mvpalab_extractdiag).
+% cfg.classmodel.permlab - Permute the labels of the real analysis
+%                          ("permute labels" in the GUI), so the result
+%                          should be at chance (see mvpalab_permlabels).
+% cfg.classmodel.parcomp - Parallel computation (Parallel Computing
+%                          Toolbox).
 
 cfg.classmodel.tempgen = false;
 cfg.classmodel.extdiag = false;
@@ -194,8 +255,17 @@ end
 
 %% CROSS-VALIDATION PROCEDURE:
 
-% cfg.cv.method = 'kfold' - K-Fold cross-validation.
+% cfg.cv.method = 'kfold' - K-Fold cross-validation, with cfg.cv.nfolds
+%                           folds.
 % cfg.cv.method = 'loo'   - Leave-one-out cross-validation.
+% cfg.cv.method = 'none'  - No cross-validation, MVCC only: the model is
+%                           trained with all the trials of one dataset and
+%                           tested with all the trials of the other one.
+%
+% In MVCC each fold trains with its training trials of one dataset and
+% tests with the trials that it leaves out of the other dataset, so each
+% test trial is tested once (see mvpalab_dirpartition). Leave-one-out in
+% MVCC needs datasets of the same size.
 
 % cfg.cv.nreps - Number of repeated cross-validations (k-fold). Each
 % repetition draws a new random assignment of trials to folds, with new
@@ -243,10 +313,24 @@ cfg.cv.nreps   = 1;
 %                               the classification, so cfg.stats.nper is not
 %                               used. It needs classes of the same size
 %                               and enough subjects, needs cfg.stats.clustcorr
-%                               = 'max', and only tests accuracy and AUC.
+%                               = 'max', and in the classifiers it only
+%                               tests accuracy and AUC, whose chance level
+%                               is known (see mvpalab_nullmaps).
 %                               Available for MVPA (not with leave-one-out,
 %                               also in the sliding filter), MVCC, RSA and
 %                               the fusion modes 'mean-fmri' and 'mean-eeg'.
+
+% cfg.stats.flag        - Run the permutation test.
+% cfg.stats.nper        - Permuted maps of each subject: the analysis is
+%                         repeated nper times with permuted labels.
+% cfg.stats.nperg       - Permuted maps at group level, each one the mean
+%                         of one permuted map of each subject chosen at
+%                         random (see mvpalab_computepermtest).
+% cfg.stats.pgroup      - Percentile of the null distribution used as the
+%                         primary threshold at each position of the maps
+%                         (95: p < 0.05).
+% cfg.stats.pclust      - Confidence level of the clusters (95: p < 0.05).
+% cfg.stats.shownulldis - Show the null distributions in a figure.
 
 cfg.stats.flag   = 0;
 cfg.stats.signflip = false;
@@ -324,6 +408,23 @@ cfg.stats.shownulldis = 0;
 % cfg.rsa.meancenter - Center each pattern across features before computing
 %                      the Pearson distance (true = Pearson correlation,
 %                      false = cosine similarity).
+% cfg.rsa.trialwise  - true: RDMs of the single trials (or supertrials).
+%                      false: RDMs of the conditions, with the mean pattern
+%                      of each condition (see mvpalab_averagetrials).
+% cfg.rsa.tmodels    - Theoretical models, a cell array of structures with
+%                      the fields id (name of the model and of its field in
+%                      the results) and mdl (RDM of the model
+%                      [conditions x conditions], see mvpalab_gentrdms).
+%
+% fMRI regions of interest (mvpalab_import_fmri and mvpalab_rsa_roi):
+% cfg.rsa.subjects   - Folder of each subject.
+% cfg.rsa.betafolder - Folder of the first-level SPM model, inside the
+%                      folder of each subject.
+% cfg.rsa.conditions - Names of the conditions (regressor names of the SPM
+%                      model).
+% cfg.rsa.roi        - File of the mask of each region of interest.
+% cfg.rsa.roi_folder - Folder of the masks, inside the folder of each
+%                      subject.
 
 cfg.rsa.modality = 'corr';
 cfg.rsa.distance = 'pearson';
@@ -332,10 +433,45 @@ cfg.rsa.nfolds = 1;
 cfg.rsa.nreps = 1;
 cfg.rsa.mnn = false;
 cfg.rsa.meancenter = true;
+cfg.rsa.tmodels = {};
+
+cfg.rsa.subjects = {};
+cfg.rsa.betafolder = '';
+cfg.rsa.conditions = {};
+cfg.rsa.roi = {};
+cfg.rsa.roi_folder = '';
+
+%% SEARCHLIGHT (fMRI):
+
+% cfg.sl.radius - Radius of the searchlight sphere, in voxels (see
+%                 mvpalab_sphere).
+
+cfg.sl.radius = 4;
+
+%% M/EEG-FMRI FUSION:
+
+% cfg.fusion.mode     - Subjects of each correlation (see mvpalab_fusion):
+%                       'mean-fmri' - Mean fMRI RDM of each region with the
+%                                     RDM of each M/EEG subject.
+%                       'mean-eeg'  - Mean M/EEG RDM with the RDM of each
+%                                     fMRI subject.
+%                       'no-mean'   - Each pair of an fMRI subject and an
+%                                     M/EEG subject.
+% cfg.fusion.distance - Name of the dissimilarity measure of the RDMs, the
+%                       first field of the results and their folder.
+
+cfg.fusion.mode = 'mean-fmri';
+cfg.fusion.distance = 'pearson';
 
 %% SLIDING FILTER ANALYSIS CONFIGURATION:
 
-% Flag:
+% cfg.sf.flag          - Sliding filter analysis.
+% cfg.sf.filesLocation - Folder of the filtered feature vectors.
+% cfg.sf.savefdata     - Also save the filtered data (see
+%                        mvpalab_savesfdata).
+% cfg.sf.metric        - Metric of the differences: 'acc' (accuracy) or
+%                        'auc' (area under the ROC curve).
+
 cfg.sf.flag = 0;
 cfg.sf.filesLocation = '';
 cfg.sf.savefdata = false;
@@ -354,7 +490,7 @@ cfg.sf.order = 1408;            % Filter order.
 
 % Frequency steps:
 cfg.sf.fspac = 'log';  % Linear or logarithmic (lin/log.)
-cfg.sf.nfreq = 1;      % Number of steps - log (Hz).
+cfg.sf.nfreq = 10;     % Number of frequency bands.
 
 %% DATAFILES, PATHS AND CONDITIONS :
 

@@ -8,9 +8,9 @@ function masks = mvpalab_foldmasks(cfg,Y)
 %  supertrials.
 %
 %  Within one dataset (MVPA) the test trials of each fold are the others.
-%  Across datasets (MVCC) each fold uses these masks of each dataset, the
-%  training dataset to train and the test dataset to test (see
-%  mvpalab_dirpartition).
+%  Across datasets (MVCC) each fold trains with these trials of the
+%  training dataset and tests with the other trials of the test dataset
+%  (see mvpalab_dirpartition).
 %
 %%  INPUT:
 %

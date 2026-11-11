@@ -3,8 +3,11 @@ function perf = mvpalab_evalmetrics(pred,job)
 %
 %  This function computes the performance of the classifier at one
 %  timepoint from its predictions in all the folds, at each test timepoint
-%  (one, or all of them in temporal generalization). Only the metrics that
-%  the analysis keeps (job.keep) are computed; the other fields are empty.
+%  (one, or all of them in temporal generalization). All the metrics,
+%  accuracy included, use the predictions of all the folds together, so the
+%  accuracy is the correct rate of the confusion matrix also when the folds
+%  have different sizes. Only the metrics that the analysis keeps
+%  (job.keep) are computed; the other fields are empty.
 %
 %%  INPUT:
 %
@@ -13,7 +16,6 @@ function perf = mvpalab_evalmetrics(pred,job)
 %    - labels:  Predicted labels, one cell per test timepoint.
 %    - scores:  Predicted scores, one cell per test timepoint.
 %    - class:   First class of the model, the positive class of the ROC.
-%    - acc:     Accuracy of each fold and test timepoint [folds x ntp_].
 %    - raw:     Feature weights of each fold.
 %    - haufe:   Corrected feature weights of each fold.
 %
@@ -40,11 +42,10 @@ end
 for f = {'x','y','t'}
     perf.(f{1}) = {tests.(f{1})};
 end
-for f = {'auc','precision','recall','f1score'}
+for f = {'auc','acc','precision','recall','f1score'}
     perf.(f{1}) = [tests.(f{1})];
 end
 perf.confmat = cat(3,tests.confmat);
-perf.acc = mean(pred.acc,1);
 
 % Feature weights:
 perf.wvector = [];
@@ -62,6 +63,9 @@ keep = @(metrics) any(ismember(metrics,job.keep));
 
 perf.x = {}; perf.y = {}; perf.t = {}; perf.auc = NaN;
 perf.confmat = []; perf.precision = []; perf.recall = []; perf.f1score = [];
+
+% Correct rate of the predictions of all the folds:
+perf.acc = mean(truth == labels);
 
 % Compute confusion matrix if needed:
 if keep({'confmat','precision','recall','f1score'})

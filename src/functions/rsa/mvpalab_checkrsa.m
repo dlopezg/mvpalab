@@ -5,7 +5,8 @@ function mvpalab_checkrsa(cfg)
 %  starts:
 %
 %  - cfg.rsa.modality is 'corr', 'regress' or 'multiple_regress'.
-%  - Each theoretical model (cfg.rsa.tmodels) has its own id, and the id
+%  - There is at least one theoretical model (cfg.rsa.tmodels).
+%  - Each theoretical model has its own id, and the id
 %    is a valid field name other than 'rdms' and 'theo', the fields of the
 %    result that hold the RDMs: a model with one of these ids would lose
 %    its result without any error.
@@ -24,6 +25,10 @@ mode = cfg.rsa.modality;
 if ~any(strcmp(mode,{'corr','regress','multiple_regress'}))
     error(['RSA modality not recognized: ''%s''. Use ''corr'', ' ...
         '''regress'' or ''multiple_regress''.'],mode);
+end
+
+if isempty(cfg.rsa.tmodels)
+    error('cfg.rsa.tmodels needs at least one theoretical model.');
 end
 
 ids = cellfun(@(model) model.id,cfg.rsa.tmodels,'UniformOutput',false);

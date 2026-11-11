@@ -34,7 +34,7 @@ for sub = 1 : nsub
         end
 
         data = mvpalab_classdata(cfg,filtered);
-        [fv,cfg] = mvpalab_featurevectors(cfg,data,sub);
+        fv = mvpalab_featurevectors(cfg,data);
         mvpalab_savesfdata(cfg,data,fv,sub,freq);
     end
 end

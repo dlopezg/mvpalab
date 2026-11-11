@@ -32,7 +32,7 @@ fv = cell(1,nsub);
 for sub = 1 : nsub
     [raw,cfg] = mvpalab_readsubject(cfg,sub);
     data(sub,:) = mvpalab_classdata(cfg,raw);
-    [fv{sub},cfg] = mvpalab_featurevectors(cfg,data(sub,:),sub);
+    fv{sub} = mvpalab_featurevectors(cfg,data(sub,:));
 end
 
 end

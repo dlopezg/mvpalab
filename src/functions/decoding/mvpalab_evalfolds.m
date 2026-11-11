@@ -47,7 +47,6 @@ nfolds = size(part.train,2);
 truth = cell(nfolds,1);
 labels = cell(nfolds,numel(tps));
 scores = labels;
-acc = zeros(nfolds,numel(tps));
 raw = [];
 haufe = [];
 
@@ -69,7 +68,6 @@ for k = 1 : nfolds
     for j = 1 : numel(tps)
         test_X = mvpalab_preparetest(test.X(part.test(:,k),:,tps(j)),fold);
         [labels{k,j},scores{k,j}] = predict(mdl,test_X);
-        acc(k,j) = sum(truth{k} == labels{k,j})/length(truth{k});
     end
 end
 
@@ -80,7 +78,6 @@ for j = 1 : numel(tps)
     pred.scores{j} = vertcat(scores{:,j});
 end
 pred.class = mdl.ClassNames(1);
-pred.acc = acc;
 pred.raw = raw;
 pred.haufe = haufe;
 

@@ -16,8 +16,7 @@ function mvpalab_checkfusion(cfg)
 %    Configuration structure (cfg.fusion and cfg.stats).
 
 modes = {'mean-fmri','mean-eeg','no-mean'};
-if ~isfield(cfg,'fusion') || ~isfield(cfg.fusion,'mode') || ...
-        ~any(strcmp(cfg.fusion.mode,modes))
+if ~any(strcmp(cfg.fusion.mode,modes))
     error('cfg.fusion.mode must be ''mean-fmri'', ''mean-eeg'' or ''no-mean''.');
 end
 

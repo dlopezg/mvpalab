@@ -55,8 +55,8 @@ cfg = mvpalab_updatecfg(cfg);
 
 % Check the settings of the analysis. The permuted maps follow the same
 % settings, and the sign flip test does not compute them:
-mvpalab_checkdecoding(cfg,'observed');
-mvpalab_checksf(cfg);
+mvpalab_validatedecoding(cfg,'observed');
+mvpalab_validatesf(cfg);
 mvpalab_savecfg(cfg);
 
 % Folder of the results (see mvpalab_save):

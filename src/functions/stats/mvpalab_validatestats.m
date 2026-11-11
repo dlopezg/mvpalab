@@ -1,5 +1,5 @@
-function mvpalab_checkstats(cfg)
-%% MVPALAB_CHECKSTATS
+function mvpalab_validatestats(cfg)
+%% MVPALAB_VALIDATESTATS
 %
 %  This function checks the settings of the permutation test, so a wrong
 %  value stops with a clear error before the analysis computes its maps:
@@ -13,9 +13,9 @@ function mvpalab_checkstats(cfg)
 %
 %  It checks them even if cfg.stats.flag is disabled, because the test
 %  can also be run after the analysis (see mvpalab_permtest).
-%  mvpalab_checkdecoding, mvpalab_checkrsa, mvpalab_checkfusion and
-%  mvpalab_computepermtest call it. The sign flip test is checked by
-%  mvpalab_checksignflip.
+%  mvpalab_validatedecoding, mvpalab_validatersa, mvpalab_validatefusion
+%  and mvpalab_computepermtest call it. The sign flip test is checked by
+%  mvpalab_validatesignflip.
 %
 %%  INPUT:
 %

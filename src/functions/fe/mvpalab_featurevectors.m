@@ -25,7 +25,7 @@ function out_data = mvpalab_featurevectors(cfg,data)
 %  - {struct} - out_data:
 %    Data matrices (X) and categorical labels (Y), with the fields a and,
 %    in MVCC, b (see mvpalab_joinclasses). X: [trials x channels x
-%    timepoints], and singletrials = true (see mvpalab_checkfv).
+%    timepoints], and singletrials = true (see mvpalab_validatefv).
 
 %% Features of each class:
 for dataset = 1 : numel(data)
@@ -46,7 +46,7 @@ for dataset = 1 : size(fv,1)
     out_data.Y.(sets{dataset}) = joined.Y;
 end
 
-%  mvpalab_checkfv needs to know that they are not supertrials:
+%  mvpalab_validatefv needs to know that they are not supertrials:
 out_data.singletrials = true;
 
 fprintf('\n');

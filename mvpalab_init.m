@@ -227,7 +227,8 @@ cfg.classmodel.optimize.opt = struct('Optimizer','gridsearch',...
 % cfg.classmodel.recall    - Recall of each class.
 % cfg.classmodel.f1score   - F1-score of each class.
 % cfg.classmodel.wvector   - Feature weights, raw and Haufe corrected
-%                            (linear models only, see mvpalab_checkwvector).
+%                            (linear models only, see
+%                            mvpalab_validateweights).
 %
 % All of them use the predictions of all the folds together (see
 % mvpalab_evalmetrics).

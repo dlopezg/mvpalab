@@ -1,5 +1,5 @@
-function mvpalab_checksf(cfg)
-%% MVPALAB_CHECKSF
+function mvpalab_validatesf(cfg)
+%% MVPALAB_VALIDATESF
 %
 %  This function checks the settings of a sliding filter analysis before
 %  the import removes the filtered data of a previous analysis (see

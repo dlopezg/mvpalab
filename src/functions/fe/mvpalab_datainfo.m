@@ -5,7 +5,7 @@ function cfg = mvpalab_datainfo(cfg,raw)
 %  data, taken from the first file of the first subject: the sampling
 %  frequency (cfg.fs), the channel locations (cfg.channels.chanloc) and
 %  the timepoints of the analysis (see mvpalab_timing). The files of every
-%  subject are checked against it (see mvpalab_checkdata).
+%  subject are checked against it (see mvpalab_validatefiles).
 %
 %  The times must be in milliseconds (see mvpalab_dataformat), as cfg.tm
 %  and the plots. A sample lasts 1000/fs milliseconds, or 1/fs seconds, so

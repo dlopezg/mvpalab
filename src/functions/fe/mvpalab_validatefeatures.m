@@ -1,5 +1,5 @@
-function mvpalab_checkfeatures(cfg)
-%% MVPALAB_CHECKFEATURES
+function mvpalab_validatefeatures(cfg)
+%% MVPALAB_VALIDATEFEATURES
 %
 %  This function checks the settings of the feature extraction before the
 %  import reads any file (see mvpalab_classfeatures), so a misspelled
@@ -13,7 +13,7 @@ function mvpalab_checkfeatures(cfg)
 %    smoothing cfg.smoothdata.window is a whole number of at least 1 (see
 %    mvpalab_smoothdata).
 %
-%  mvpalab_checkimport calls it.
+%  mvpalab_validateimport calls it.
 %
 %%  INPUT:
 %

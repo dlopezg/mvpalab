@@ -1,5 +1,5 @@
-function mvpalab_checkclasses(cfg)
-%% MVPALAB_CHECKCLASSES
+function mvpalab_validateclasses(cfg)
+%% MVPALAB_VALIDATECLASSES
 %
 %  This function checks the classes of the study, so the import or an
 %  analysis stops before it starts:
@@ -20,8 +20,8 @@ function mvpalab_checkclasses(cfg)
 %    map per class and one with the mean of the classes, named 'mean' (see
 %    mvpalab_decodingjob).
 %
-%  mvpalab_checkimport and mvpalab_checkdecoding call it. The metrics that
-%  need two classes are checked by mvpalab_checkdecoding.
+%  mvpalab_validateimport and mvpalab_validatedecoding call it. The
+%  metrics that need two classes are checked by mvpalab_validatedecoding.
 %
 %%  INPUT:
 %

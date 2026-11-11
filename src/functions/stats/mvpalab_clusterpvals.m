@@ -82,7 +82,7 @@ for i = 1 : nC
 end
 
 %% Significant clusters:
-%  cfg.stats.clustcorr is 'max' or 'fdr' (see mvpalab_checkstats):
+%  cfg.stats.clustcorr is 'max' or 'fdr' (see mvpalab_validatestats):
 if strcmp(cfg.stats.clustcorr,'max')
     sig_idx = cpvals < alpha;
 else

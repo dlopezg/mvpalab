@@ -33,7 +33,7 @@ function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %    share. In a simulation with a 5% level they reached 22-30% of false
 %    positives in 'mean-eeg' and 8-13% in 'mean-fmri', while the shared
 %    permutation stayed at 2-5% in both modes. The sign flip test is not
-%    available (see mvpalab_checkfusion).
+%    available (see mvpalab_validatefusion).
 %  - The conditions are treated as random and the subjects of both
 %    modalities as fixed: the result holds for these subjects and these
 %    conditions (the condition-label randomization test of Nili et al.,
@@ -42,7 +42,7 @@ function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %  The results and the permuted maps are saved with mvpalab_save, the
 %  statistics are saved by mvpalab_permtest, and the configuration is
 %  saved with mvpalab_savecfg once the settings are checked (see
-%  mvpalab_checkfusion) and at the end of the analysis.
+%  mvpalab_validatefusion) and at the end of the analysis.
 %
 %  - Nili, H., Wingfield, C., Walther, A., Su, L., Marslen-Wilson, W., &
 %    Kriegeskorte, N. (2014). A toolbox for representational similarity
@@ -94,7 +94,7 @@ function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %% Initialization:
 cfg = mvpalab_updatecfg(cfg);
 nconds = size(eeg_rdms{1},1);
-mvpalab_checkfusion(cfg,nconds);
+mvpalab_validatefusion(cfg,nconds);
 mvpalab_savecfg(cfg);
 cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis);
 

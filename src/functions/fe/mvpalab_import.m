@@ -4,7 +4,7 @@ function [cfg, data, fv] = mvpalab_import(cfg)
 %  This function starts an analysis: it checks the configuration structure
 %  and saves it, prepares the frequency bands of a sliding filter analysis
 %  (see mvpalab_preparesf), checks its settings before reading any file
-%  (see mvpalab_checkimport) and reads the data of each subject (see
+%  (see mvpalab_validateimport) and reads the data of each subject (see
 %  mvpalab_readdata). It saves the configuration again at the end, with the
 %  fields set by the import.
 %
@@ -38,7 +38,7 @@ mvpalab_savecfg(cfg);
 
 % Settings of the study and checks before reading any file:
 if cfg.sf.flag, cfg = mvpalab_preparesf(cfg); end
-mvpalab_checkimport(cfg);
+mvpalab_validateimport(cfg);
 
 if cfg.sf.flag
     mvpalab_sffolders(cfg);

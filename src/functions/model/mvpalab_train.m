@@ -20,7 +20,7 @@ function [ mdl , w ] = mvpalab_train(train_X,train_Y,cfg)
 %  discriminant type 'linear'; otherwise they are NaN. With more than two
 %  classes, the weights of the linear discriminant are those between the
 %  first two classes (mdl.Coeffs(2,1)), and the analysis does not use them
-%  (see mvpalab_checkclasses).
+%  (see mvpalab_validateclasses).
 %
 %%  INPUT:
 %
@@ -65,7 +65,7 @@ if strcmp(cfg.classmodel.method,'svm')
     
     if numel(unique(train_Y)) > 2
         % One binary SVM per pair of classes, combined by fitcecoc. There
-        % are no feature weights (see mvpalab_checkclasses):
+        % are no feature weights (see mvpalab_validateclasses):
         mdl = fitcecoc(train_X,train_Y,'Learners',templateSVM(kernel{:}),...
             'Coding','onevsone',optimize{:});
         w = NaN(size(train_X,2),1);

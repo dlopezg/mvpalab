@@ -10,7 +10,7 @@ function data = mvpalab_supertrials(cfg,data)
 %  applied afterwards (see mvpalab_preparedata). It gives an error if a
 %  class has fewer than cfg.trialaver.ntrials trials, because it would be
 %  left without supertrials; the other settings are checked before the
-%  analysis starts (see mvpalab_checktrialaver).
+%  analysis starts (see mvpalab_validatesupertrials).
 %
 %  The classes are defined by the labels of the datasets, so a permuted map
 %  averages trials of the same permuted class (see mvpalab_permlabels).

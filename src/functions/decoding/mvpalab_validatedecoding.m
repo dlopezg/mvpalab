@@ -1,11 +1,11 @@
-function mvpalab_checkdecoding(cfg,mode)
-%% MVPALAB_CHECKDECODING
+function mvpalab_validatedecoding(cfg,mode)
+%% MVPALAB_VALIDATEDECODING
 %
 %  This function checks the settings of a decoding analysis (MVPA or MVCC)
 %  before it starts, so a wrong setting stops with a clear error instead of
 %  failing later or giving a wrong result:
 %
-%  - The classes of the analysis (see mvpalab_checkclasses).
+%  - The classes of the analysis (see mvpalab_validateclasses).
 %  - With more than two classes, the metrics that are only defined for two
 %    classes are not available:
 %    - cfg.classmodel.wvector: there is one set of feature weights per pair
@@ -14,12 +14,12 @@ function mvpalab_checkdecoding(cfg,mode)
 %      mvpalab_evalmetrics compares the first class with the others, so its
 %      result would depend on the order of the classes. In a sliding filter
 %      analysis cfg.sf.metric = 'auc' enables cfg.classmodel.auc.
-%  - The methods of the analysis (see mvpalab_checkmethods) and the
-%    supertrials (see mvpalab_checktrialaver).
-%  - The settings of the permutation test (see mvpalab_checkstats).
+%  - The methods of the analysis (see mvpalab_validateclassifier) and the
+%    supertrials (see mvpalab_validatesupertrials).
+%  - The settings of the permutation test (see mvpalab_validatestats).
 %  - Observed maps: the settings of the sign flip test (see
-%    mvpalab_checksignflip) and the feature weights (see
-%    mvpalab_checkwvector). The sign flip test is not available with
+%    mvpalab_validatesignflip) and the feature weights (see
+%    mvpalab_validateweights). The sign flip test is not available with
 %    leave-one-out in MVPA: the left-out trial leaves its class with one
 %    trial less in the training set, so the accuracy without effect is
 %    below 0.5. This also applies to a sliding filter analysis.
@@ -36,7 +36,7 @@ function mvpalab_checkdecoding(cfg,mode)
 %  - {string} - mode:
 %    'observed' or 'permuted'.
 
-mvpalab_checkclasses(cfg);
+mvpalab_validateclasses(cfg);
 
 metrics = {'wvector','auc','roc'};
 enabled = cellfun(@(metric) logical(cfg.classmodel.(metric)),metrics);
@@ -44,20 +44,20 @@ if size(cfg.study.dataFiles,2) > 2 && any(enabled)
     error('cfg.classmodel.%s needs two classes.',metrics{find(enabled,1)});
 end
 
-mvpalab_checkmethods(cfg);
-mvpalab_checktrialaver(cfg);
-mvpalab_checkstats(cfg);
+mvpalab_validateclassifier(cfg);
+mvpalab_validatesupertrials(cfg);
+mvpalab_validatestats(cfg);
 
 if strcmp(mode,'permuted')
     if cfg.stats.signflip
         error('The sign flip test has no permuted maps. Use mvpalab_nullmaps.');
     end
 else
-    mvpalab_checksignflip(cfg);
+    mvpalab_validatesignflip(cfg);
     if cfg.stats.signflip && ~mvpalab_ismvcc(cfg) && strcmp(cfg.cv.method,'loo')
         error('The sign flip test is not available with leave-one-out in MVPA.');
     end
-    mvpalab_checkwvector(cfg);
+    mvpalab_validateweights(cfg);
 end
 
 end

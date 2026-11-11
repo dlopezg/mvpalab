@@ -49,7 +49,7 @@ fprintf('   - Computing neural RDMs:');
 
 %% Checks and folds of each repetition:
 if nargin < 4, folds = []; end
-mvpalab_checkrdm(cfg,Y,folds);
+mvpalab_validaterdm(cfg,Y,folds);
 folds = mvpalab_rdmfolds(cfg,Y,folds);
 nreps = size(folds,2);
 

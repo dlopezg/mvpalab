@@ -37,7 +37,7 @@ function maps = mvpalab_signmaps(cfg,res,chance)
 %    https://doi.org/10.1016/j.neuroimage.2016.07.040
 %
 %  It shows a warning if there are too few subjects for anything to be
-%  significant (see mvpalab_checksignflip).
+%  significant (see mvpalab_validatesignflip).
 %
 %%  INPUT:
 %
@@ -60,7 +60,7 @@ function maps = mvpalab_signmaps(cfg,res,chance)
 %    the feature weights (see mvpalab_permtest).
 
 maps = reflect(res,chance);
-mvpalab_checksignflip(cfg,observations(maps));
+mvpalab_validatesignflip(cfg,observations(maps));
 
 end
 

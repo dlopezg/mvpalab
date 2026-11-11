@@ -1,5 +1,5 @@
-function mvpalab_checkdata(cfg,raw,sub)
-%% MVPALAB_CHECKDATA
+function mvpalab_validatefiles(cfg,raw,sub)
+%% MVPALAB_VALIDATEFILES
 %
 %  This function checks that the files of one subject agree with the
 %  information of the study (see mvpalab_datainfo): the same sampling

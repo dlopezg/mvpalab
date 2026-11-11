@@ -1,5 +1,5 @@
-function mvpalab_checkstudy(cfg)
-%% MVPALAB_CHECKSTUDY
+function mvpalab_validatestudy(cfg)
+%% MVPALAB_VALIDATESTUDY
 %
 %  This function checks the files of the study before any of them is read,
 %  so the import stops with a clear error:

@@ -1,5 +1,5 @@
-function mvpalab_checkrdm(cfg,Y,folds)
-%% MVPALAB_CHECKRDM
+function mvpalab_validaterdm(cfg,Y,folds)
+%% MVPALAB_VALIDATERDM
 %
 %  This function checks the settings of the RDMs of one subject before
 %  they are computed (see mvpalab_rdm):

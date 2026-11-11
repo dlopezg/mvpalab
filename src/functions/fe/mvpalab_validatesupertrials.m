@@ -1,5 +1,5 @@
-function mvpalab_checktrialaver(cfg)
-%% MVPALAB_CHECKTRIALAVER
+function mvpalab_validatesupertrials(cfg)
+%% MVPALAB_VALIDATESUPERTRIALS
 %
 %  This function checks the settings of the supertrials before an
 %  analysis loads any subject. The supertrials are built by the analysis
@@ -12,7 +12,7 @@ function mvpalab_checktrialaver(cfg)
 %
 %  Each class also needs at least cfg.trialaver.ntrials trials, which
 %  depends on the data, so mvpalab_supertrials checks it.
-%  mvpalab_checkdecoding and mvpalab_checkrsa call it.
+%  mvpalab_validatedecoding and mvpalab_validatersa call it.
 %
 %%  INPUT:
 %

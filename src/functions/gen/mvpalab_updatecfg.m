@@ -3,7 +3,7 @@ function cfg = mvpalab_updatecfg(cfg)
 %
 %  This function updates a configuration structure to the current version
 %  of the toolbox. It does not check the settings of an analysis (see, for
-%  example, mvpalab_checkdecoding).
+%  example, mvpalab_validatedecoding).
 %
 %  The renamed fields of older versions are updated first (see
 %  mvpalab_backCompatibility). Then the structure is completed with the

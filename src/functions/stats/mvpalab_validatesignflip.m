@@ -1,5 +1,5 @@
-function mvpalab_checksignflip(cfg,nobs)
-%% MVPALAB_CHECKSIGNFLIP
+function mvpalab_validatesignflip(cfg,nobs)
+%% MVPALAB_VALIDATESIGNFLIP
 %
 %  This function checks the settings of the sign flip test (see
 %  mvpalab_signmaps), so an analysis stops before it starts:
@@ -7,7 +7,7 @@ function mvpalab_checksignflip(cfg,nobs)
 %  - The maximum cluster size is needed, because the null distribution of
 %    all the cluster sizes grows with the effect.
 %
-%  Leave-one-out in MVPA is checked by mvpalab_checkdecoding.
+%  Leave-one-out in MVPA is checked by mvpalab_validatedecoding.
 %
 %  With the number of subjects (nobs), it also shows a warning if nothing
 %  can be significant. The test has 2^nobs combinations of signs and the

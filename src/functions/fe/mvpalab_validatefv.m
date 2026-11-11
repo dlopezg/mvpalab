@@ -1,5 +1,5 @@
-function mvpalab_checkfv(cfg,fv)
-%% MVPALAB_CHECKFV
+function mvpalab_validatefv(cfg,fv)
+%% MVPALAB_VALIDATEFV
 %
 %  This function checks that the feature vectors can be used to build
 %  supertrials. The import marks its feature vectors as single trials

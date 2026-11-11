@@ -32,7 +32,7 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %  for MVCC (see mvpalab_signmaps).
 %
 %  It stops with an error before computing or saving anything if a
-%  setting is not valid (see mvpalab_checkdecoding) or if cfg.sf.flag is
+%  setting is not valid (see mvpalab_validatedecoding) or if cfg.sf.flag is
 %  enabled, because a sliding filter analysis is computed by
 %  mvpalab_sfilter. It saves:
 %
@@ -73,7 +73,7 @@ cfg = mvpalab_updatecfg(cfg);
 if cfg.sf.flag
     error('Use mvpalab_sfilter for a sliding filter analysis (cfg.sf.flag).');
 end
-mvpalab_checkdecoding(cfg,mode);
+mvpalab_validatedecoding(cfg,mode);
 mvpalab_savecfg(cfg);
 
 % Folder of the results (see mvpalab_save):

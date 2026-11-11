@@ -1,5 +1,5 @@
-function mvpalab_checkeeglab()
-%% MVPALAB_CHECKEEGLAB
+function mvpalab_validateeeglab()
+%% MVPALAB_VALIDATEEEGLAB
 %
 %  This function checks that EEGLAB is available. If eeglab.m is in the
 %  MATLAB path but pop_firws is not, it shows a warning and initializes

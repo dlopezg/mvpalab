@@ -37,7 +37,7 @@ else
     fv = fv{job.sub};
 end
 
-mvpalab_checkfv(cfg,fv);
+mvpalab_validatefv(cfg,fv);
 
 %% Datasets:
 data.a.X = fv.X.a;

@@ -6,7 +6,7 @@ function cfg = mvpalab_plotfreqresp(cfg)
 %  EEGLAB from cfg.sf.wtype (with the beta of mvpalab_kaiserbeta for the
 %  Kaiser window, as the filter) and cfg.sf.order. The filter is
 %  band-stop if cfg.sf.ftype is 'bandstop' and band-pass if it is
-%  'bandpass', the two types accepted (see mvpalab_checksf). The x axis
+%  'bandpass', the two types accepted (see mvpalab_validatesf). The x axis
 %  goes up to cfg.sf.hfreq. It needs EEGLAB and the bands in
 %  cfg.sf.fcutoff (see mvpalab_genfreqvec). The first subplot shows the
 %  bands of cfg.sf.fspac, and the second one the bands generated again
@@ -28,7 +28,7 @@ function cfg = mvpalab_plotfreqresp(cfg)
 %    changed to the other spacing.
 
     % Check if EEGlab is installed.
-    mvpalab_checkeeglab();
+    mvpalab_validateeeglab();
     
     % Select FS:
     if isfield(cfg,'fs')

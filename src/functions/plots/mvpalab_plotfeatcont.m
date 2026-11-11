@@ -6,7 +6,7 @@ function mvpalab_plotfeatcont(graph,cfg,weights,result)
 %  decoding performance with the selected temporal window. It opens new
 %  figures, and shows a warning without plotting if
 %  cfg.channels.selectedchanloc is empty. EEGLAB is checked with
-%  mvpalab_checkeeglab.
+%  mvpalab_validateeeglab.
 %
 %  The weights are averaged across subjects, or one subject is selected
 %  (graph.weights.sub), between graph.weights.start and
@@ -43,7 +43,7 @@ if isempty(cfg.channels.selectedchanloc)
 end
 
 % Check if EEGlab is installed:
-mvpalab_checkeeglab();
+mvpalab_validateeeglab();
 
 if ~isfield(graph,'xlim'), graph.xlim = cfg.tm.times([1 end]); end
 

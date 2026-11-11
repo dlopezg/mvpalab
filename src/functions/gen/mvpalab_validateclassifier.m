@@ -1,5 +1,5 @@
-function mvpalab_checkmethods(cfg)
-%% MVPALAB_CHECKMETHODS
+function mvpalab_validateclassifier(cfg)
+%% MVPALAB_VALIDATECLASSIFIER
 %
 %  This function checks the methods of a decoding analysis before it
 %  starts, so an unsupported value stops with a clear error instead of
@@ -14,8 +14,8 @@ function mvpalab_checkmethods(cfg)
 %  - cfg.dimred.method is 'none' or 'pca', and 'pca' needs a whole
 %    cfg.dimred.ncomp of at least 1, a single number.
 %
-%  mvpalab_checkdecoding calls it. RSA checks cfg.normdata in
-%  mvpalab_checkrsa.
+%  mvpalab_validatedecoding calls it. RSA checks cfg.normdata in
+%  mvpalab_validatersa.
 %
 %%  INPUT:
 %

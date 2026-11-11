@@ -34,10 +34,11 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps,pairing)
 %
 %  cfg.stats.tails selects the tails: 1 (above chance), -1 (below chance)
 %  or 2 (both). The function stops with an error if the settings of the
-%  test are not valid (see mvpalab_checkstats and mvpalab_checksignflip). With cfg.stats.shownulldis it opens a
-%  figure with the null distribution at the last position of the maps and
-%  the null distribution of the cluster sizes used by the correction (all
-%  the clusters with 'fdr', the largest cluster of each permuted map with
+%  test are not valid (see mvpalab_validatestats and
+%  mvpalab_validatesignflip). With cfg.stats.shownulldis it opens a figure
+%  with the null distribution at the last position of the maps and the
+%  null distribution of the cluster sizes used by the correction (all the
+%  clusters with 'fdr', the largest cluster of each permuted map with
 %  'max'). It does not save any file.
 %
 %  - Maris, E., & Oostenveld, R. (2007). Nonparametric statistical testing
@@ -94,8 +95,8 @@ if ~any(strcmp(pairing,{'random','shared'}))
     error('The pairing of the permuted maps must be ''random'' or ''shared''.');
 end
 
-mvpalab_checkstats(cfg);
-mvpalab_checksignflip(cfg);
+mvpalab_validatestats(cfg);
+mvpalab_validatesignflip(cfg);
 
 % Tails of the test:
 above = cfg.stats.tails ~= -1;

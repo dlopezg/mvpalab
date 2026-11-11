@@ -1,5 +1,5 @@
-function mvpalab_checkwvector(cfg)
-%% MVPALAB_CHECKWVECTOR
+function mvpalab_validateweights(cfg)
+%% MVPALAB_VALIDATEWEIGHTS
 %
 %  This function warns the user at the beginning of the analysis if the
 %  feature weights are requested with a non-linear model. Each feature has

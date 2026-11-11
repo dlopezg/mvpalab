@@ -4,7 +4,7 @@ function [raw,cfg] = mvpalab_readsubject(cfg,sub)
 %  This function loads the files of one subject: one per class and
 %  dataset (see mvpalab_loadfile). The first subject stores the
 %  information of the study in cfg (see mvpalab_datainfo), and the files
-%  of every subject are checked against it (see mvpalab_checkdata).
+%  of every subject are checked against it (see mvpalab_validatefiles).
 %
 %%  INPUT:
 %
@@ -39,6 +39,6 @@ for dataset = 1 : nsets
 end
 
 if sub == 1, cfg = mvpalab_datainfo(cfg,raw); end
-mvpalab_checkdata(cfg,raw,sub);
+mvpalab_validatefiles(cfg,raw,sub);
 
 end

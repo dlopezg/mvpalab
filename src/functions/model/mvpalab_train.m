@@ -17,7 +17,10 @@ function [ mdl , w ] = mvpalab_train(train_X,train_Y,cfg)
 %  enabled, the hyperparameters in cfg.classmodel.optimize.params are
 %  optimized with the options in cfg.classmodel.optimize.opt. The feature
 %  weights are only defined for the linear SVM of two classes and the
-%  discriminant type 'linear'; otherwise they are NaN.
+%  discriminant type 'linear'; otherwise they are NaN. With more than two
+%  classes, the weights of the linear discriminant are those between the
+%  first two classes (mdl.Coeffs(2,1)), and the analysis does not use them
+%  (see mvpalab_checkclasses).
 %
 %%  INPUT:
 %

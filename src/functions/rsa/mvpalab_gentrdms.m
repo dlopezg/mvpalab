@@ -11,23 +11,21 @@ function trdms = mvpalab_gentrdms(cfg,mdls,labels)
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Description: Configuration structure.
+%    Configuration structure (cfg.rsa.trialwise).
 %
-%  - {cellarray} mdls
-%    Description: Cells contain a data structure for each theoretical model
-%    including the following fields:
+%  - {cell array} - mdls:
+%    Theoretical models (cfg.rsa.tmodels), one structure per model:
+%    - id:  Identifier of the model.
+%    - mdl: RDM of the model [conditions x conditions].
 %
-%       - {string} id : Identifier of the model.
-%       - {matrix} mdl: Data matrix of the model. - [ncond x ncond]
-%
-%  - {1D-categorical} labels (only for trial-wise RDMs)
-%    Description: Condition label of each trial, in the order of the rows
-%    of the neural RDM. - [trials x 1]
+%  - {1D-categorical} - labels:
+%    Optional, only for trial-wise RDMs. Condition of each trial, in the
+%    order of the rows of the neural RDM [trials x 1].
 %
 %%  OUTPUT:
 %
-%  - {4D-matrix} trdms
-%    Description: Theoretical RDMs [trials x trials x 1 x models] or
+%  - {matrix} - trdms:
+%    Theoretical RDMs [trials x trials x 1 x models] or
 %    [conditions x conditions x 1 x models].
 
 fprintf('   - Computing theoretical RDMs:\n');

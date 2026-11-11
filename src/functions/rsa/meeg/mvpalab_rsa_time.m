@@ -27,8 +27,9 @@ function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 %
 %  The results and the permuted maps are saved with mvpalab_save and the
 %  statistics by mvpalab_permtest, except in a sliding filter analysis
-%  (cfg.sf.flag). The configuration is saved with mvpalab_savecfg at the
-%  start and at the end of the analysis.
+%  (cfg.sf.flag). The configuration is saved with mvpalab_savecfg once the
+%  settings are checked (see mvpalab_checkrsa) and at the end of the
+%  analysis.
 %
 %%  INPUT:
 %
@@ -63,7 +64,6 @@ function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 
 % Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
-mvpalab_savecfg(cfg);
 
 %% Initialize
 stats = struct();
@@ -76,6 +76,7 @@ permaps.(mode).(dist) = struct();
 
 %% Check the configuration:
 mvpalab_checkrsa(cfg);
+mvpalab_savecfg(cfg);
 
 %% Subjects loop:
 for sub = 1 : nsub

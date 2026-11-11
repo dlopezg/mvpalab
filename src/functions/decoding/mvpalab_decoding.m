@@ -31,6 +31,16 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %  test (cfg.stats.signflip) does not permute labels, so it is recommended
 %  for MVCC (see mvpalab_signmaps).
 %
+%  It stops with an error before computing or saving anything if a
+%  setting is not valid (see mvpalab_checkdecoding) or if cfg.sf.flag is
+%  enabled, because a sliding filter analysis is computed by
+%  mvpalab_sfilter. It saves:
+%
+%  - cfg.mat, once the settings are checked and again at the end, with the
+%    fields set by the analysis (see mvpalab_savecfg).
+%  - The result (result.mat) or the permuted maps (permaps.mat) of each
+%    metric in cfg.location/results (see mvpalab_save).
+%
 %%  INPUT:
 %
 %  - {struct} - cfg:
@@ -38,8 +48,7 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %
 %  - {cell array} - fv:
 %    Feature vectors of each subject (single trials if cfg.trialaver.flag
-%    is enabled). Empty or not used in a sliding filter analysis, where the
-%    data of each frequency band is loaded from disk.
+%    is enabled).
 %
 %  - {string} - mode:
 %    'observed' (default) or 'permuted'.
@@ -58,15 +67,18 @@ if nargin < 3, mode = 'observed'; end
 
 % Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
-mvpalab_savecfg(cfg);
 
 % Check the settings of the analysis:
+if cfg.sf.flag
+    error('Use mvpalab_sfilter for a sliding filter analysis (cfg.sf.flag).');
+end
 mvpalab_checkdecoding(cfg,mode);
+mvpalab_savecfg(cfg);
 
 [res,cfg,job] = mvpalab_evalsubjects(cfg,fv,mode);
 
 % Save result:
-if ~cfg.sf.flag, mvpalab_save(cfg,res,job.savemode); end
+mvpalab_save(cfg,res,job.savemode);
 
 % Save the configuration with the fields set by the analysis:
 mvpalab_savecfg(cfg);

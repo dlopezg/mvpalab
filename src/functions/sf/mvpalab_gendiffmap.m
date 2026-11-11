@@ -10,24 +10,34 @@ function [cfg,diffMap,perdiffMap] = mvpalab_gendiffmap(cfg,acc,accmap,peracc,per
 %  - {struct} - cfg:
 %    Configuration structure.
 %
-%  - {matrix} - acc, peracc:
-%    Observed [1 x ntp x subjects] and permuted [1 x ntp x subjects x maps]
-%    baseline. In MVCC, fields ab and ba.
+%  - {matrix} - acc:
+%    Observed baseline [1 x ntp x subjects]. In MVCC, fields ab and ba.
 %
-%  - {matrix} - accmap, permaps:
-%    Observed [1 x ntp x subjects x bands] and permuted
-%    [1 x ntp x subjects x maps x bands] maps of each band. In MVCC, fields
-%    ab and ba.
+%  - {matrix} - accmap:
+%    Observed map of each band [1 x ntp x subjects x bands]. In MVCC,
+%    fields ab and ba.
+%
+%  - {matrix} - peracc:
+%    Optional. Permuted baseline [1 x ntp x subjects x maps]. In MVCC,
+%    fields ab and ba.
+%
+%  - {matrix} - permaps:
+%    Optional. Permuted maps of each band
+%    [1 x ntp x subjects x maps x bands]. In MVCC, fields ab and ba.
 %
 %%  OUTPUT:
 %
 %  - {struct} - cfg:
 %    Configuration structure.
 %
-%  - {struct} - diffMap, perdiffMap:
-%    Field cfg.sf.metric with the observed [bands x ntp x subjects] and
-%    permuted [bands x ntp x subjects x maps] diffMaps. In MVCC, fields ab
-%    and ba.
+%  - {struct} - diffMap:
+%    Field cfg.sf.metric with the observed diffMaps
+%    [bands x ntp x subjects]. In MVCC, fields ab and ba.
+%
+%  - {struct} - perdiffMap:
+%    Field cfg.sf.metric with the permuted diffMaps
+%    [bands x ntp x subjects x maps], if peracc and permaps are given. In
+%    MVCC, fields ab and ba.
 
 fprintf('<strong> > Generating diffmaps... </strong>');
 

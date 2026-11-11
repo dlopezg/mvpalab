@@ -2,15 +2,16 @@ function EEG = mvpalab_dataformat(input)
 %% MVPALAB_DATAFORMAT
 %
 %  This function reads the content of one data file and returns its data
-%  in the EEGLAB format used by MVPAlab. The format is detected from the
-%  fields of the data:
+%  in the EEGLAB format used by MVPAlab, with the times in milliseconds.
+%  The format is detected from the fields of the data:
 %
 %  - FieldTrip (field fsample): the trials are concatenated in EEG.data
 %    and the times of the first trial are converted to milliseconds.
 %  - EEGLAB (field srate): the structure is used as it is.
-%  - MVPAlab (field format = 'mvpalab'): fields data, fs and, optionally,
-%    times. Without times, the time vector is 1 to the number of
-%    timepoints and a warning is shown.
+%  - MVPAlab (field format = 'mvpalab'): fields data, fs (Hz) and,
+%    optionally, times (ms). Without times, the time vector is 1 to the
+%    number of timepoints and a warning is shown. Times in seconds give a
+%    warning (see mvpalab_datainfo).
 %
 %  Any other format gives an error. Channel locations are only kept from
 %  EEGLAB files.
@@ -25,7 +26,7 @@ function EEG = mvpalab_dataformat(input)
 %
 %  - {struct} - EEG:
 %    Data in the EEGLAB format: data [channels x timepoints x trials],
-%    srate, nbchan, pnts, trials, times and chanlocs.
+%    srate, nbchan, pnts, trials, times (ms) and chanlocs.
 
 % Extract data:
 fields = fieldnames(input);

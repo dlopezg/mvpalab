@@ -4,7 +4,10 @@ function recall = mvpalab_recall(confmat)
 %  This function computes the recall of each class from a confusion matrix
 %  with the predicted classes in the rows and the true classes in the
 %  columns, the transpose of the matrix returned by confusionmat (see
-%  mvpalab_evalmetrics). The recall of a class without test trials is NaN.
+%  mvpalab_evalmetrics). The recall is always defined, because the test
+%  trials of all the folds together include every class; a class without
+%  test trials would give NaN. The precision, instead, can be undefined in
+%  practice (see mvpalab_precision).
 %
 %%  INPUT:
 %

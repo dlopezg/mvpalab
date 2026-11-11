@@ -8,7 +8,10 @@ function [cfg,diffMap,stats] = mvpalab_sfilter(cfg)
 %  cfg.sf.flag enabled).
 %
 %  All the maps are computed with mvpalab_evalsubjects. The unfiltered
-%  baseline is read again with mvpalab_readdata. The bands and the baseline
+%  baseline is read again with mvpalab_readdata, and its feature vectors
+%  are rounded to single precision, as those of the bands saved by the
+%  import (see mvpalab_savesfdata), so a filter without effect gives a
+%  diffMap of exactly 0. The bands and the baseline
 %  share their random draws (see mvpalab_sfrng), except the draws of the
 %  hyperparameter search (cfg.classmodel.optimize), with a warning.
 %
@@ -48,11 +51,11 @@ function [cfg,diffMap,stats] = mvpalab_sfilter(cfg)
 
 % Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
-mvpalab_savecfg(cfg);
 
 % Check the settings of the analysis. The permuted maps follow the same
 % settings, and the sign flip test does not compute them:
 mvpalab_checkdecoding(cfg,'observed');
+mvpalab_savecfg(cfg);
 
 % Only computed if cfg.stats.flag is enabled:
 stats = [];
@@ -87,6 +90,7 @@ end
 % are computed from fv and not from the bands on disk:
 cfg.sf.flag = false;
 [cfg,~,fv] = mvpalab_readdata(cfg);
+fv = cellfun(@singleprecision,fv,'UniformOutput',false);
 
 [performance,cfg] = mvpalab_evalsubjects(cfg,fv,'observed');
 
@@ -136,3 +140,13 @@ end
 
 end
 
+function fv = singleprecision(fv)
+%% Feature vectors of one subject rounded to single precision and read in
+%  double precision, as the bands (see mvpalab_savesfdata and
+%  mvpalab_subjectdata).
+
+for field = fieldnames(fv.X)'
+    fv.X.(field{1}) = double(single(fv.X.(field{1})));
+end
+
+end

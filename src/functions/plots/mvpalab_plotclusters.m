@@ -12,8 +12,11 @@ function mvpalab_plotclusters(graph,x,y,stats)
 %  - {struct} - graph:
 %    Parameters of the plot (see mvpalab_plotinit).
 %
-%  - {matrix} - x, y:
-%    Coordinates of the columns and rows of the map.
+%  - {matrix} - x:
+%    Coordinates of the columns of the map.
+%
+%  - {matrix} - y:
+%    Coordinates of the rows of the map.
 %
 %  - {struct} - stats:
 %    Statistics of the map, with stats.sigmask and stats.sigmask_ (see

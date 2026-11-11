@@ -10,7 +10,7 @@ function perf = mvpalab_evaltp(cfg,data,part,tp,job)
 %    Configuration structure.
 %
 %  - {struct} - data:
-%    Datasets of the subject (see mvpalab_subjectdata).
+%    Datasets of the repetition (see mvpalab_preparedata).
 %
 %  - {struct} - part:
 %    Cross-validation partitions (see mvpalab_cvpartitions).

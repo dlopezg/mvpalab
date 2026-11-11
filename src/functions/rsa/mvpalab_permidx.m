@@ -9,23 +9,23 @@ function pidx = mvpalab_permidx(nvec,nperm)
 %  that share a condition. Each permutation is applied to all the
 %  timepoints, so the permuted maps preserve the temporal autocorrelation
 %  of the data and the cluster-based permutation test is not liberal.
-
+%
 %%  INPUT:
 %
-%  - {integer} nvec
-%    Description: Length of the vectorized RDM. The RDMs are vectorized by
+%  - {int} - nvec:
+%    Length of the vectorized RDM. The RDMs are vectorized by
 %    mvpalab_vectorizerdm as unique pairs of conditions (squareform), so
 %    nvec = n*(n-1)/2 for n conditions.
 %
-%  - {integer} nperm
-%    Description: Number of permutations.
+%  - {int} - nperm:
+%    Number of permutations.
 %
 %%  OUTPUT:
 %
-%  - {2D-matrix} pidx
-%    Description: Indexes into the vectorized RDM. Row i is the vectorized
-%    RDM permuted with the i-th permutation of the conditions:
-%    vrdm(pidx(i,:)) - [permutations x vectorized]
+%  - {matrix} - pidx:
+%    Indexes into the vectorized RDM [permutations x nvec]. Row i is the
+%    vectorized RDM permuted with the i-th permutation of the conditions:
+%    vrdm(pidx(i,:)).
 
 %% Index matrix:
 %  lin is a [conditions x conditions] matrix containing the position of

@@ -3,7 +3,8 @@ function mvpalab_checkdata(cfg,raw,sub)
 %
 %  This function checks that the files of one subject agree with the
 %  information of the study (see mvpalab_datainfo): the same sampling
-%  frequency and the same time vector, up to half a sample. All the
+%  frequency and the same time vector, up to half a sample (1000/fs
+%  milliseconds per sample, see mvpalab_datainfo). All the
 %  timepoints of the analysis come from the first file, so a file with
 %  other times would be decoded on the wrong times without any error.
 %  The files of the subject must also have the same channels, because

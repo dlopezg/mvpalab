@@ -6,8 +6,9 @@ function perf = mvpalab_evalmetrics(pred,job)
 %  (one, or all of them in temporal generalization). All the metrics,
 %  accuracy included, use the predictions of all the folds together, so the
 %  accuracy is the correct rate of the confusion matrix also when the folds
-%  have different sizes. Only the metrics that the analysis keeps
-%  (job.keep) are computed; the other fields are empty.
+%  have different sizes. The accuracy is always computed. The other
+%  metrics are only computed if the analysis keeps them (job.keep);
+%  otherwise their fields are empty, and the AUC is NaN.
 %
 %%  INPUT:
 %

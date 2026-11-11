@@ -1,8 +1,10 @@
 function rdm = mvpalab_rdm(cfg,X,Y,folds)
 %% MVPALAB_RDM
 %
-%  This function returns the trial-wise Representational Dissimilarity
-%  Matrices for each timepoint.
+%  This function returns the Representational Dissimilarity Matrices of
+%  one subject at each timepoint, between the trials or, if
+%  cfg.rsa.trialwise is false, between the conditions (see
+%  mvpalab_averagetrials).
 %
 %  Cross-validation (cfg.rsa.nfolds > 1): each fold is used once as test
 %  set and the remaining folds as training set. By default the folds are a
@@ -23,22 +25,24 @@ function rdm = mvpalab_rdm(cfg,X,Y,folds)
 %  - {struct} - cfg:
 %    Configuration structure.
 %
-%  - {3D-matrix} - X:
-%    Data matrix for an individual subject containing all the trials and
-%    conditions. [trials x chanels x timepoints]
+%  - {matrix} - X:
+%    Data of the subject [trials x channels x timepoints].
 %
 %  - {1D-categorical} - Y:
-%    Categorical vector including data labels
+%    Condition of each trial [trials x 1].
 %
-%  - {1D-array} - folds (optional):
-%    Predefined fold of each trial for the cross-validation.
+%  - {1D-array} - folds:
+%    Optional. Predefined fold of each trial for the cross-validation.
 %
 %%  OUTPUT:
 %
-%  - {3D-matrix} - rdm.matrix:
-%    Representational Dissimilarity Matrices for each timepoint:
-%    [trials x trials x timepoints]
-%    [conditions x conditions x timepoints]
+%  - {struct} - rdm:
+%    - rdm:    Representational Dissimilarity Matrices
+%              [trials x trials x timepoints] or
+%              [conditions x conditions x timepoints].
+%    - labels: Condition of each row of the RDMs: the label of each
+%              trial, or the conditions 1 to conditions, in the order of
+%              unique(Y), for condition-wise RDMs.
 
 %% Print some information:
 fprintf('   - Computing neural RDMs:');

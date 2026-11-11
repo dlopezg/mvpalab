@@ -21,8 +21,8 @@ function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %  the permuted maps or, with cfg.stats.signflip, the maps of the sign flip
 %  test (mvpalab_signmaps). The results and the permuted maps are saved
 %  with mvpalab_save, the statistics are saved by mvpalab_permtest, and the
-%  configuration is saved with mvpalab_savecfg at the start and at the end
-%  of the analysis.
+%  configuration is saved with mvpalab_savecfg once the settings are
+%  checked (see mvpalab_checkfusion) and at the end of the analysis.
 %
 %%  INPUT:
 %
@@ -62,8 +62,8 @@ function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 
 %% Initialization:
 cfg = mvpalab_updatecfg(cfg);
-mvpalab_savecfg(cfg);
 mvpalab_checkfusion(cfg);
+mvpalab_savecfg(cfg);
 
 dist = cfg.fusion.distance;
 permuted = cfg.stats.flag && ~cfg.stats.signflip;

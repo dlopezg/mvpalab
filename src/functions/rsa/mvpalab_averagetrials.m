@@ -1,8 +1,9 @@
 function dataset = mvpalab_averagetrials(cfg,dataset)
 %% MVPALAB_AVERAGETRIALS
 %
-%  This function combines trials belonging to the same condition by
-%  averaging them, if trialwise analysis is not selected.
+%  This function averages the trials of each condition of the training
+%  and test sets of one fold, if cfg.rsa.trialwise is false. Otherwise
+%  the dataset is returned as it is.
 %
 %  Order of the conditions: the trials are matched by the value of their
 %  label (not by the index of its category), so any categorical, numeric
@@ -14,21 +15,20 @@ function dataset = mvpalab_averagetrials(cfg,dataset)
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Configuration structure. If cfg.rsa.trialwise is false, trials will
-%    be averaged by condition.
+%    Configuration structure (cfg.rsa.trialwise).
 %
-%  - {3D-matrix} - dataset.train/test_x:
-%    Data matrix for an individual subject containing all the trials and
-%    conditions. [trials x channels x timepoints]
-%
-%  - {1D-categorical} - dataset.train/test_y:
-%    Categorical vector including data labels
+%  - {struct} - dataset:
+%    Training and test sets of one fold:
+%    - train_x, test_x: Data [trials x channels x timepoints].
+%    - train_y, test_y: Condition of each trial [trials x 1].
 %
 %%  OUTPUT:
 %
-%  - {3D-matrix} - combined:
-%    Averaged data matrix where trials are grouped by condition.
-%    [conditions x channels x timepoints]
+%  - {struct} - dataset:
+%    The same structure. If cfg.rsa.trialwise is false, train_x and
+%    test_x are the mean of each condition [conditions x channels x
+%    timepoints], and train_y and test_y are the conditions 1 to
+%    conditions, as categorical labels.
 
 %% Combine trials into conditions if necessary:
 

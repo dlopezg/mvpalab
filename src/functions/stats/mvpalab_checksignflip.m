@@ -6,9 +6,8 @@ function mvpalab_checksignflip(cfg,nobs)
 %
 %  - The maximum cluster size is needed, because the null distribution of
 %    all the cluster sizes grows with the effect.
-%  - Leave-one-out is not available in MVPA: the left-out trial leaves its
-%    class with one trial less in the training set, so the accuracy without
-%    effect is below 0.5. This also applies to a sliding filter analysis.
+%
+%  Leave-one-out in MVPA is checked by mvpalab_checkdecoding.
 %
 %  With the number of subjects (nobs), it also shows a warning if nothing
 %  can be significant. The test has 2^nobs combinations of signs and the
@@ -31,10 +30,6 @@ if ~cfg.stats.signflip, return; end
 
 if ~strcmp(cfg.stats.clustcorr,'max')
     error('The sign flip test needs cfg.stats.clustcorr = ''max''.');
-end
-
-if strcmp(cfg.analysis,'MVPA') && strcmp(cfg.cv.method,'loo')
-    error('The sign flip test is not available with leave-one-out in MVPA.');
 end
 
 if nargin < 2, return; end

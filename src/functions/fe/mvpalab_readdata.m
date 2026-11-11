@@ -10,7 +10,7 @@ function [cfg, data, fv] = mvpalab_readdata(cfg)
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Configuration structure (see mvpalab_preparestudy).
+%    Configuration structure.
 %
 %%  OUTPUT:
 %
@@ -26,7 +26,7 @@ function [cfg, data, fv] = mvpalab_readdata(cfg)
 %    mvpalab_featurevectors).
 
 nsub = length(cfg.study.dataFiles{1,1});
-data = cell(nsub,1 + strcmp(cfg.analysis,'MVCC'));
+data = cell(nsub,1 + mvpalab_ismvcc(cfg));
 fv = cell(1,nsub);
 
 for sub = 1 : nsub

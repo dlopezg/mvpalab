@@ -3,15 +3,13 @@ function out_data = mvpalab_featurevectors(cfg,data)
 %
 %  This function generates the feature vectors of one subject from the
 %  data of each class: the features of each class (see
-%  mvpalab_classfeatures), the class sizes (see mvpalab_trimclasses) and
-%  the data matrix and the labels (see mvpalab_joinclasses). The feature
-%  vectors are not normalized: cfg.normdata is applied in each repetition
-%  (see mvpalab_preparedata).
-%
-%  With supertrials (cfg.trialaver.flag) the feature vectors keep the
-%  single trials and the class sizes are applied to the supertrials of each
-%  repetition (see mvpalab_supertrials). Then each class needs at least
-%  cfg.trialaver.ntrials trials; otherwise it gives an error.
+%  mvpalab_classfeatures) and the data matrix and the labels (see
+%  mvpalab_joinclasses). The feature vectors keep all the single trials:
+%  the supertrials, the class sizes and cfg.normdata are applied in each
+%  repetition of the analysis (see mvpalab_preparedata), so each analysis
+%  uses its own settings. With supertrials (cfg.trialaver.flag) each class
+%  needs at least cfg.trialaver.ntrials trials; otherwise it gives an
+%  error.
 %
 %%  INPUT:
 %
@@ -46,14 +44,6 @@ for dataset = 1 : numel(data)
     end
 end
 
-%% Class sizes:
-%  With supertrials they are applied to the supertrials of each
-%  repetition (see mvpalab_supertrials) and the feature vectors keep the
-%  single trials.
-if ~cfg.trialaver.flag
-    fv = mvpalab_trimclasses(cfg,fv);
-end
-
 %% Data and labels, with the classes named '1', '2'...:
 sets = {'a','b'};
 classes = cellstr(string(1:size(fv,2)));
@@ -64,7 +54,7 @@ for dataset = 1 : size(fv,1)
 end
 
 %  mvpalab_checkfv needs to know that they are not supertrials:
-if cfg.trialaver.flag, out_data.singletrials = true; end
+out_data.singletrials = true;
 
 fprintf('\n');
 

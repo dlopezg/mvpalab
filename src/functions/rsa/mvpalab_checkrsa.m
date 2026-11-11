@@ -10,10 +10,10 @@ function mvpalab_checkrsa(cfg)
 %    is a valid field name other than 'rdms' and 'theo', the fields of the
 %    result that hold the RDMs: a model with one of these ids would lose
 %    its result without any error.
-%  - The values 3 and 4 of cfg.normdata are applied within the folds of
-%    the classifiers (see mvpalab_preparetrain) and have no effect in RSA,
-%    so a warning is shown. The values 1 and 2 are applied to each trial or
-%    supertrial (see mvpalab_normtrials).
+%  - cfg.normdata is 0, 1, 2, 3 or 4. The values 3 and 4 are applied
+%    within the folds of the classifiers (see mvpalab_preparetrain) and
+%    have no effect in RSA, so a warning is shown. The values 1 and 2 are
+%    applied to each trial or supertrial (see mvpalab_normtrials).
 %  - The settings of the sign flip test (see mvpalab_checksignflip).
 %
 %%  INPUT:
@@ -43,6 +43,9 @@ end
 
 mvpalab_checksignflip(cfg);
 
+if ~ismember(cfg.normdata,0:4)
+    error('cfg.normdata must be 0, 1, 2, 3 or 4.');
+end
 if cfg.normdata >= 3
     warning(['cfg.normdata = %d is only applied by the classifiers ' ...
         '(MVPA and MVCC) and has no effect in RSA. Use cfg.normdata = 1 ' ...

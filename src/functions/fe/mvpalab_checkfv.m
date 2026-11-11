@@ -2,8 +2,11 @@ function mvpalab_checkfv(cfg,fv)
 %% MVPALAB_CHECKFV
 %
 %  This function checks that the feature vectors can be used to build
-%  supertrials. Feature vectors saved by a previous version already contain
-%  supertrials, and averaging them again would give a wrong result.
+%  supertrials. The import marks its feature vectors as single trials
+%  (field singletrials, see mvpalab_featurevectors), and the class sizes
+%  are applied by the analysis (see mvpalab_preparedata). Feature vectors
+%  saved by older versions have no mark: they can contain supertrials, and
+%  averaging them again would give a wrong result.
 %
 %%  INPUT:
 %
@@ -14,8 +17,9 @@ function mvpalab_checkfv(cfg,fv)
 %    Feature vectors of one subject.
 
 if cfg.trialaver.flag && ~isfield(fv,'singletrials')
-    error(['These feature vectors already contain supertrials. Import the ' ...
-        'data again with this version of MVPAlab.']);
+    error(['These feature vectors were imported by an older version of ' ...
+        'MVPAlab and can contain supertrials. Import the data again to ' ...
+        'build supertrials.']);
 end
 
 end

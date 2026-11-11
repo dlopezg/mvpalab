@@ -186,6 +186,7 @@ end
 
 
 
+cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis);
 mvpalab_save(cfg,res,'res');
 
 end

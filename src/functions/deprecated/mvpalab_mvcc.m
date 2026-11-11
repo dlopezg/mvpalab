@@ -2,14 +2,15 @@ function [res,cfg] = mvpalab_mvcc(cfg,fv)
 %% MVPALAB_MVCC
 %
 %  Deprecated: use [result,cfg] = mvpalab_decoding(cfg,fv).
-%  This function computes the cross-classification analysis, whatever the
-%  value of cfg.analysis.
+%  This function computes the cross-classification analysis.
 
 if nargin < 2, fv = []; end
 
 warning('mvpalab:deprecated','mvpalab_mvcc is deprecated. Use mvpalab_decoding.');
 
-cfg.analysis = 'MVCC';
+if ~mvpalab_ismvcc(cfg)
+    error('mvpalab_mvcc needs the files of dataset B (see mvpalab_ismvcc).');
+end
 [res,cfg] = mvpalab_decoding(cfg,fv);
 
 end

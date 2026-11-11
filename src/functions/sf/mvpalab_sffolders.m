@@ -4,8 +4,8 @@ function mvpalab_sffolders(cfg)
 %  This function prepares the folders of a sliding filter analysis. If the
 %  folder cfg.sf.filesLocation exists, it removes the filtered data of a
 %  previous analysis, so a new analysis with fewer bands does not read old
-%  files (see mvpalab_cleansfdata). Then it creates cfg.sf.filesLocation,
-%  cfg.sf.savefolder and its subfolder 'other'.
+%  files (see mvpalab_cleansfdata). Then it creates cfg.sf.filesLocation.
+%  The folder of the results is created by mvpalab_sfilter.
 %
 %%  INPUT:
 %
@@ -17,7 +17,5 @@ if exist(cfg.sf.filesLocation,'dir')
 end
 
 mvpalab_mkdir(cfg.sf.filesLocation);
-mvpalab_mkdir(cfg.sf.savefolder);
-mvpalab_mkdir([cfg.sf.savefolder 'other' filesep]);
 
 end

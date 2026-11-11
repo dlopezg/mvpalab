@@ -39,7 +39,7 @@ for rep = 1 : job.nreps
     job.rep = rep;
 
     %% Data of this repetition:
-    prepared = mvpalab_preparedata(cfg,data);
+    prepared = mvpalab_preparedata(cfg,data,job.trimfolds);
 
     %% Stratified partition for cross validation:
     part = mvpalab_cvpartitions(cfg,prepared,job);

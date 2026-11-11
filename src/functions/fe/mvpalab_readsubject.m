@@ -28,7 +28,7 @@ fprintf('<strong> > Importing subject data </strong> - Subject: ');
 fprintf([int2str(sub) '/' int2str(length(cfg.study.dataFiles{1,1}))]);
 fprintf('\n');
 
-nsets = 1 + strcmp(cfg.analysis,'MVCC');
+nsets = 1 + mvpalab_ismvcc(cfg);
 nclass = size(cfg.study.dataFiles,2);
 
 raw = cell(nsets,nclass);

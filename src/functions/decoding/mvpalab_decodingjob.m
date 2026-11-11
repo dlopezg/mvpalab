@@ -51,7 +51,7 @@ if ~any(strcmp(mode,{'observed','permuted'}))
     error('The mode of mvpalab_decoding must be ''observed'' or ''permuted''.');
 end
 
-job.mvcc = strcmp(cfg.analysis,'MVCC');
+job.mvcc = mvpalab_ismvcc(cfg);
 job.permuted = strcmp(mode,'permuted');
 
 job.dirs = {'aa'};
@@ -64,6 +64,12 @@ if cfg.sf.flag, job.nfreq = length(cfg.sf.freqvec); end
 
 job.nper = 1;
 if job.permuted, job.nper = cfg.stats.nper; end
+
+% Folds of cfg.classsize.matchkfold (see mvpalab_trimclasses): the folds
+% of the k-fold in MVPA, none in MVCC, where the folds of each dataset are
+% drawn on their own:
+job.trimfolds = 1;
+if strcmp(cfg.cv.method,'kfold') && ~job.mvcc, job.trimfolds = cfg.cv.nfolds; end
 
 job.nreps = 1;
 redraw = job.mvcc && strcmp(cfg.cv.method,'none') && cfg.trialaver.flag ...

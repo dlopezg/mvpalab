@@ -77,6 +77,7 @@ permaps.(mode).(dist) = struct();
 %% Check the configuration:
 mvpalab_checkrsa(cfg);
 mvpalab_savecfg(cfg);
+cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis);
 
 %% Subjects loop:
 for sub = 1 : nsub
@@ -91,7 +92,7 @@ for sub = 1 : nsub
 
     mvpalab_checkfv(cfg,fv{sub});
     data.a.X = fv{sub}.X.a; data.a.Y = fv{sub}.Y.a;
-    data = mvpalab_preparedata(cfg,data);
+    data = mvpalab_preparedata(cfg,data,max(cfg.rsa.nfolds,1));
     X = data.a.X(:,:,cfg.tm.tpoints); Y = data.a.Y;
 
     %% Neural and theoretical RDMs:

@@ -37,23 +37,31 @@ if nargin < 2 || updatepath
     addpath(genpath_exclude(fileparts(loc),{'\..*','demos'}));
 end
 
-%% ANALYSIS TYPE AND STUDY FOLDER:
+%% ANALYSIS NAME AND STUDY FOLDER:
 
-cfg.analysis = 'MVPA';
+cfg.analysis = '';
 cfg.location = pwd;
+cfg.savefolder = '';
+cfg.gui.type = 'MVPA';
 
-% cfg.analysis = 'MVPA' - Multivariate Pattern Analysis.
-% cfg.analysis = 'MVCC' - Multivariate Cross-Classification.
+% cfg.analysis   - Name of the analysis, only to keep apart the results of
+%                  different runs, for example 'decoding-no-smoothing'. The
+%                  results are saved in cfg.location/results/cfg.analysis
+%                  (see mvpalab_save). Empty by default: the results go to
+%                  cfg.location/results. It does not decide anything else.
+% cfg.location   - Folder of the study: cfg.mat and the results (see
+%                  mvpalab_save and mvpalab_savecfg). The current folder by
+%                  default.
+% cfg.savefolder - Folder of the results of the last analysis run with this
+%                  cfg. Set by the analysis (see mvpalab_save), not by the
+%                  user.
+% cfg.gui.type   - Only used by the GUI: the kind of study it shows,
+%                  'MVPA' or 'MVCC'.
 %
-% The import sets 'MVCC' if every class of dataset B has its files (see
-% mvpalab_preparestudy). RSA and fusion do not use it to decide anything:
-% any name can be used, and it is the name of the folder of their results
-% (see mvpalab_save).
-%
-% cfg.location - Folder of the study: cfg.mat, the results in
-%                cfg.location/results (see mvpalab_save and
-%                mvpalab_savecfg) and the differences of the sliding
-%                filter analysis. The current folder by default.
+% The analysis that runs is the function that is called: mvpalab_decoding,
+% mvpalab_sfilter, mvpalab_rsa_time, mvpalab_rsa_roi or mvpalab_fusion. The
+% decoding is a cross-classification (MVCC) if dataset B, the second row of
+% cfg.study.dataFiles, has files, and MVPA otherwise (see mvpalab_ismvcc).
 
 %% FEATURE EXTRACTION:
 
@@ -98,9 +106,12 @@ cfg.trialaver.order    = 'rand';
 %                            cfg.rsa.nfolds in RSA (if larger than 1). Not
 %                            used in MVCC (see mvpalab_trimclasses).
 %
-% With supertrials both are applied to the supertrials, which are in random
-% order with cfg.trialaver.order = 'rand'. Without them they are applied
-% when the data is imported and the first trials of each class are kept.
+% Both are applied by each analysis, in each repetition, after the
+% supertrials (see mvpalab_preparedata), so they follow the settings of the
+% analysis and not those of the import. The first observations of each
+% class are kept: with supertrials in random order (cfg.trialaver.order =
+% 'rand') they are different each time, and without supertrials they are
+% the first trials of each class.
 
 cfg.classsize.match = false;
 cfg.classsize.matchkfold = false;

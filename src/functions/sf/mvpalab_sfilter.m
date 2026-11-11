@@ -21,7 +21,8 @@ function [cfg,diffMap,stats] = mvpalab_sfilter(cfg)
 %  diffMaps (see mvpalab_signmaps).
 %
 %  It saves cfg (see mvpalab_savecfg) after checking it and again after
-%  computing the maps, and these files in cfg.sf.savefolder:
+%  computing the maps, and these files in cfg.savefolder,
+%  cfg.location/results/cfg.analysis/diffMaps (see mvpalab_save):
 %  - result.mat: diffMap of cfg.sf.metric, with cfg.
 %  - stats.mat: Statistics, if cfg.stats.flag is enabled.
 %  - other/performance_maps.mat, other/performance.mat: Maps of the bands
@@ -57,6 +58,10 @@ cfg = mvpalab_updatecfg(cfg);
 mvpalab_checkdecoding(cfg,'observed');
 mvpalab_savecfg(cfg);
 
+% Folder of the results (see mvpalab_save):
+cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis,'diffMaps');
+mvpalab_mkdir(fullfile(cfg.savefolder,'other'));
+
 % Only computed if cfg.stats.flag is enabled:
 stats = [];
 
@@ -74,13 +79,13 @@ end
 % Compute analysis for each frequency band:
 [performance_maps,cfg] = mvpalab_evalsubjects(cfg,[],'observed');
 
-save([cfg.sf.savefolder 'other' filesep 'performance_maps.mat'],...
+save(fullfile(cfg.savefolder,'other','performance_maps.mat'),...
     'performance_maps','-v7.3');
 
 % Generate permuted maps for each frequency band if needed:
 if permuted
     [permuted_maps,cfg] = mvpalab_evalsubjects(cfg,[],'permuted');
-    save([cfg.sf.savefolder 'other' filesep 'permuted_maps.mat'],...
+    save(fullfile(cfg.savefolder,'other','permuted_maps.mat'),...
         'permuted_maps','-v7.3');
 end
 
@@ -94,7 +99,7 @@ fv = cellfun(@singleprecision,fv,'UniformOutput',false);
 
 [performance,cfg] = mvpalab_evalsubjects(cfg,fv,'observed');
 
-save([cfg.sf.savefolder 'other' filesep 'performance.mat'],...
+save(fullfile(cfg.savefolder,'other','performance.mat'),...
     'performance','-v7.3');
 
 % Chance level if needed:
@@ -102,7 +107,7 @@ save([cfg.sf.savefolder 'other' filesep 'performance.mat'],...
 %  permuted diffMap has its own baseline (see mvpalab_gendiffmap).
 if permuted
     [permuted_performance,cfg] = mvpalab_evalsubjects(cfg,fv,'permuted');
-    save([cfg.sf.savefolder 'other' filesep 'permuted_performance.mat'],...
+    save(fullfile(cfg.savefolder,'other','permuted_performance.mat'),...
         'permuted_performance','-v7.3');
 end
 
@@ -127,15 +132,15 @@ else
 end
 
 result = diffMap.(cfg.sf.metric);
-save([cfg.sf.savefolder 'result.mat'],'result','cfg','-v7.3');
+save(fullfile(cfg.savefolder,'result.mat'),'result','cfg','-v7.3');
 
 %% Compute permutation test if needed:
 if cfg.stats.flag
-    save([cfg.sf.savefolder 'other' filesep 'perdiffMap.mat'],...
+    save(fullfile(cfg.savefolder,'other','perdiffMap.mat'),...
         'perdiffMap','-v7.3');
     stats = mvpalab_permtest(cfg,diffMap,perdiffMap);
     stats = stats.(cfg.sf.metric);
-    save([cfg.sf.savefolder 'stats.mat'],'stats','-v7.3');
+    save(fullfile(cfg.savefolder,'stats.mat'),'stats','-v7.3');
 end
 
 end

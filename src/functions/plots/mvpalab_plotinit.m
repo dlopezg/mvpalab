@@ -6,14 +6,15 @@ function graph = mvpalab_plotinit(cfg)
 %  mvpalab_colorschemes.mat), labels, limits, chance level, smoothing,
 %  cluster contours, statistics and feature weights.
 %
-%  With cfg, graph.xlim is set to [cfg.tm.tpstart cfg.tm.tpend] and, in
-%  MVPA and MVCC, graph.chanlvl is set to 1/number of classes. Without
-%  cfg, graph.xlim is not set and graph.chanlvl stays at 0.5.
+%  With cfg, graph.xlim is set to [cfg.tm.tpstart cfg.tm.tpend] and
+%  graph.chanlvl to the chance level of the classifiers, 1/number of
+%  classes; the plots of RSA and fusion set their own (0). Without cfg,
+%  graph.xlim is not set and graph.chanlvl stays at 0.5.
 %
 %%  INPUT:
 %
 %  - {struct} - cfg (optional):
-%    Configuration structure (cfg.tm, cfg.analysis and cfg.study).
+%    Configuration structure (cfg.tm and cfg.study).
 %
 %%  OUTPUT:
 %
@@ -49,9 +50,7 @@ graph.ylim = [0 1];
 
 if nargin > 0
     graph.xlim = [cfg.tm.tpstart cfg.tm.tpend];
-    if any(strcmp(cfg.analysis,{'MVPA','MVCC'}))
-        graph.chanlvl = 1/size(cfg.study.dataFiles,2);
-    end
+    graph.chanlvl = 1/size(cfg.study.dataFiles,2);
 end
 
 %% Diagonal plots:

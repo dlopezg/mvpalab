@@ -4,8 +4,6 @@ function mvpalab_checkstudy(cfg)
 %  This function checks the files of the study before any of them is read,
 %  so the import stops with a clear error:
 %
-%  - Dataset B (second row of cfg.study.dataFiles) has the files of every
-%    class or of none, and an MVCC analysis needs them.
 %  - Each class of each dataset that is read has one file per subject: as
 %    many files as cfg.study.dataFiles{1,1}.
 %  - The files are .mat or .set files.
@@ -15,20 +13,11 @@ function mvpalab_checkstudy(cfg)
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Configuration structure (see mvpalab_preparestudy).
+%    Configuration structure.
 
 files = cfg.study.dataFiles;
 nsub = numel(files{1,1});
-mvcc = strcmp(cfg.analysis,'MVCC');
-
-%% Dataset B:
-filled = ~cellfun(@isempty,files(2,:));
-if any(filled) && ~all(filled)
-    error('In MVCC, dataset B needs the same classes as dataset A.');
-end
-if mvcc && ~any(filled)
-    error('MVCC needs the files of dataset B in cfg.study.dataFiles(2,:).');
-end
+mvcc = mvpalab_ismvcc(cfg);
 
 %% Files of each class:
 for dataset = 1 : 1 + mvcc

@@ -1,10 +1,10 @@
 function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %% MVPALAB_DECODING
 %
-%  This function computes the decoding analysis defined in cfg.analysis:
-%  MVPA or MVCC (cross-classification between datasets A and B, in both
-%  directions: training in A and test in B and vice versa), and their
-%  permuted maps for the permutation test:
+%  This function computes the decoding analysis of the study: MVPA, or
+%  MVCC if dataset B has files (see mvpalab_ismvcc), a cross-classification
+%  between datasets A and B in both directions (training in A and test in B
+%  and vice versa), and their permuted maps for the permutation test:
 %
 %    [result,cfg] = mvpalab_decoding(cfg,fv);
 %    [permaps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
@@ -39,7 +39,8 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %  - cfg.mat, once the settings are checked and again at the end, with the
 %    fields set by the analysis (see mvpalab_savecfg).
 %  - The result (result.mat) or the permuted maps (permaps.mat) of each
-%    metric in cfg.location/results (see mvpalab_save).
+%    metric in cfg.savefolder: cfg.location/results/cfg.analysis/
+%    time_resolved or temporal_generalization (see mvpalab_save).
 %
 %%  INPUT:
 %
@@ -74,6 +75,11 @@ if cfg.sf.flag
 end
 mvpalab_checkdecoding(cfg,mode);
 mvpalab_savecfg(cfg);
+
+% Folder of the results (see mvpalab_save):
+folder = 'time_resolved';
+if cfg.classmodel.tempgen, folder = 'temporal_generalization'; end
+cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis,folder);
 
 [res,cfg,job] = mvpalab_evalsubjects(cfg,fv,mode);
 

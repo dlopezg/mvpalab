@@ -93,6 +93,7 @@ cfg = mvpalab_updatecfg(cfg);
 nconds = size(eeg_rdms{1},1);
 mvpalab_checkfusion(cfg,nconds);
 mvpalab_savecfg(cfg);
+cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis);
 
 dist = cfg.fusion.distance;
 permaps = struct();

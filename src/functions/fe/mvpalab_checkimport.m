@@ -6,7 +6,6 @@ function mvpalab_checkimport(cfg)
 %  after some subjects have been read:
 %
 %  - The files of the study (see mvpalab_checkstudy).
-%  - The methods of the analysis (see mvpalab_checkmethods).
 %  - The settings of the sign flip test (see mvpalab_checksignflip).
 %  - The classes of the analysis (see mvpalab_checkclasses).
 %  - EEGLAB, if it reads the .set files or filters the frequency bands of
@@ -14,17 +13,17 @@ function mvpalab_checkimport(cfg)
 %  - The filter settings of a sliding filter analysis, before the filtered
 %    data of a previous analysis is removed (see mvpalab_checksf).
 %
-%  The analyses check their own settings again (see mvpalab_checkdecoding),
-%  because they can run with feature vectors imported in another session.
+%  The methods of each analysis are checked by the analysis (see
+%  mvpalab_checkdecoding and mvpalab_checkrsa), because the import does not
+%  use them and they can change after the import.
 %
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Configuration structure, with the settings of the study (see
-%    mvpalab_preparestudy).
+%    Configuration structure, with the frequency bands of a sliding filter
+%    analysis (see mvpalab_preparesf).
 
 mvpalab_checkstudy(cfg);
-mvpalab_checkmethods(cfg);
 mvpalab_checksignflip(cfg);
 mvpalab_checkclasses(cfg);
 

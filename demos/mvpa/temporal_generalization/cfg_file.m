@@ -1,7 +1,7 @@
 
 %% Basic configuration file for MVPA analysis - Folder and data files:
 
-cfg.analysis = 'MVPA';
+cfg.analysis = '';  % Optional name of the results: results/<name>/...
 cfg.location = pwd;
 
 % Condition indentifiers:

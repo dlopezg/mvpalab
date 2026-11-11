@@ -2,15 +2,14 @@ function cfg = mvpalab_preparesf(cfg)
 %% MVPALAB_PREPARESF
 %
 %  This function prepares the configuration of a sliding filter analysis
-%  (see mvpalab_preparestudy):
+%  when its data is imported (see mvpalab_import):
 %
 %  - It disables temporal generalization (cfg.classmodel.tempgen).
-%  - It sets the result folder cfg.sf.savefolder (results/diffMaps/ in
-%    cfg.location).
 %  - It generates the frequency bands (see mvpalab_genfreqvec) and selects
 %    the performance metrics (see mvpalab_sfmetrics).
 %
-%  The folders are created by mvpalab_sffolders.
+%  The folders of the filtered data are created by mvpalab_sffolders, and
+%  the folder of the results by mvpalab_sfilter.
 %
 %%  INPUT:
 %
@@ -24,7 +23,6 @@ function cfg = mvpalab_preparesf(cfg)
 
 cfg.classmodel.tempgen = false; % Disable temporal generalization.
 
-cfg.sf.savefolder = [cfg.location filesep 'results' filesep 'diffMaps' filesep];
 cfg = mvpalab_genfreqvec(cfg);  % Generate cutoff frequencies.
 cfg = mvpalab_sfmetrics(cfg);   % Update performace metrics.
 

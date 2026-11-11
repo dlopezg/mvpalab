@@ -55,6 +55,7 @@ end
 fprintf('<strong> > Extracting time resolved diagonal: </strong>');
 
 cfg.classmodel.tempgen = false;
+cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis,'time_resolved');
 %% Loop over different performance metrics:
 fields = fieldnames(performance);
 validfields = {'acc' 'auc' 'precision' 'recall' 'f1score'};

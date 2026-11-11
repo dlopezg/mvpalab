@@ -6,8 +6,8 @@ function data = mvpalab_supertrials(cfg,data)
 %
 %  The trials of each class are grouped in blocks of cfg.trialaver.ntrials
 %  (cfg.trialaver.order: random or consecutive trials) and each block is
-%  averaged. The remaining trials are not used. Then, the class sizes are
-%  applied to the supertrials (see mvpalab_trimclasses).
+%  averaged. The remaining trials are not used. The class sizes are
+%  applied afterwards (see mvpalab_preparedata).
 %
 %  The classes are defined by the labels of the datasets, so a permuted map
 %  averages trials of the same permuted class (see mvpalab_permlabels).
@@ -41,9 +41,6 @@ for dataset = 1 : numel(sets)
         fv{dataset,condition} = averageclass(cfg,trials{condition});
     end
 end
-
-%% Class sizes:
-fv = mvpalab_trimclasses(cfg,fv);
 
 %% Data and labels, with the names of the classes:
 for dataset = 1 : numel(sets)

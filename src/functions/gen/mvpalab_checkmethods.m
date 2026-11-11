@@ -1,16 +1,18 @@
 function mvpalab_checkmethods(cfg)
 %% MVPALAB_CHECKMETHODS
 %
-%  This function checks the methods of the analysis before it starts, so an
-%  unsupported value stops with a clear error instead of being ignored:
+%  This function checks the methods of a decoding analysis before it
+%  starts, so an unsupported value stops with a clear error instead of
+%  being ignored:
 %
 %  - cfg.normdata is 0, 1, 2, 3 or 4.
-%  - In MVPA and MVCC:
-%    - cfg.cv.method is 'kfold' or 'loo', and also 'none' in MVCC.
-%    - cfg.dimred.method is 'none' or 'pca', and 'pca' needs a whole
-%      cfg.dimred.ncomp of at least 1.
+%  - cfg.cv.method is 'kfold' or 'loo', and also 'none' in MVCC (see
+%    mvpalab_ismvcc).
+%  - cfg.dimred.method is 'none' or 'pca', and 'pca' needs a whole
+%    cfg.dimred.ncomp of at least 1.
 %
-%  mvpalab_checkimport and mvpalab_checkdecoding call it.
+%  mvpalab_checkdecoding calls it. RSA checks cfg.normdata in
+%  mvpalab_checkrsa.
 %
 %%  INPUT:
 %
@@ -21,12 +23,11 @@ if ~ismember(cfg.normdata,0:4)
     error('cfg.normdata must be 0, 1, 2, 3 or 4.');
 end
 
-if ~any(strcmp(cfg.analysis,{'MVPA','MVCC'})), return; end
-
 methods = {'kfold','loo'};
-if strcmp(cfg.analysis,'MVCC'), methods{end+1} = 'none'; end
+kind = 'MVPA';
+if mvpalab_ismvcc(cfg), methods{end+1} = 'none'; kind = 'MVCC'; end
 if ~any(strcmp(cfg.cv.method,methods))
-    error('cfg.cv.method must be %s in %s.',strjoin(methods,', '),cfg.analysis);
+    error('cfg.cv.method must be %s in %s.',strjoin(methods,', '),kind);
 end
 
 if ~any(strcmp(cfg.dimred.method,{'none','pca'}))

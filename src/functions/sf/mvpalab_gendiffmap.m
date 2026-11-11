@@ -42,7 +42,7 @@ function [cfg,diffMap,perdiffMap] = mvpalab_gendiffmap(cfg,acc,accmap,peracc,per
 fprintf('<strong> > Generating diffmaps... </strong>');
 
 metric = cfg.sf.metric;
-mvcc = strcmp(cfg.analysis,'MVCC');
+mvcc = mvpalab_ismvcc(cfg);
 
 %% Generate diffMap for real data:
 order = [4 2 3 1];

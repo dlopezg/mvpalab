@@ -2,10 +2,17 @@ function cfg = mvpalab_backCompatibility(cfg)
 %% MVPALAB_BACKCOMPATIBILITY
 %
 %  This function updates the renamed fields of a configuration structure of
-%  an older version of MVPAlab, with a warning: the field cfg.chanloc is
-%  moved to cfg.channels.chanloc and cfg.channels.selectedchanloc, with
-%  cfg.channels.selected empty. The missing fields are added by
-%  mvpalab_updatecfg.
+%  an older version of MVPAlab, with a warning:
+%
+%  - The field cfg.chanloc is moved to cfg.channels.chanloc and
+%    cfg.channels.selectedchanloc, with cfg.channels.selected empty.
+%  - cfg.analysis = 'MVPA' or 'MVCC' of a structure without cfg.gui (made
+%    before cfg.analysis became only the name of the results) is moved to
+%    cfg.gui.type, and cfg.analysis is left empty, so the results keep
+%    their folders. MVPA or MVCC is decided by the files (see
+%    mvpalab_ismvcc).
+%
+%  The missing fields are added by mvpalab_updatecfg.
 %
 %%  INPUT:
 %
@@ -25,6 +32,15 @@ function cfg = mvpalab_backCompatibility(cfg)
         cfg.channels.selectedchanloc = cfg.chanloc;
         cfg = rmfield(cfg,'chanloc');
         warning('CFG structure updated > Channels');
+    end
+
+    %% Analysis type:
+    % cfg.analysis is only the name of the results:
+    if ~isfield(cfg,'gui') && isfield(cfg,'analysis') && ...
+            any(strcmp(cfg.analysis,{'MVPA','MVCC'}))
+        cfg.gui.type = cfg.analysis;
+        cfg.analysis = '';
+        warning('CFG structure updated > cfg.analysis moved to cfg.gui.type');
     end
 end
 

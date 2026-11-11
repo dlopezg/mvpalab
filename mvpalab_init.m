@@ -320,15 +320,20 @@ cfg.cv.nreps   = 1;
 %                               tests accuracy and AUC, whose chance level
 %                               is known (see mvpalab_nullmaps).
 %                               Available for MVPA (not with leave-one-out,
-%                               also in the sliding filter), MVCC, RSA and
-%                               the fusion modes 'mean-fmri' and 'mean-eeg'.
+%                               also in the sliding filter), MVCC and RSA.
+%                               Not available in the M/EEG-fMRI fusion,
+%                               which uses a shared permutation (see
+%                               cfg.fusion below).
 
 % cfg.stats.flag        - Run the permutation test.
 % cfg.stats.nper        - Permuted maps of each subject: the analysis is
-%                         repeated nper times with permuted labels.
+%                         repeated nper times with permuted labels. In the
+%                         fusion, number of shared permutations, which is
+%                         also the number of null maps (at least 1000).
 % cfg.stats.nperg       - Permuted maps at group level, each one the mean
 %                         of one permuted map of each subject chosen at
-%                         random (see mvpalab_computepermtest).
+%                         random (see mvpalab_computepermtest). Not used
+%                         in the fusion.
 % cfg.stats.pgroup      - Percentile of the null distribution used as the
 %                         primary threshold at each position of the maps
 %                         (95: p < 0.05).
@@ -458,10 +463,16 @@ cfg.sl.radius = 4;
 %                                     RDM of each M/EEG subject.
 %                       'mean-eeg'  - Mean M/EEG RDM with the RDM of each
 %                                     fMRI subject.
-%                       'no-mean'   - Each pair of an fMRI subject and an
-%                                     M/EEG subject.
 % cfg.fusion.distance - Name of the dissimilarity measure of the RDMs, the
 %                       first field of the results and their folder.
+%
+% The permutation test of the fusion is a shared permutation of the
+% conditions: the same permutations for all the observations, with one null
+% map at group level per permutation (see mvpalab_fusion). It is valid in
+% both modes, but the subjects of both modalities are treated as
+% fixed, so the result holds for these subjects and these conditions. It
+% needs at least 7 conditions and cfg.stats.nper >= 1000. The sign flip
+% test is not available in the fusion.
 
 cfg.fusion.mode = 'mean-fmri';
 cfg.fusion.distance = 'pearson';

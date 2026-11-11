@@ -7,8 +7,6 @@ function [veeg,vfmri] = mvpalab_fusionpairs(cfg,eeg_rdms,fmri_rdms)
 %
 %  - 'mean-fmri': the mean fMRI RDM with the RDM of each M/EEG subject.
 %  - 'mean-eeg': the mean M/EEG RDM with the RDM of each fMRI subject.
-%  - 'no-mean': each pair of an fMRI subject and an M/EEG subject, the
-%    M/EEG subjects of the first fMRI subject first.
 %
 %  Each RDM is vectorized once (see mvpalab_vectorizerdm).
 %
@@ -40,12 +38,6 @@ switch cfg.fusion.mode
     case 'mean-eeg'
         vfmri = cellfun(@(v) v',vectorize(fmri_rdms),'UniformOutput',false);
         veeg = repmat({mvpalab_vectorizerdm(mvpalab_meanrdm(eeg_rdms))},size(vfmri));
-    case 'no-mean'
-        [e,f] = ndgrid(1:numel(eeg_rdms),1:numel(fmri_rdms));
-        veeg = vectorize(eeg_rdms);
-        vfmri = cellfun(@(v) v',vectorize(fmri_rdms),'UniformOutput',false);
-        veeg = veeg(e(:));
-        vfmri = vfmri(f(:));
 end
 
 end

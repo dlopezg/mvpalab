@@ -44,8 +44,7 @@ cfg.classmodel.parcomp = true;
 %% PERMUTATION TEST
 
 cfg.stats.flag   = 1;
-cfg.stats.nper   = 10;
-cfg.stats.nperg  = 1e4;
+cfg.stats.nper   = 5000;  % Shared permutations, one null map each.
 cfg.stats.pgroup = 99.9;
 cfg.stats.pclust = 99.9;
 cfg.stats.tails  = 2;

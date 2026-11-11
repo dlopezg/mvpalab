@@ -1,14 +1,24 @@
-function stats = mvpalab_computepermtest(cfg,performance,nullmaps)
+function stats = mvpalab_computepermtest(cfg,performance,nullmaps,pairing)
 %% MVPALAB_COMPUTEPERMTEST
 %
 %  This function computes the cluster-based permutation test of one
 %  performance map at group level (Stelzer et al., 2013):
 %
-%  - It builds cfg.stats.nperg permuted maps at group level, each one the
-%    mean of one permuted map of each subject selected at random. They are
-%    computed in blocks, first of positions of the maps for the thresholds
-%    and then of permuted maps for the clusters, so the memory does not
-%    grow with cfg.stats.nperg.
+%  - It builds the permuted maps at group level as set in pairing:
+%    - 'random' (default): cfg.stats.nperg maps, each one the mean of one
+%      permuted map of each subject selected at random (Stelzer et al.,
+%      2013). The permuted maps of each subject are independent of those
+%      of the other subjects.
+%    - 'shared': one map per permutation, the mean of the permuted map k
+%      of all the subjects, because map k of every subject was computed
+%      with the same permutation (the shared permutation of the conditions
+%      of the M/EEG-fMRI fusion, see mvpalab_fusion). cfg.stats.nperg is
+%      not used. The null distribution then includes everything the
+%      subjects share, such as the noise of an averaged RDM, which a random
+%      combination of independent permutations leaves out.
+%    They are computed in blocks, first of positions of the maps for the
+%    thresholds and then of permuted maps for the clusters, so the memory
+%    does not grow with the number of maps.
 %  - At each position of the maps, the threshold is the percentile
 %    cfg.stats.pgroup of this null distribution. With cfg.stats.tails = 2
 %    the percentile is split between the two tails.
@@ -54,7 +64,11 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps)
 %    Maps of the null distribution of each subject
 %    [ntp x ntp_ x subjects x maps]: its permuted maps or, with
 %    cfg.stats.signflip, its result and its reflection around chance (see
-%    mvpalab_nullmaps).
+%    mvpalab_nullmaps). With pairing = 'shared', map k of every subject
+%    uses the same permutation.
+%
+%  - {string} - pairing:
+%    Optional. 'random' (default) or 'shared', see above.
 %
 %%  OUTPUT:
 %
@@ -76,6 +90,11 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps)
 % Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
 
+if nargin < 4, pairing = 'random'; end
+if ~any(strcmp(pairing,{'random','shared'}))
+    error('The pairing of the permuted maps must be ''random'' or ''shared''.');
+end
+
 if ~ismember(cfg.stats.tails,[-1 1 2])
     error('cfg.stats.tails must be 1 (above chance), -1 (below chance) or 2.');
 end
@@ -87,15 +106,21 @@ above = cfg.stats.tails ~= -1;
 below = cfg.stats.tails ~= 1;
 
 %% Null maps at group level:
-%  Each one is the mean of one map of each subject, chosen at random. The
-%  maps of the subjects are the columns of pages, and page(:,i) are the
-%  columns of the null map i.
+%  Each one is the mean of one map of each subject: chosen at random
+%  ('random') or the map with the same permutation ('shared'). The maps of
+%  the subjects are the columns of pages, and page(:,i) are the columns of
+%  the null map i.
 
 [n1,n2,nsub,nmaps] = size(nullmaps);
-nperg = cfg.stats.nperg;
 
 fprintf('   - Generating permuted maps at group level: ');
-idx = randi(nmaps,nsub,nperg,'single');
+if strcmp(pairing,'shared')
+    nperg = nmaps;
+    idx = repmat(1:nmaps,nsub,1);
+else
+    nperg = cfg.stats.nperg;
+    idx = randi(nmaps,nsub,nperg,'single');
+end
 pages = reshape(nullmaps,n1*n2,nsub*nmaps);
 page = (1:nsub)' + nsub*(double(idx) - 1);
 fprintf(' - Done!\n');

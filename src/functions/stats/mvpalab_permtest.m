@@ -1,14 +1,14 @@
-function stats = mvpalab_permtest(cfg,results,nullmaps,fname)
+function stats = mvpalab_permtest(cfg,results,nullmaps,pairing)
 %% MVPALAB_PERMTEST
 %
-%  This function recursively iterates over the fields contained in the
-%  results and nullmaps structures. If the selected field has maps of the
-%  null distribution we make a recursive call and the permutation test is
-%  computed with mvpalab_computepermtest. Cell arrays are not maps: an RSA
-%  model can share its name with the RDMs.
+%  This function computes the permutation test of every map of results
+%  that has maps of the null distribution in nullmaps, with
+%  mvpalab_computepermtest. It iterates over the fields of both structures
+%  (local function testfields). Cell arrays are not maps: an RSA model can
+%  share its name with the RDMs.
 %
-%  The first call (without fname) saves the statistics with mvpalab_save,
-%  unless cfg.sf.flag is true.
+%  The statistics are saved with mvpalab_save, unless cfg.sf.flag is
+%  true.
 %
 %%  INPUT:
 %
@@ -16,17 +16,18 @@ function stats = mvpalab_permtest(cfg,results,nullmaps,fname)
 %    Configuration structure.
 %
 %  - {struct} - results:
-%    Data structure containing the results for each measure, or one map
-%    in the recursive call.
+%    Data structure containing the results for each measure.
 %
 %  - {struct} - nullmaps:
 %    Maps of the null distribution for each measure (see
 %    mvpalab_nullmaps): the permuted maps or, with cfg.stats.signflip, the
-%    maps of the sign flip test. In the recursive call, the maps of one
-%    measure.
+%    maps of the sign flip test.
 %
-%  - {string} - fname:
-%    Optional. Current field name used for the recursive call.
+%  - {string} - pairing:
+%    Optional. How the null maps of the subjects are combined at group
+%    level: 'random' (default, Stelzer et al., 2013) or 'shared', when map
+%    k of every subject uses the same permutation, as in the M/EEG-fMRI
+%    fusion (see mvpalab_computepermtest and mvpalab_fusion).
 %
 %%  OUTPUT:
 %
@@ -34,41 +35,29 @@ function stats = mvpalab_permtest(cfg,results,nullmaps,fname)
 %    The same fields as results that have maps in nullmaps, with the output
 %    of mvpalab_computepermtest for each map.
 
-%% Check if the current input is a struct:
-%  Description: If the current input is a struct, extract field names and
-%  iterate over fields.
+if nargin < 4, pairing = 'random'; end
+
+stats = testfields(cfg,results,nullmaps,pairing,'acc');
+
+fprintf('\n<strong> > Permutation test finished!</strong>\n\n');
+if ~cfg.sf.flag, mvpalab_save(cfg,stats,'stats'); end
+
+end
+
+function stats = testfields(cfg,results,nullmaps,pairing,fname)
+%% The test of each map with maps of the null distribution, field by field.
 
 if isstruct(results)
-    field_names = fieldnames(results);
-    
-    for i = 1 : length(field_names)
-        fname = field_names{i};
-        
+    for field = fieldnames(results)'
+        fname = field{1};
         if isfield(nullmaps,fname) && ~iscell(results.(fname))
-            res = results.(fname);
-            pmap = nullmaps.(fname);
-            stats.(fname) = mvpalab_permtest(cfg,res,pmap,fname);
+            stats.(fname) = testfields(cfg,results.(fname),...
+                nullmaps.(fname),pairing,fname);
         end
     end
-    
 else
-    %% Compute the permutation test:
-    %  Description: If the current input is a data matrix the permutation 
-    %  test is computed.
-    
-    if ~exist('fname','var'); fname = 'acc'; end
     fprintf(['\n<strong> > Permutation test (' fname '): </strong>\n']);
-    stats = mvpalab_computepermtest(cfg,results,nullmaps);
-    
-end
-
-%% Exit:
-%  And save the statistics.
-
-if nargin < 4
-    fprintf('\n<strong> > Permutation test finished!</strong>\n\n');
-    if ~cfg.sf.flag, mvpalab_save(cfg,stats,'stats'); end
+    stats = mvpalab_computepermtest(cfg,results,nullmaps,pairing);
 end
 
 end
-

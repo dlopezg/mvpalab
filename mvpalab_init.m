@@ -496,11 +496,13 @@ cfg.sf.lfreq = 0;   % Analysis inferior limit (Hz).
 cfg.sf.hfreq = 40;  % Analysis superior limit (Hz).
 
 % Filter design:
-cfg.sf.ftype = 'bandstop';      % Filter type.
-cfg.sf.wtype = 'blackman';      % Window type.
+cfg.sf.ftype = 'bandstop';      % Filter type: 'bandstop' or 'bandpass'.
+cfg.sf.wtype = 'blackman';      % Window type: 'rectangular', 'hann',
+                                % 'hamming', 'blackman' or 'kaiser'
+                                % (-60 dB, see mvpalab_kaiserbeta).
 cfg.sf.bw    = 2;               % Filter bandwidth (Hz).
 cfg.sf.hbw   = cfg.sf.bw/2;     % Halfband width (Hz), set from bw (see mvpalab_genfreqvec).
-cfg.sf.order = 1408;            % Filter order.
+cfg.sf.order = 1408;            % Filter order (even).
 
 % Frequency steps:
 cfg.sf.fspac = 'log';  % Linear or logarithmic (lin/log.)

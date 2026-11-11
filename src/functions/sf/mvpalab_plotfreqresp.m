@@ -3,14 +3,17 @@ function cfg = mvpalab_plotfreqresp(cfg)
 %
 %  This function plots, in a new figure, the magnitude response of the
 %  filter of each frequency band, computed with firws and windows of
-%  EEGLAB from cfg.sf.wtype and cfg.sf.order. The filter is band-stop if
-%  cfg.sf.ftype is 'bandstop' and band-pass otherwise. The x axis goes up
-%  to cfg.sf.hfreq. It needs EEGLAB and the bands in cfg.sf.fcutoff (see
-%  mvpalab_genfreqvec). The first subplot shows the bands of cfg.sf.fspac,
-%  and the second one the bands generated again with the other spacing
-%  ('lin' or 'log'). The titles of the subplots are fixed (log spacing,
-%  then linear spacing), so they are right when cfg.sf.fspac is 'log'. The
-%  sampling rate is cfg.fs, or 250 Hz if cfg has no field fs.
+%  EEGLAB from cfg.sf.wtype (with the beta of mvpalab_kaiserbeta for the
+%  Kaiser window, as the filter) and cfg.sf.order. The filter is
+%  band-stop if cfg.sf.ftype is 'bandstop' and band-pass if it is
+%  'bandpass', the two types accepted (see mvpalab_checksf). The x axis
+%  goes up to cfg.sf.hfreq. It needs EEGLAB and the bands in
+%  cfg.sf.fcutoff (see mvpalab_genfreqvec). The first subplot shows the
+%  bands of cfg.sf.fspac, and the second one the bands generated again
+%  with the other spacing ('lin' or 'log'). The titles of the subplots are
+%  fixed (log spacing, then linear spacing), so they are right when
+%  cfg.sf.fspac is 'log'. The sampling rate is cfg.fs, or 250 Hz if cfg
+%  has no field fs.
 %
 %%  INPUT:
 %
@@ -50,7 +53,8 @@ function cfg = mvpalab_plotfreqresp(cfg)
     
     for i = length(cfg.sf.fcutoff) : -1 : 1
         % Generate the window:
-        cfg.sf.win = windows(cfg.sf.wtype,cfg.sf.order+1);
+        cfg.sf.win = windows(cfg.sf.wtype,cfg.sf.order+1,...
+            mvpalab_kaiserbeta(cfg));
 
         % Calculate the filter coefficients
         f = cfg.sf.fcutoff{i}/(cfg.sf.fs/2);
@@ -98,7 +102,8 @@ function cfg = mvpalab_plotfreqresp(cfg)
     hold on;
     for i = length(cfg.sf.fcutoff) : -1 : 1
         % Generate the window:
-        cfg.sf.win = windows(cfg.sf.wtype,cfg.sf.order+1);
+        cfg.sf.win = windows(cfg.sf.wtype,cfg.sf.order+1,...
+            mvpalab_kaiserbeta(cfg));
 
         % Calculate the filter coefficients
         f = cfg.sf.fcutoff{i}/(cfg.sf.fs/2);

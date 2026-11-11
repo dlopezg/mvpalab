@@ -11,6 +11,8 @@ function mvpalab_checkimport(cfg)
 %  - The classes of the analysis (see mvpalab_checkclasses).
 %  - EEGLAB, if it reads the .set files or filters the frequency bands of
 %    a sliding filter analysis (see mvpalab_checkeeglab).
+%  - The filter settings of a sliding filter analysis, before the filtered
+%    data of a previous analysis is removed (see mvpalab_checksf).
 %
 %  The analyses check their own settings again (see mvpalab_checkdecoding),
 %  because they can run with feature vectors imported in another session.
@@ -30,5 +32,7 @@ files = [cfg.study.dataFiles{:}];
 if cfg.sf.flag || any(endsWith(lower(files),'.set'))
     mvpalab_checkeeglab();
 end
+
+if cfg.sf.flag, mvpalab_checksf(cfg); end
 
 end

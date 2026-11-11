@@ -17,14 +17,9 @@ run cfg_file;
 
 %% Compute MVPA analysis:
 
-[result,cfg] = mvpalab_decoding(cfg,fv);
-
-%% Compute permutation maps and run statistical analysis:
-
-if cfg.stats.flag
-    [nullmaps,cfg] = mvpalab_nullmaps(cfg,fv,result);
-    stats = mvpalab_permtest(cfg,result,nullmaps);
-end
+% With cfg.stats.flag it also computes the null maps and the
+% permutation test:
+[result,cfg,stats,nullmaps] = mvpalab_decoding(cfg,fv);
 
 %% Plot the results:
 

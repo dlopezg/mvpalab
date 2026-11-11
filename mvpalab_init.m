@@ -330,14 +330,18 @@ cfg.cv.nreps   = 1;
 %                               and enough subjects, needs cfg.stats.clustcorr
 %                               = 'max', and in the classifiers it only
 %                               tests accuracy and AUC, whose chance level
-%                               is known (see mvpalab_nullmaps).
+%                               is known (see mvpalab_decodingnullmaps).
 %                               Available for MVPA (not with leave-one-out,
 %                               also in the sliding filter), MVCC and RSA.
 %                               Not available in the M/EEG-fMRI fusion,
 %                               which uses a shared permutation (see
 %                               cfg.fusion below).
 
-% cfg.stats.flag        - Run the permutation test.
+% cfg.stats.flag        - Run the permutation test inside the analysis:
+%                         the null maps (mvpalab_decodingnullmaps,
+%                         mvpalab_rsanullmaps, mvpalab_fusionnullmaps or
+%                         mvpalab_sfnullmaps) and the test
+%                         (mvpalab_permtest), returned by the analysis.
 % cfg.stats.nper        - Permuted maps of each subject: the analysis is
 %                         repeated nper times with permuted labels. In the
 %                         fusion, number of shared permutations, which is
@@ -483,8 +487,8 @@ cfg.sl.radius = 4;
 %
 % The permutation test of the fusion is a shared permutation of the
 % conditions: the same permutations for all the observations, with one null
-% map at group level per permutation (see mvpalab_fusion). It is valid in
-% both modes, but the subjects of both modalities are treated as
+% map at group level per permutation (see mvpalab_fusionnullmaps). It is
+% valid in both modes, but the subjects of both modalities are treated as
 % fixed, so the result holds for these subjects and these conditions. It
 % needs at least 7 conditions and cfg.stats.nper >= 1000. The sign flip
 % test is not available in the fusion.
@@ -499,9 +503,13 @@ cfg.fusion.mode = 'mean-fmri';
 %                        mvpalab_savesfdata).
 % cfg.sf.metric        - Metric of the differences: 'acc' (accuracy) or
 %                        'auc' (area under the ROC curve).
+% cfg.sf.importid      - Identifier of the import of the filtered data,
+%                        set by the import (see mvpalab_preparesf), not by
+%                        the user.
 
 cfg.sf.flag = 0;
 cfg.sf.filesLocation = '';
+cfg.sf.importid = '';
 cfg.sf.savefdata = false;
 cfg.sf.metric = 'acc';
 

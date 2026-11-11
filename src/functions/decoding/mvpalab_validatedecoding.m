@@ -24,7 +24,7 @@ function mvpalab_validatedecoding(cfg,mode)
 %    trial less in the training set, so the accuracy without effect is
 %    below 0.5. This also applies to a sliding filter analysis.
 %  - Permuted maps: the sign flip test has no permuted maps (see
-%    mvpalab_nullmaps), so it gives an error.
+%    mvpalab_decodingnullmaps), so it gives an error.
 %
 %  mvpalab_decoding and mvpalab_sfilter call it.
 %
@@ -50,7 +50,7 @@ mvpalab_validatestats(cfg);
 
 if strcmp(mode,'permuted')
     if cfg.stats.signflip
-        error('The sign flip test has no permuted maps. Use mvpalab_nullmaps.');
+        error('The sign flip test has no permuted maps. Use mvpalab_decodingnullmaps.');
     end
 else
     mvpalab_validatesignflip(cfg);

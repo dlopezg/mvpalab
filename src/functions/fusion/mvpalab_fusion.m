@@ -1,4 +1,4 @@
-function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
+function [res,cfg,stats,nullmaps] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %% MVPALAB_FUSION
 %
 %  This function computes the fusion of the M/EEG and fMRI RDMs: the RDM of
@@ -15,43 +15,18 @@ function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %  was removed: no published fusion or toolbox correlates all the pairs,
 %  and its observations are not independent.
 %
-%  Shared permutation test (cfg.stats.flag):
+%  With cfg.stats.flag enabled, it also computes the maps of the null
+%  distribution (see mvpalab_fusionnullmaps) and the permutation test (see
+%  mvpalab_permtest) in the same call, with the same cfg, so the result and
+%  its null distribution always follow the same settings. To repeat the
+%  test with other settings of cfg.stats (for example cfg.stats.pclust),
+%  call mvpalab_permtest again with the returned null maps. The test uses a
+%  permutation of the conditions shared by all the observations (see
+%  mvpalab_fusionnullmaps).
 %
-%  - Each permutation reorders the conditions of the M/EEG RDM, rows and
-%    columns together, and the same permutation is used for all the
-%    observations, all the timepoints and all the regions (local function
-%    sharedpidx): the identity and then cfg.stats.nper permutations, or
-%    all the different permutations (factorial of the conditions minus 1)
-%    if there are not more than cfg.stats.nper, which gives an exact test.
-%  - The null map at group level of each permutation is the mean of its
-%    maps of all the observations (mvpalab_permtest with pairing
-%    'shared'), so the null distribution includes the noise that the
-%    observations share, the averaged RDM. cfg.stats.nperg is not used.
-%  - Independent permutations per observation combined at random (Stelzer
-%    et al., 2013), or the sign flip test, leave that shared noise out and
-%    are liberal when one modality has structure that the other does not
-%    share. In a simulation with a 5% level they reached 22-30% of false
-%    positives in 'mean-eeg' and 8-13% in 'mean-fmri', while the shared
-%    permutation stayed at 2-5% in both modes. The sign flip test is not
-%    available (see mvpalab_validatefusion).
-%  - The conditions are treated as random and the subjects of both
-%    modalities as fixed: the result holds for these subjects and these
-%    conditions (the condition-label randomization test of Nili et al.,
-%    2014). It does not generalize to new subjects.
-%
-%  The results and the permuted maps are saved with mvpalab_save, the
-%  statistics are saved by mvpalab_permtest, and the configuration is
-%  saved with mvpalab_savecfg once the settings are checked (see
-%  mvpalab_validatefusion) and at the end of the analysis.
-%
-%  - Nili, H., Wingfield, C., Walther, A., Su, L., Marslen-Wilson, W., &
-%    Kriegeskorte, N. (2014). A toolbox for representational similarity
-%    analysis. PLoS Computational Biology, 10(4), e1003553.
-%
-%  - Stelzer, J., Chen, Y., & Turner, R. (2013). Statistical inference and
-%    multiple testing correction in classification-based multi-voxel
-%    pattern analysis (MVPA): random permutations and cluster size
-%    control. NeuroImage, 65, 69-82.
+%  The results are saved with mvpalab_save in cfg.savefolder. The
+%  configuration is saved with mvpalab_savecfg once the settings are
+%  checked (see mvpalab_validatefusion) and at the end of the analysis.
 %
 %%  INPUT:
 %
@@ -69,9 +44,6 @@ function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %
 %%  OUTPUT:
 %
-%  - {struct} - cfg:
-%    Configuration structure.
-%
 %  - {struct} - res:
 %    Correlations in res.(region) [1 x timepoints x observations], with
 %    one observation per M/EEG subject ('mean-fmri') or per fMRI subject
@@ -80,31 +52,22 @@ function [cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %    cfg.analysis to keep apart the fusions of RDMs computed with different
 %    distances.
 %
-%  - {struct} - nullmaps:
-%    Maps of the null distribution of the permutation test, in
-%    nullmaps.(region): the permuted maps
-%    [1 x timepoints x observations x permutations], where map k of every
-%    observation uses the same permutation. Empty without
-%    cfg.stats.flag.
+%  - {struct} - cfg:
+%    Configuration structure.
 %
 %  - {struct} - stats:
 %    Result of the permutation test (see mvpalab_permtest), empty without
-%    cfg.stats.flag, in stats.(region), as res.
+%    cfg.stats.flag.
+%
+%  - {struct} - nullmaps:
+%    Maps of the null distribution (see mvpalab_fusionnullmaps), empty
+%    without cfg.stats.flag.
 
 %% Initialization:
 cfg = mvpalab_updatecfg(cfg);
-nconds = size(eeg_rdms{1},1);
-mvpalab_validatefusion(cfg,nconds);
+mvpalab_validatefusion(cfg);
 mvpalab_savecfg(cfg);
 cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis);
-
-permaps = struct();
-nullmaps = struct();
-stats = struct();
-
-% Shared permutations of the conditions, the same for every observation
-% and region:
-pidx = sharedpidx(cfg,nconds,cfg.stats.flag);
 
 %% Compute fusion:
 regions = fieldnames(fmri_rdms);
@@ -116,49 +79,23 @@ for roi = 1 : numel(regions)
     [veeg,vfmri] = mvpalab_fusionpairs(cfg,eeg_rdms,fmri_rdms.(region));
 
     for obs = 1 : numel(veeg)
-        z = mvpalab_spearmanz(veeg{obs},vfmri{obs},pidx);
-        res.(region)(1,:,obs) = z(:,1)';
-        if cfg.stats.flag
-            permaps.(region)(1,:,obs,:) = permute(z(:,2:end),[3 1 4 2]);
-        end
+        z = mvpalab_spearmanz(veeg{obs},vfmri{obs},1:numel(vfmri{obs}));
+        res.(region)(1,:,obs) = z';
     end
 end
 
 %% Save results:
 mvpalab_save(cfg,res,'res');
 
-%% Shared permutation test if needed:
+%% Shared permutation test, if needed:
+stats = [];
+nullmaps = [];
 if cfg.stats.flag
-    nullmaps = permaps;
-    stats = mvpalab_permtest(cfg,res,nullmaps,'shared');
-    mvpalab_save(cfg,permaps,'permaps');
+    [nullmaps,cfg] = mvpalab_fusionnullmaps(cfg,eeg_rdms,fmri_rdms,res);
+    stats = mvpalab_permtest(cfg,res,nullmaps);
 end
 
 % Save the configuration with the fields set by the analysis:
 mvpalab_savecfg(cfg);
-
-end
-
-function pidx = sharedpidx(cfg,nconds,permuted)
-%% Order of the pairs of conditions of each map [maps x pairs], shared by
-%  all the observations: the identity (the observed map) and then
-%  cfg.stats.nper permutations (see mvpalab_rsapermidx), or every
-%  different permutation once if there are not more than cfg.stats.nper.
-
-nvec = nconds*(nconds - 1)/2;
-if ~permuted || factorial(nconds) - 1 > cfg.stats.nper
-    pidx = mvpalab_rsapermidx(cfg,nvec,permuted);
-    return
-end
-
-lin = squareform(1:nvec);
-orders = perms(1:nconds);
-orders = orders(any(orders ~= 1:nconds,2),:);
-pidx = zeros(size(orders,1) + 1,nvec);
-pidx(1,:) = 1 : nvec;
-for k = 1 : size(orders,1)
-    p = orders(k,:);
-    pidx(k + 1,:) = squareform(lin(p,p));
-end
 
 end

@@ -138,7 +138,7 @@ cfg.cv.nreps   = 1;     % Repeated k-fold CV: set > 1 to average several random 
 
 %% PERMUTATION TEST
 
-cfg.stats.flag   = true;  % Permutation test of the demo (mvpalab_nullmaps and mvpalab_permtest).
+cfg.stats.flag   = true;  % Permutation test of the demo (mvpalab_decodingnullmaps and mvpalab_permtest).
 cfg.stats.nper   = 100;
 cfg.stats.nperg  = 1e5;
 cfg.stats.pgroup = 95;

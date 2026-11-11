@@ -12,7 +12,9 @@ run cfg_file;
 
 %% Compute fusion
 
-[cfg,res,nullmaps,stats] = mvpalab_fusion(cfg,meeg_rdms,fmri_rdms);
+% With cfg.stats.flag it also computes the null maps and the
+% permutation test:
+[res,cfg,stats,nullmaps] = mvpalab_fusion(cfg,meeg_rdms,fmri_rdms);
 
 %% Plot the results:
 

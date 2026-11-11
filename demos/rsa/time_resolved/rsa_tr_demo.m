@@ -17,7 +17,9 @@ cfg.classmodel.parcomp = 0;
 
 %% Compute the time-resolved representational similarity analysis:
 
-[res,stats,cfg] = mvpalab_rsa_time(cfg,data);
+% With cfg.stats.flag it also computes the null maps and the
+% permutation test:
+[res,cfg,stats,nullmaps] = mvpalab_rsa_time(cfg,data);
 
 %% Plot the results:
 

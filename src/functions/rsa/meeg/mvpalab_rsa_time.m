@@ -1,4 +1,4 @@
-function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
+function [res,cfg,stats,nullmaps] = mvpalab_rsa_time(cfg,fv)
 %% MVPALAB_RSA_TIME
 %
 %  This function computes the time-resolved representational similarity
@@ -14,22 +14,20 @@ function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 %  - 'multiple_regress': one general linear model with all the theoretical
 %    models as regressors (mvpalab_glm).
 %
-%  The observed map is the permuted map with the identity (see
-%  mvpalab_rsapermidx), and the permutations of a subject are drawn once
-%  and shared by all the models (see mvpalab_rsamaps).
-%
 %  The RDMs use the channels of cfg.channels.selected (all of them if it is
 %  empty). The values 3 and 4 of cfg.normdata have no effect in RSA (a
-%  warning is shown). With cfg.stats.flag the permuted maps are computed
-%  and the permutation test is run (mvpalab_permtest); with
-%  cfg.stats.signflip the sign flip test around 0 is used instead (see
-%  mvpalab_selectnull).
+%  warning is shown).
 %
-%  The results and the permuted maps are saved with mvpalab_save and the
-%  statistics by mvpalab_permtest, except in a sliding filter analysis
-%  (cfg.sf.flag). The configuration is saved with mvpalab_savecfg once the
-%  settings are checked (see mvpalab_validatersa) and at the end of the
-%  analysis.
+%  With cfg.stats.flag enabled, it also computes the maps of the null
+%  distribution (see mvpalab_rsanullmaps) and the permutation test (see
+%  mvpalab_permtest) in the same call, with the same cfg, so the result and
+%  its null distribution always follow the same settings. To repeat the
+%  test with other settings of cfg.stats (for example cfg.stats.pclust),
+%  call mvpalab_permtest again with the returned null maps. The result
+%  keeps the RDMs of each subject, so the null maps are computed from it.
+%  The results are saved with mvpalab_save in cfg.savefolder. The
+%  configuration is saved with mvpalab_savecfg once the settings are
+%  checked (see mvpalab_validatersa) and at the end of the analysis.
 %
 %%  INPUT:
 %
@@ -54,25 +52,26 @@ function [res,stats,cfg] = mvpalab_rsa_time(cfg,fv)
 %    - theo: Cell array with the theoretical RDMs of each subject (see
 %      mvpalab_gentrdms).
 %
+%  - {struct} - cfg:
+%    Configuration structure, with the condition boundaries of each
+%    subject in cfg.rsa.bounds (see mvpalab_findbound).
+%
 %  - {struct} - stats:
 %    Result of the permutation test (see mvpalab_permtest), empty without
 %    cfg.stats.flag.
 %
-%  - {struct} - cfg:
-%    Configuration structure, with the condition boundaries of each
-%    subject in cfg.rsa.bounds (see mvpalab_findbound).
+%  - {struct} - nullmaps:
+%    Maps of the null distribution (see mvpalab_rsanullmaps), empty without
+%    cfg.stats.flag.
 
 % Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
 
 %% Initialize
-stats = struct();
 nsub = length(cfg.study.dataFiles{1,1});
 mode = cfg.rsa.modality;
 dist = cfg.rsa.distance;
-permuted = cfg.stats.flag && ~cfg.stats.signflip;
 res.(mode).(dist) = struct();
-permaps.(mode).(dist) = struct();
 
 %% Check the configuration:
 mvpalab_validatersa(cfg);
@@ -110,11 +109,9 @@ for sub = 1 : nsub
     vrdm = mvpalab_vectorizerdm(rdm.rdm);
     vtheo = permute(mvpalab_vectorizerdm(theo{sub}),[2 3 1]);
 
-    %% Observed and permuted maps of the subject:
-    pidx = mvpalab_rsapermidx(cfg,size(vrdm,2),permuted);
-    maps = mvpalab_rsamaps(cfg,vrdm,vtheo,pidx);
-    [res.(mode).(dist),permaps.(mode).(dist)] = storemaps(...
-        res.(mode).(dist),permaps.(mode).(dist),maps,sub);
+    %% Observed map of the subject (the identity order of the pairs):
+    maps = mvpalab_rsamaps(cfg,vrdm,vtheo,1:size(vrdm,2));
+    res.(mode).(dist) = mvpalab_storersamaps(res.(mode).(dist),maps,sub);
 end
 
 %% Condition boundaries of each subject (see mvpalab_findbound):
@@ -134,41 +131,17 @@ res.(mode).(dist).rdms = rdms;
 res.(mode).(dist).theo = theo;
 
 % Save results:
-if ~cfg.sf.flag, mvpalab_save(cfg,res,'res'); end
+mvpalab_save(cfg,res,'res');
 
-if permuted
-    if ~cfg.sf.flag, mvpalab_save(cfg,permaps,'permaps'); end
-end
-
-%% Compute permutation test:
-%  If needed. The correlations and the coefficients have no effect at 0.
-
+% Null maps and permutation test, if needed:
+stats = [];
+nullmaps = [];
 if cfg.stats.flag
-    nullmaps = mvpalab_selectnull(cfg,res,permaps,0);
+    [nullmaps,cfg] = mvpalab_rsanullmaps(cfg,res);
     stats = mvpalab_permtest(cfg,res,nullmaps);
 end
 
 % Save the configuration with the fields set by the analysis:
 mvpalab_savecfg(cfg);
-
-end
-
-function [obs,per] = storemaps(obs,per,maps,sub)
-%% Observed map (first column) and permuted maps of one subject, in each
-%  field of the maps.
-
-if isstruct(maps)
-    for field = fieldnames(maps)'
-        name = field{1};
-        if ~isfield(obs,name), obs.(name) = []; per.(name) = []; end
-        [obs.(name),per.(name)] = storemaps(obs.(name),per.(name),maps.(name),sub);
-    end
-    return
-end
-
-obs(1,:,sub) = maps(:,1)';
-if size(maps,2) > 1
-    per(1,:,sub,:) = permute(maps(:,2:end),[3 1 4 2]);
-end
 
 end

@@ -35,9 +35,10 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps,pairing)
 %  cfg.stats.tails selects the tails: 1 (above chance), -1 (below chance)
 %  or 2 (both). The function stops with an error if the settings of the
 %  test are not valid (see mvpalab_validatestats and
-%  mvpalab_validatesignflip). With cfg.stats.shownulldis it opens a figure
-%  with the null distribution at the last position of the maps and the
-%  null distribution of the cluster sizes used by the correction (all the
+%  mvpalab_validatesignflip), or if the null maps do not have the positions
+%  and subjects of the result. With cfg.stats.shownulldis it opens a figure
+%  with the null distribution at the last position of the maps and the null
+%  distribution of the cluster sizes used by the correction (all the
 %  clusters with 'fdr', the largest cluster of each permuted map with
 %  'max'). It does not save any file.
 %
@@ -61,11 +62,10 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps,pairing)
 %    analyses.
 %
 %  - {matrix} - nullmaps:
-%    Maps of the null distribution of each subject
-%    [ntp x ntp_ x subjects x maps]: its permuted maps or, with
-%    cfg.stats.signflip, its result and its reflection around chance (see
-%    mvpalab_nullmaps). With pairing = 'shared', map k of every subject
-%    uses the same permutation.
+%    Maps of the null distribution of each subject [ntp x ntp_ x subjects x
+%    maps]: its permuted maps or, with cfg.stats.signflip, its result and
+%    its reflection around chance (see mvpalab_decodingnullmaps). With
+%    pairing = 'shared', map k of every subject uses the same permutation.
 %
 %  - {string} - pairing:
 %    Optional. 'random' (default) or 'shared', see above.
@@ -109,6 +109,10 @@ below = cfg.stats.tails ~= 1;
 %  the null map i.
 
 [n1,n2,nsub,nmaps] = size(nullmaps);
+if ~isequal(size(performance,1:3),[n1 n2 nsub])
+    error(['The null maps [%s] do not match the result [%s]: they come ' ...
+        'from another analysis.'],num2str([n1 n2 nsub]),num2str(size(performance,1:3)));
+end
 
 fprintf('   - Generating permuted maps at group level: ');
 if strcmp(pairing,'shared')

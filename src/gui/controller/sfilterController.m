@@ -1,10 +1,7 @@
 %% Import data:
 cfg = mvpalab_import(cfg);
 
-%% Compute analysis:
-if cfg.stats.flag
-    [cfg,result,stats] = mvpalab_sfilter(cfg);
-else
-    [cfg,result] = mvpalab_sfilter(cfg);
-end
-
+%% Compute the sliding filter analysis and save results:
+%  With cfg.stats.flag it also computes the null maps (permuted or sign
+%  flip diffMaps) and the permutation test.
+[result,cfg,stats,nullmaps] = mvpalab_sfilter(cfg);

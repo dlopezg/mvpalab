@@ -16,7 +16,9 @@ cfg = mvpalab_import(cfg);
 
 %% Compute sliding filter analysis:
 
-[cfg,diffMap,stats] = mvpalab_sfilter(cfg);
+% With cfg.stats.flag it also computes the null maps and the
+% permutation test:
+[diffMap,cfg,stats,nullmaps] = mvpalab_sfilter(cfg);
 
 %% Plot the results:
 

@@ -1,4 +1,4 @@
-function stats = mvpalab_permtest(cfg,results,nullmaps,pairing)
+function stats = mvpalab_permtest(cfg,results,nullmaps)
 %% MVPALAB_PERMTEST
 %
 %  This function computes the permutation test of every map of results
@@ -7,8 +7,16 @@ function stats = mvpalab_permtest(cfg,results,nullmaps,pairing)
 %  (local function testfields). Cell arrays are not maps: an RSA model can
 %  share its name with the RDMs.
 %
-%  The statistics are saved with mvpalab_save, unless cfg.sf.flag is
-%  true.
+%  The null maps of the subjects are combined at group level as set in
+%  nullmaps.pairing: 'shared' when map k of every subject uses the same
+%  permutation, as in the M/EEG-fMRI fusion (see mvpalab_fusionnullmaps),
+%  or at random otherwise (Stelzer et al., 2013), when nullmaps has no
+%  field pairing. The pairing travels with the null maps, so the test
+%  cannot be run with the wrong one.
+%
+%  All the analyses run it after they compute their result and its null
+%  maps, with the cfg returned by the analysis. The statistics are saved
+%  with mvpalab_save in cfg.savefolder, next to the results.
 %
 %%  INPUT:
 %
@@ -19,15 +27,9 @@ function stats = mvpalab_permtest(cfg,results,nullmaps,pairing)
 %    Data structure containing the results for each measure.
 %
 %  - {struct} - nullmaps:
-%    Maps of the null distribution for each measure (see
-%    mvpalab_nullmaps): the permuted maps or, with cfg.stats.signflip, the
-%    maps of the sign flip test.
-%
-%  - {string} - pairing:
-%    Optional. How the null maps of the subjects are combined at group
-%    level: 'random' (default, Stelzer et al., 2013) or 'shared', when map
-%    k of every subject uses the same permutation, as in the M/EEG-fMRI
-%    fusion (see mvpalab_computepermtest and mvpalab_fusion).
+%    Maps of the null distribution for each measure: the permuted maps or,
+%    with cfg.stats.signflip, the maps of the sign flip test (see
+%    mvpalab_selectnull), and optionally the field pairing.
 %
 %%  OUTPUT:
 %
@@ -35,12 +37,13 @@ function stats = mvpalab_permtest(cfg,results,nullmaps,pairing)
 %    The same fields as results that have maps in nullmaps, with the output
 %    of mvpalab_computepermtest for each map.
 
-if nargin < 4, pairing = 'random'; end
+pairing = 'random';
+if isstruct(nullmaps) && isfield(nullmaps,'pairing'), pairing = nullmaps.pairing; end
 
 stats = testfields(cfg,results,nullmaps,pairing,'acc');
 
 fprintf('\n<strong> > Permutation test finished!</strong>\n\n');
-if ~cfg.sf.flag, mvpalab_save(cfg,stats,'stats'); end
+mvpalab_save(cfg,stats,'stats');
 
 end
 

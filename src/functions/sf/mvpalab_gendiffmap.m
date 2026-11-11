@@ -1,67 +1,47 @@
-function [cfg,diffMap,perdiffMap] = mvpalab_gendiffmap(cfg,acc,accmap,peracc,permaps)
+function diffMap = mvpalab_gendiffmap(cfg,baseline,bands,mode)
 %% MVPALAB_GENDIFFMAP
 %
 %  This function computes the diffMaps of a sliding filter analysis: the
-%  filtered maps minus the unfiltered baseline, and the same with the
-%  permuted maps if they are provided.
+%  maps of each frequency band minus the unfiltered baseline, with the
+%  bands in the first dimension. mvpalab_sfilter computes the observed
+%  diffMaps and mvpalab_sfnullmaps the permuted ones, where each permuted
+%  map of a band is compared with the permuted baseline of the same
+%  permutation.
 %
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Configuration structure.
+%    Configuration structure (cfg.sf.metric and cfg.study).
 %
-%  - {matrix} - acc:
-%    Observed baseline [1 x ntp x subjects]. In MVCC, fields ab and ba.
+%  - {matrix} - baseline:
+%    Unfiltered baseline [1 x ntp x subjects] or, permuted,
+%    [1 x ntp x subjects x maps]. In MVCC, fields ab and ba.
 %
-%  - {matrix} - accmap:
-%    Observed map of each band [1 x ntp x subjects x bands]. In MVCC,
-%    fields ab and ba.
-%
-%  - {matrix} - peracc:
-%    Optional. Permuted baseline [1 x ntp x subjects x maps]. In MVCC,
-%    fields ab and ba.
-%
-%  - {matrix} - permaps:
-%    Optional. Permuted maps of each band
+%  - {matrix} - bands:
+%    Maps of each band [1 x ntp x subjects x bands] or, permuted,
 %    [1 x ntp x subjects x maps x bands]. In MVCC, fields ab and ba.
+%
+%  - {string} - mode:
+%    'observed' or 'permuted'.
 %
 %%  OUTPUT:
 %
-%  - {struct} - cfg:
-%    Configuration structure.
-%
 %  - {struct} - diffMap:
-%    Field cfg.sf.metric with the observed diffMaps
-%    [bands x ntp x subjects]. In MVCC, fields ab and ba.
-%
-%  - {struct} - perdiffMap:
-%    Field cfg.sf.metric with the permuted diffMaps
-%    [bands x ntp x subjects x maps], if peracc and permaps are given. In
-%    MVCC, fields ab and ba.
+%    Field cfg.sf.metric with the diffMaps [bands x ntp x subjects] or,
+%    permuted, [bands x ntp x subjects x maps]. In MVCC, fields ab and ba.
 
 fprintf('<strong> > Generating diffmaps... </strong>');
 
-metric = cfg.sf.metric;
-mvcc = mvpalab_ismvcc(cfg);
-
-%% Generate diffMap for real data:
 order = [4 2 3 1];
-if mvcc
-    diffMap.(metric).ab = permute(accmap.ab - acc.ab,order);
-    diffMap.(metric).ba = permute(accmap.ba - acc.ba,order);
-else
-    diffMap.(metric) = permute(accmap - acc,order);
-end
+if strcmp(mode,'permuted'), order = [5 2 3 4 1]; end
+difference = @(base,maps) permute(maps - base,order);
 
-%% Generate permuted diffMaps for statistics if nedeed:
-if nargin > 3
-    order = [5 2 3 4 1];
-    if mvcc
-        perdiffMap.(metric).ab = permute(permaps.ab - peracc.ab,order);
-        perdiffMap.(metric).ba = permute(permaps.ba - peracc.ba,order);
-    else
-        perdiffMap.(metric) = permute(permaps - peracc,order);
-    end
+metric = cfg.sf.metric;
+if mvpalab_ismvcc(cfg)
+    diffMap.(metric).ab = difference(baseline.ab,bands.ab);
+    diffMap.(metric).ba = difference(baseline.ba,bands.ba);
+else
+    diffMap.(metric) = difference(baseline,bands);
 end
 
 fprintf('Done.\n');

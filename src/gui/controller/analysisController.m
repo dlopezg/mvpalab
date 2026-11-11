@@ -2,16 +2,9 @@
 [cfg,~,fv] = mvpalab_import(cfg);
 
 %% Compute the decoding analysis and save results:
-[result,cfg] = mvpalab_decoding(cfg,fv);
-
-%% If permutation analysis is enabled
-if cfg.stats.flag
-    % Maps of the null distribution (permuted or sign flip):
-    [nullmaps,cfg] = mvpalab_nullmaps(cfg,fv,result);
-
-    % Compute the permutation based analysis:
-    stats = mvpalab_permtest(cfg,result,nullmaps);
-end
+%  With cfg.stats.flag it also computes the null maps (permuted or sign
+%  flip) and the permutation test.
+[result,cfg,stats,nullmaps] = mvpalab_decoding(cfg,fv);
 
 %% Extract diag:
 if cfg.classmodel.tempgen && cfg.classmodel.extdiag
@@ -21,4 +14,3 @@ if cfg.classmodel.tempgen && cfg.classmodel.extdiag
         resultdiag = mvpalab_extractdiag(cfg,result);
     end
 end
-

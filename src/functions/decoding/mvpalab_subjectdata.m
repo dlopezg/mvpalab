@@ -6,7 +6,10 @@ function data = mvpalab_subjectdata(cfg,fv,job)
 %  channels and they are not normalized: both are applied in each
 %  repetition (see mvpalab_preparedata). In a sliding filter analysis the
 %  feature vectors of the band are read from disk, where they are saved in
-%  single precision (see mvpalab_savesfdata), and converted to double.
+%  single precision (see mvpalab_savesfdata), and converted to double. It
+%  gives an error if they come from another import than cfg, because then
+%  the analysis or its null maps would use other data (cfg.sf.importid,
+%  see mvpalab_preparesf).
 %
 %%  INPUT:
 %
@@ -30,7 +33,14 @@ function data = mvpalab_subjectdata(cfg,fv,job)
 if cfg.sf.flag
     % Saved in single precision (see mvpalab_savesfdata), computed in
     % double precision:
-    band = load(mvpalab_sffile(cfg,'fv',job.sub,job.freq),'fv');
+    file = mvpalab_sffile(cfg,'fv',job.sub,job.freq);
+    band = load(file,'fv','cfg');
+    imported = '';
+    if isfield(band.cfg.sf,'importid'), imported = band.cfg.sf.importid; end
+    if ~strcmp(imported,cfg.sf.importid)
+        error(['%s comes from another import than this cfg. Use the cfg ' ...
+            'of that import, or import the data again.'],file);
+    end
     fv = band.fv;
     fv.X = structfun(@double,fv.X,'UniformOutput',false);
 else

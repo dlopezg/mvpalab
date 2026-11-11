@@ -13,10 +13,10 @@ function nullmaps = mvpalab_selectnull(cfg,res,permaps,chance)
 %    for example changes outside the diagonal in temporal generalization,
 %    so they are not symmetric around chance.
 %
-%  The decoding (mvpalab_nullmaps, chance 1 over the number of classes),
-%  RSA (mvpalab_rsa_time, chance 0) and the sliding filter
-%  (mvpalab_sfilter, chance 0) call it, so the choice is made in one
-%  place. The fusion has no sign flip test (see mvpalab_fusion).
+%  The decoding (mvpalab_decodingnullmaps, chance 1 over the number of
+%  classes), RSA (mvpalab_rsa_time, chance 0) and the sliding filter
+%  (mvpalab_sfilter, chance 0) call it, so the choice is made in one place.
+%  The fusion has no sign flip test (see mvpalab_fusion).
 %
 %%  INPUT:
 %

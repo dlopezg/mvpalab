@@ -1,4 +1,4 @@
-function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
+function [res,cfg,stats,nullmaps] = mvpalab_decoding(cfg,fv,mode)
 %% MVPALAB_DECODING
 %
 %  This function computes the decoding analysis of the study: MVPA, or
@@ -6,7 +6,7 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %  between datasets A and B in both directions (training in A and test in B
 %  and vice versa), and their permuted maps for the permutation test:
 %
-%    [result,cfg] = mvpalab_decoding(cfg,fv);
+%    [result,cfg,stats,nullmaps] = mvpalab_decoding(cfg,fv);
 %    [permaps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
 %
 %  A permuted map is the observed map computed with permuted labels, so
@@ -30,6 +30,14 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %  cross-decoding between them, so the test can be liberal. The sign flip
 %  test (cfg.stats.signflip) does not permute labels, so it is recommended
 %  for MVCC (see mvpalab_signmaps).
+%
+%  With cfg.stats.flag enabled, it also computes the maps of the null
+%  distribution (see mvpalab_decodingnullmaps) and the permutation test
+%  (see mvpalab_permtest) in the same call, with the same cfg, so the
+%  result and its null distribution always follow the same settings. To
+%  repeat the test with other settings of cfg.stats (for example
+%  cfg.stats.pclust), call mvpalab_permtest again with the returned null
+%  maps. The 'permuted' mode only returns the permuted maps.
 %
 %  It stops with an error before computing or saving anything if a
 %  setting is not valid (see mvpalab_validatedecoding) or if cfg.sf.flag is
@@ -62,6 +70,14 @@ function [res,cfg] = mvpalab_decoding(cfg,fv,mode)
 %
 %  - {struct} - cfg:
 %    Updated configuration structure.
+%
+%  - {struct} - stats:
+%    Result of the permutation test (see mvpalab_permtest), empty without
+%    cfg.stats.flag.
+%
+%  - {struct} - nullmaps:
+%    Maps of the null distribution (see mvpalab_decodingnullmaps), empty
+%    without cfg.stats.flag.
 
 if nargin < 2, fv = []; end
 if nargin < 3, mode = 'observed'; end
@@ -85,6 +101,14 @@ cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis,folder);
 
 % Save result:
 mvpalab_save(cfg,res,job.savemode);
+
+% Null maps and permutation test of the observed result, if needed:
+stats = [];
+nullmaps = [];
+if strcmp(mode,'observed') && cfg.stats.flag
+    [nullmaps,cfg] = mvpalab_decodingnullmaps(cfg,fv,res);
+    stats = mvpalab_permtest(cfg,res,nullmaps);
+end
 
 % Save the configuration with the fields set by the analysis:
 mvpalab_savecfg(cfg);

@@ -28,7 +28,7 @@ function [per,nulldiag,stats] = mvpalab_extractdiag(cfg,performance,nullmaps)
 %
 %  - {struct} - nullmaps:
 %    Optional. Maps of the null distribution of a temporal generalization
-%    analysis (see mvpalab_nullmaps), with maps
+%    analysis (see mvpalab_decodingnullmaps), with maps
 %    [ntp x ntp x subjects x maps x bands] in each metric.
 %
 %%  OUTPUT:

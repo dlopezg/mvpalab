@@ -14,7 +14,7 @@ function maps = mvpalab_rsamaps(cfg,vrdm,vtheo,pidx)
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Configuration structure (cfg.rsa and cfg.classmodel.parcomp).
+%    Configuration structure (cfg.rsa).
 %
 %  - {matrix} - vrdm:
 %    Vectorized empirical RDM [timepoints x pairs].
@@ -32,14 +32,11 @@ function maps = mvpalab_rsamaps(cfg,vrdm,vtheo,pidx)
 %    [timepoints x maps] in 'corr', or the fields bvalues and tvalues of
 %    the same size.
 
-nworkers = 0;
-if cfg.classmodel.parcomp, nworkers = Inf; end
-
 ids = cellfun(@(model) model.id,cfg.rsa.tmodels,'UniformOutput',false);
 
 if strcmp(cfg.rsa.modality,'multiple_regress')
     fprintf('\n<strong>   >> All the models</strong>\n');
-    [b,t] = mvpalab_glm(vrdm,vtheo,pidx,nworkers);
+    [b,t] = mvpalab_glm(vrdm,vtheo,pidx);
     for mdl = 1 : numel(ids)
         maps.(ids{mdl}).bvalues = b(:,:,mdl);
         maps.(ids{mdl}).tvalues = t(:,:,mdl);
@@ -50,10 +47,10 @@ end
 for mdl = 1 : numel(ids)
     fprintf(['\n<strong>   >> Model: ' ids{mdl} '</strong>\n']);
     if strcmp(cfg.rsa.modality,'corr')
-        maps.(ids{mdl}) = mvpalab_spearmanz(vrdm,vtheo(:,mdl),pidx,nworkers);
+        maps.(ids{mdl}) = mvpalab_spearmanz(vrdm,vtheo(:,mdl),pidx);
     else
         [maps.(ids{mdl}).bvalues,maps.(ids{mdl}).tvalues] = ...
-            mvpalab_glm(vrdm,vtheo(:,mdl),pidx,nworkers);
+            mvpalab_glm(vrdm,vtheo(:,mdl),pidx);
     end
 end
 

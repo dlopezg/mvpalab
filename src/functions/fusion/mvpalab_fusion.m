@@ -71,9 +71,6 @@ permaps = struct();
 nullmaps = struct();
 stats = struct();
 
-nworkers = 0;
-if cfg.classmodel.parcomp, nworkers = Inf; end
-
 %% Compute fusion:
 regions = fieldnames(fmri_rdms);
 
@@ -85,7 +82,7 @@ for roi = 1 : numel(regions)
 
     for obs = 1 : numel(veeg)
         pidx = mvpalab_rsapermidx(cfg,size(veeg{obs},2),permuted);
-        z = mvpalab_spearmanz(veeg{obs},vfmri{obs},pidx,nworkers);
+        z = mvpalab_spearmanz(veeg{obs},vfmri{obs},pidx);
         res.(dist).(region)(1,:,obs) = z(:,1)';
         if permuted
             permaps.(dist).(region)(1,:,obs,:) = permute(z(:,2:end),[3 1 4 2]);

@@ -92,8 +92,11 @@ cfg.trialaver.order    = 'rand';
 
 % cfg.classsize.match      - The classes of a dataset keep the size of the
 %                            smallest one.
-% cfg.classsize.matchkfold - The size of each class is a multiple of
-%                            cfg.cv.nfolds (k-fold only, not used in MVCC).
+% cfg.classsize.matchkfold - The size of each class is a multiple of the
+%                            number of folds, so all the folds have the
+%                            same size: cfg.cv.nfolds in MVPA with k-fold,
+%                            cfg.rsa.nfolds in RSA (if larger than 1). Not
+%                            used in MVCC (see mvpalab_trimclasses).
 %
 % With supertrials both are applied to the supertrials, which are in random
 % order with cfg.trialaver.order = 'rand'. Without them they are applied

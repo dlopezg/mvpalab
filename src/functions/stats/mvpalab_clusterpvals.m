@@ -9,8 +9,8 @@ function [clusters, corrcsize] = mvpalab_clusterpvals(cfg,clusters,sizedist,maxd
 %    a cluster of equal or greater size in the null distribution of all
 %    the clusters found in all the permuted maps (sizedist). The
 %    Benjamini-Hochberg FDR correction is then applied to the vector of
-%    cluster p-values (Stelzer et al., 2013). Controls the false discovery
-%    rate among the significant clusters.
+%    cluster p-values (Stelzer et al., 2013, see mvpalab_bhfdr). Controls
+%    the false discovery rate among the significant clusters.
 %
 %  - 'max': For each cluster, the p-value is the probability of obtaining
 %    a maximum cluster of equal or greater size in the null distribution
@@ -86,7 +86,7 @@ if strcmp(cfg.stats.clustcorr,'max')
     sig_idx = cpvals < alpha;
 elseif strcmp(cfg.stats.clustcorr,'fdr')
     if nC > 0
-        cfdr = mafdr(cpvals,'bhfdr','true');
+        cfdr = mvpalab_bhfdr(cpvals);
     end
     sig_idx = cfdr < alpha;
 else

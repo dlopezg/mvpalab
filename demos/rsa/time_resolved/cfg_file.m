@@ -74,7 +74,7 @@ cfg.trialaver.order    = 'rand';
 %% BALANCED DATASETS:
 
 cfg.classsize.match = false;
-cfg.classsize.matchkfold = true; % Required true if CV!
+cfg.classsize.matchkfold = true; % Folds of the RDMs of the same size (cfg.rsa.nfolds).
 
 %% DATA SMOOTHING:
 

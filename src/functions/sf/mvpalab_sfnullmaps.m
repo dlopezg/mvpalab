@@ -14,15 +14,15 @@ function [nullmaps,cfg] = mvpalab_sfnullmaps(cfg,diffMap)
 %    the filter under the null hypothesis, as the observed diffMap. The
 %    permuted maps are saved with mvpalab_save, and the maps of the bands
 %    and of the baseline in other/permuted_maps.mat and
-%    other/permuted_performance.mat.
+%    other/permuted_performance.mat, with cfg.
 %  - With cfg.stats.signflip, the sign flip maps of the diffMaps around 0
 %    (see mvpalab_selectnull).
 %
 %  mvpalab_sfilter calls it with cfg.stats.flag enabled, with its own cfg,
 %  so the null maps always follow the settings of the result. To call it
 %  separately, use the cfg returned by mvpalab_sfilter. The filtered data
-%  on disk is checked: it must come from the same import (see
-%  mvpalab_subjectdata).
+%  on disk is checked: it must come from the same import, with the same
+%  settings (see mvpalab_validatesfimport and mvpalab_subjectdata).
 %
 %%  INPUT:
 %
@@ -44,6 +44,7 @@ function [nullmaps,cfg] = mvpalab_sfnullmaps(cfg,diffMap)
 cfg = mvpalab_updatecfg(cfg);
 mvpalab_validatestats(cfg);
 mvpalab_validatesignflip(cfg);
+mvpalab_validatesfimport(cfg);
 
 permaps = [];
 if ~cfg.stats.signflip
@@ -51,17 +52,19 @@ if ~cfg.stats.signflip
     cfg.sf.rng = cell(length(cfg.study.dataFiles{1,1}),2);
 
     [permuted_maps,cfg] = mvpalab_evalsubjects(cfg,[],'permuted');
-    save(fullfile(cfg.savefolder,'other','permuted_maps.mat'),...
-        'permuted_maps','-v7.3');
 
     cfg.sf.flag = false;
     [fv,cfg] = mvpalab_sfbaseline(cfg);
     [permuted_performance,cfg] = mvpalab_evalsubjects(cfg,fv,'permuted');
-    save(fullfile(cfg.savefolder,'other','permuted_performance.mat'),...
-        'permuted_performance','-v7.3');
 
     cfg.sf = rmfield(cfg.sf,'rng');
     cfg.sf.flag = true;
+
+    % Permuted maps of the bands and of the baseline, with cfg:
+    save(fullfile(cfg.savefolder,'other','permuted_maps.mat'),...
+        'permuted_maps','cfg','-v7.3');
+    save(fullfile(cfg.savefolder,'other','permuted_performance.mat'),...
+        'permuted_performance','cfg','-v7.3');
 
     permaps = mvpalab_gendiffmap(cfg,permuted_performance.(cfg.sf.metric),...
         permuted_maps.(cfg.sf.metric),'permuted');

@@ -5,7 +5,8 @@ function [diffMap,cfg,stats,nullmaps] = mvpalab_sfilter(cfg)
 %  performance of each frequency band minus the performance of the
 %  unfiltered data (see mvpalab_gendiffmap). The feature vectors of the
 %  bands must be in cfg.sf.filesLocation (see mvpalab_import with
-%  cfg.sf.flag enabled), from the import of this cfg (see
+%  cfg.sf.flag enabled), from the import of this cfg: the settings of the
+%  import must not change (see mvpalab_validatesfimport and
 %  mvpalab_subjectdata).
 %
 %  All the maps are computed with mvpalab_evalsubjects. The unfiltered
@@ -27,7 +28,7 @@ function [diffMap,cfg,stats,nullmaps] = mvpalab_sfilter(cfg)
 %  - The diffMaps of cfg.sf.metric with mvpalab_save, for example
 %    acc/result.mat (acc/ab/result.mat and acc/ba/result.mat in MVCC).
 %  - other/performance_maps.mat and other/performance.mat: Maps of the
-%    bands and of the baseline.
+%    bands and of the baseline, with cfg.
 %
 %%  INPUT:
 %
@@ -57,6 +58,7 @@ cfg = mvpalab_updatecfg(cfg);
 % Check the settings of the analysis:
 mvpalab_validatedecoding(cfg,'observed');
 mvpalab_validatesf(cfg);
+mvpalab_validatesfimport(cfg);
 mvpalab_savecfg(cfg);
 
 % Folder of the results (see mvpalab_save):
@@ -71,8 +73,6 @@ end
 
 %% Maps of each frequency band:
 [performance_maps,cfg] = mvpalab_evalsubjects(cfg,[],'observed');
-save(fullfile(cfg.savefolder,'other','performance_maps.mat'),...
-    'performance_maps','-v7.3');
 
 %% Unfiltered baseline:
 %  Without cfg.sf.flag the maps are computed from fv and not from the bands
@@ -80,11 +80,15 @@ save(fullfile(cfg.savefolder,'other','performance_maps.mat'),...
 cfg.sf.flag = false;
 [fv,cfg] = mvpalab_sfbaseline(cfg);
 [performance,cfg] = mvpalab_evalsubjects(cfg,fv,'observed');
-save(fullfile(cfg.savefolder,'other','performance.mat'),...
-    'performance','-v7.3');
 
 cfg.sf = rmfield(cfg.sf,'rng');
 cfg.sf.flag = true;
+
+% Maps of the bands and of the baseline, with the cfg of the analysis:
+save(fullfile(cfg.savefolder,'other','performance_maps.mat'),...
+    'performance_maps','cfg','-v7.3');
+save(fullfile(cfg.savefolder,'other','performance.mat'),...
+    'performance','cfg','-v7.3');
 
 %% diffMaps:
 diffMap = mvpalab_gendiffmap(cfg,performance.(cfg.sf.metric),...

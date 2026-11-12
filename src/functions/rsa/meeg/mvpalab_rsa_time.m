@@ -72,6 +72,7 @@ function [res,cfg,stats,nullmaps] = mvpalab_rsa_time(cfg,fv)
 %    cfg.stats.flag.
 
 cfg = mvpalab_updatecfg(cfg);
+cfg.stats.pairing = 'random';  % Saved with every file (see mvpalab_permtest).
 
 %% Initialize
 nsub = length(cfg.study.dataFiles{1,1});

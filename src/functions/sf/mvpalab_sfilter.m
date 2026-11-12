@@ -53,6 +53,7 @@ function [diffMap,cfg,stats,nullmaps] = mvpalab_sfilter(cfg)
 %    cfg.stats.flag.
 
 cfg = mvpalab_updatecfg(cfg);
+cfg.stats.pairing = 'random';  % Saved with every file (see mvpalab_permtest).
 
 % Check the settings of the analysis:
 mvpalab_validatedecoding(cfg,'observed');

@@ -83,6 +83,7 @@ if nargin < 2, fv = []; end
 if nargin < 3, mode = 'observed'; end
 
 cfg = mvpalab_updatecfg(cfg);
+cfg.stats.pairing = 'random';  % Saved with every file (see mvpalab_permtest).
 
 % Check the settings of the analysis:
 if cfg.sf.flag

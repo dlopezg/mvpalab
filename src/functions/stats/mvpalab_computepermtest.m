@@ -1,11 +1,12 @@
-function stats = mvpalab_computepermtest(cfg,performance,nullmaps,pairing)
+function stats = mvpalab_computepermtest(cfg,performance,nullmaps)
 %% MVPALAB_COMPUTEPERMTEST
 %
 %  This function computes the cluster-based permutation test of one
 %  performance map at group level (Stelzer et al., 2013):
 %
-%  - It builds the permuted maps at group level as set in pairing:
-%    - 'random' (default): cfg.stats.nperg maps, each one the mean of one
+%  - It builds the permuted maps at group level as set in
+%    cfg.stats.pairing, which the analysis sets (see mvpalab_permtest):
+%    - 'random': cfg.stats.nperg maps, each one the mean of one
 %      permuted map of each subject selected at random (Stelzer et al.,
 %      2013). The permuted maps of each subject are independent of those
 %      of the other subjects.
@@ -65,10 +66,8 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps,pairing)
 %    Maps of the null distribution of each subject [ntp x ntp_ x subjects x
 %    maps]: its permuted maps or, with cfg.stats.signflip, its result and
 %    its reflection around chance (see mvpalab_decodingnullmaps). With
-%    pairing = 'shared', map k of every subject uses the same permutation.
-%
-%  - {string} - pairing (optional):
-%    'random' (default) or 'shared', see above.
+%    cfg.stats.pairing = 'shared', map k of every subject uses the same
+%    permutation.
 %
 %%  OUTPUT:
 %
@@ -87,10 +86,10 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps,pairing)
 %    - corrcsize, corrcsize_: Minimum size of the significant clusters
 %      (Inf if none or if the tail is not tested).
 
-if nargin < 4, pairing = 'random'; end
+pairing = cfg.stats.pairing;
 if ~any(strcmp(pairing,{'random','shared'}))
     error('mvpalab:computepermtest',...
-        'The pairing of the permuted maps must be ''random'' or ''shared''.');
+        'cfg.stats.pairing must be ''random'' or ''shared''.');
 end
 
 mvpalab_validatestats(cfg);

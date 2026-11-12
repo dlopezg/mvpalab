@@ -358,6 +358,13 @@ cfg.cv.nreps   = 1;
 %                         (95: p < 0.05).
 % cfg.stats.pclust      - Confidence level of the clusters (95: p < 0.05).
 % cfg.stats.shownulldis - Show the null distributions in a figure.
+% cfg.stats.pairing     - Set by each analysis, not by the user: how the
+%                         permuted maps of the subjects are combined at
+%                         group level (see mvpalab_computepermtest),
+%                         'random' (Stelzer et al., 2013) or 'shared' in
+%                         the fusion. It is saved in the cfg of every
+%                         file, so a test repeated from the saved files
+%                         uses the right one.
 
 cfg.stats.flag   = 0;
 cfg.stats.signflip = false;
@@ -368,6 +375,7 @@ cfg.stats.pclust = 95;
 cfg.stats.tails  = 2;
 cfg.stats.clustcorr = 'fdr';
 cfg.stats.shownulldis = 0;
+cfg.stats.pairing = 'random';
 
 %% REPRESENTATIONAL SIMILARITY ANALYSIS:
 

@@ -76,6 +76,7 @@ function [res,cfg,stats,nullmaps] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 
 %% Initialization:
 cfg = mvpalab_updatecfg(cfg);
+cfg.stats.pairing = 'shared';  % Saved with every file (see mvpalab_permtest).
 mvpalab_validatefusion(cfg);
 mvpalab_validatefusionrdms(eeg_rdms,fmri_rdms);
 cfg = conditionpairs(cfg,eeg_rdms,fmri_rdms);

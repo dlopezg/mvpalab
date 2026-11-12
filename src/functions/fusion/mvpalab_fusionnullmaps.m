@@ -11,10 +11,11 @@ function [nullmaps,cfg] = mvpalab_fusionnullmaps(cfg,eeg_rdms,fmri_rdms,res)
 %    sharedpidx): cfg.stats.nper permutations, or all the different
 %    permutations (factorial of the conditions minus 1) if there are not
 %    more than cfg.stats.nper, which gives an exact test.
-%  - nullmaps.pairing = 'shared' tells mvpalab_permtest that the null map
-%    at group level of each permutation is the mean of its maps of all the
-%    observations, so the null distribution includes the noise that the
-%    observations share, the averaged RDM. cfg.stats.nperg is not used.
+%  - cfg.stats.pairing = 'shared' (set by mvpalab_fusion and saved with
+%    every file) tells mvpalab_permtest that the null map at group level
+%    of each permutation is the mean of its maps of all the observations,
+%    so the null distribution includes the noise that the observations
+%    share, the averaged RDM. cfg.stats.nperg is not used.
 %  - Independent permutations per observation combined at random (Stelzer
 %    et al., 2013), or the sign flip test, leave that shared noise out and
 %    are liberal when one modality has structure that the other does not
@@ -67,7 +68,7 @@ function [nullmaps,cfg] = mvpalab_fusionnullmaps(cfg,eeg_rdms,fmri_rdms,res)
 %  - {struct} - nullmaps:
 %    Permuted maps of each region in nullmaps.(region)
 %    [1 x timepoints x observations x permutations], where map k of every
-%    observation uses the same permutation, and pairing = 'shared'.
+%    observation uses the same permutation.
 %
 %  - {struct} - cfg:
 %    Configuration structure.
@@ -113,7 +114,6 @@ for roi = 1 : numel(regions)
 end
 
 mvpalab_save(cfg,nullmaps,'permaps');
-nullmaps.pairing = 'shared';
 
 end
 

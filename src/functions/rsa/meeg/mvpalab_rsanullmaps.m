@@ -45,7 +45,7 @@ dist = cfg.rsa.distance;
 permaps = [];
 if ~cfg.stats.signflip
     fprintf('\n<strong> > Computing RSA permuted maps: </strong>\n');
-    rdms = res.(mode).(dist).rdms;
+    rdms = res.(mode).(dist).rdms.rdm;
     theo = res.(mode).(dist).theo;
     permaps.(mode).(dist) = struct();
     for sub = 1 : numel(rdms)

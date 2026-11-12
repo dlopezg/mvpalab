@@ -483,6 +483,12 @@ cfg.sl.radius = 4;
 %                       'mean-eeg'  - Mean M/EEG RDM with the RDM of each
 %                                     fMRI subject.
 %
+% cfg.fusion.conditions - Set by mvpalab_fusion: the pairs of conditions
+%                         of each region, cfg.fusion.conditions.(region)
+%                         [conditions x 2] (M/EEG, fMRI). The conditions
+%                         are paired by their position in the RDMs, not
+%                         by their names: check that they match.
+%
 % The fusion always correlates the RDMs with the Spearman correlation. The
 % distance of the RDMs (cfg.rsa.distance of the analyses that computed
 % them) is not known by the fusion: use cfg.analysis to keep apart the
@@ -497,6 +503,7 @@ cfg.sl.radius = 4;
 % test is not available in the fusion.
 
 cfg.fusion.mode = 'mean-fmri';
+cfg.fusion.conditions = struct();
 
 %% SLIDING FILTER ANALYSIS CONFIGURATION:
 

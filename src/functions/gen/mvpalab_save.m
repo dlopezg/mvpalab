@@ -5,7 +5,8 @@ function mvpalab_save(cfg,data,mode)
 %  in cfg.savefolder: each field is saved in a folder with its name, so the
 %  folders follow the fields of the structure, and each leaf is a file with
 %  the data and cfg. The statistics of one map (a structure with the field
-%  sigmask) are one leaf.
+%  sigmask) and the RDMs of an RSA with the names of their conditions (a
+%  structure with the field conditions) are one leaf.
 %
 %  cfg.savefolder is set by the analysis that computes the results, in
 %  cfg.location/results/cfg.analysis (cfg.analysis is only the name that
@@ -55,7 +56,7 @@ end
 function savefields(cfg,data,folder,kind)
 %% Each field in a folder with its name, and each leaf in one file.
 
-if isstruct(data) && ~isfield(data,'sigmask')
+if isstruct(data) && ~isfield(data,'sigmask') && ~isfield(data,'conditions')
     for field = fieldnames(data)'
         savefields(cfg,data.(field{1}),fullfile(folder,field{1}),kind);
     end

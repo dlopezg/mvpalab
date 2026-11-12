@@ -9,7 +9,11 @@ cfg.analysis = 'fusion_cue';
 cfg.fusion.mode = 'mean-fmri';
 
 %% RDMs of the fMRI regions (also bin_rwA1_bilateral, bin_rwPSL_bilateral,
-%  bin_rwRSC_bilateral and bin_rwSFL_bilateral) and of the M/EEG:
+%  bin_rwRSC_bilateral and bin_rwSFL_bilateral) and of the M/EEG. Each file
+%  is the rdms/result.mat of an RSA (mvpalab_rsa_roi, condition-wise
+%  mvpalab_rsa_time): the RDMs in result.rdm and the names of the
+%  conditions in result.conditions. The fusion pairs the conditions by
+%  their position and shows the pairs, so check that they match:
 
 folder = fullfile('data','rdms');
 regions = {'bin_rwM1_bilateral','bin_rwVVC_bilateral'};

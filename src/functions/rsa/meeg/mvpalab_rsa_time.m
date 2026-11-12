@@ -47,9 +47,15 @@ function [res,cfg,stats,nullmaps] = mvpalab_rsa_time(cfg,fv)
 %      'corr', or the fields
 %      bvalues and tvalues of the same size in 'regress' and
 %      'multiple_regress'.
-%    - rdms: Cell array with the RDM of each subject [conditions x
-%      conditions x timepoints] or, with cfg.rsa.trialwise, [trials x
-%      trials x timepoints].
+%    - rdms: RDMs of the subjects, saved together in one file (see
+%      mvpalab_save):
+%      - rdm: Cell array with the RDM of each subject [conditions x
+%        conditions x timepoints] or, with cfg.rsa.trialwise, [trials x
+%        trials x timepoints].
+%      - conditions: Names of the conditions in the order of the rows of
+%        condition-wise RDMs (cfg.study.conditionIdentifier), the same
+%        order as the rows of the theoretical models. In trial-wise RDMs
+%        the condition of each row is in cfg.rsa.bounds.
 %    - theo: Cell array with the theoretical RDMs of each subject (see
 %      mvpalab_gentrdms).
 %
@@ -127,7 +133,8 @@ cfg = mvpalab_updatechanloc(cfg,cfg.channels.selected);
 %  the fMRI ROI analysis. This is the format read by the fusion analysis
 %  (mvpalab_fusion). The condition boundaries are saved in cfg.rsa.bounds.
 
-res.(mode).(dist).rdms = rdms;
+res.(mode).(dist).rdms.rdm = rdms;
+res.(mode).(dist).rdms.conditions = cfg.study.conditionIdentifier(1,:)';
 res.(mode).(dist).theo = theo;
 
 % Save results:

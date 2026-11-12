@@ -57,8 +57,12 @@ function [res,stats,cfg] = mvpalab_rsa_roi(cfg,volumes,masks)
 %  - {struct} - res:
 %    Results in res.(cfg.rsa.modality).(cfg.rsa.distance).(region), with
 %    the names of the fields of masks:
-%    - rdms: Cell array with the RDM of each subject [conditions x
-%      conditions].
+%    - rdms: RDMs of the subjects, saved together in one file (see
+%      mvpalab_save):
+%      - rdm: Cell array with the RDM of each subject [conditions x
+%        conditions].
+%      - conditions: Names of the conditions in the order of the rows
+%        (cfg.rsa.conditions).
 %    - theo: Theoretical RDMs [conditions x conditions x 1 x models] (see
 %      mvpalab_gentrdms).
 %
@@ -175,7 +179,8 @@ for roi = 1 : length(cfg.rsa.roi)
     end
     
     %% Save RSA data
-    res.(mode).(dist).(subject_roi_name).rdms = rdm;
+    rdms = struct('rdm',{rdm},'conditions',{cfg.rsa.conditions(:)});
+    res.(mode).(dist).(subject_roi_name).rdms = rdms;
     res.(mode).(dist).(subject_roi_name).theo = theo;
     
 end

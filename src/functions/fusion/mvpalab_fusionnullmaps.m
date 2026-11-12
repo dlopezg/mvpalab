@@ -53,7 +53,7 @@ function [nullmaps,cfg] = mvpalab_fusionnullmaps(cfg,eeg_rdms,fmri_rdms,res)
 %  - {struct} - cfg:
 %    Configuration structure returned by mvpalab_fusion.
 %
-%  - {cell array} - eeg_rdms:
+%  - {struct} - eeg_rdms:
 %    RDMs of the M/EEG subjects, as in mvpalab_fusion.
 %
 %  - {struct} - fmri_rdms:
@@ -74,8 +74,9 @@ function [nullmaps,cfg] = mvpalab_fusionnullmaps(cfg,eeg_rdms,fmri_rdms,res)
 
 cfg = mvpalab_updatecfg(cfg);
 mvpalab_validatefusion(cfg);
+mvpalab_validatefusionrdms(eeg_rdms,fmri_rdms);
 
-nconds = size(eeg_rdms{1},1);
+nconds = numel(eeg_rdms.conditions);
 if factorial(nconds) - 1 > cfg.stats.nper && cfg.stats.nper < 1000
     warning('mvpalab:fusionnullmaps',...
         ['The shared permutation test of the fusion has one null map ' ...
@@ -97,7 +98,8 @@ for roi = 1 : numel(regions)
     region = regions{roi};
     fprintf(['\n<strong> > Computing fusion permuted maps: </strong>- Region: ' region '\n']);
 
-    [veeg,vfmri] = mvpalab_fusionpairs(cfg,eeg_rdms,fmri_rdms.(region));
+    [veeg,vfmri] = mvpalab_fusionpairs(cfg,eeg_rdms.rdm,...
+        fmri_rdms.(region).rdm);
 
     for obs = 1 : numel(veeg)
         z = mvpalab_spearmanz(veeg{obs},vfmri{obs},pidx);

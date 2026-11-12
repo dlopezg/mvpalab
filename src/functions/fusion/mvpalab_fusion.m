@@ -24,6 +24,13 @@ function [res,cfg,stats,nullmaps] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %  permutation of the conditions shared by all the observations (see
 %  mvpalab_fusionnullmaps).
 %
+%  The conditions are paired by their position in the RDMs: the names of
+%  the conditions are not compared, because they can be different in the
+%  two modalities. The pairs of each region are shown in the console and
+%  kept in cfg.fusion.conditions.(region) [conditions x 2] (M/EEG, fMRI)
+%  so they can be checked. Only the number of conditions is checked (see
+%  mvpalab_validatefusionrdms).
+%
 %  The results are saved with mvpalab_save in cfg.savefolder. The
 %  configuration is saved with mvpalab_savecfg once the settings are
 %  checked (see mvpalab_validatefusion) and at the end of the analysis.
@@ -33,14 +40,17 @@ function [res,cfg,stats,nullmaps] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %  - {struct} - cfg:
 %    Configuration structure.
 %
-%  - {cell array} - eeg_rdms:
-%    RDM of each M/EEG subject [conditions x conditions x timepoints], as
-%    in the field rdms of the result of mvpalab_rsa_time.
+%  - {struct} - eeg_rdms:
+%    RDMs of the M/EEG subjects, the field rdms of the result of
+%    mvpalab_rsa_time (condition-wise): the RDM of each subject in rdm
+%    [conditions x conditions x timepoints] and the names of the
+%    conditions in conditions.
 %
 %  - {struct} - fmri_rdms:
-%    One field per region of interest, with a cell array that contains the
-%    RDM of each fMRI subject [conditions x conditions], as in the field
-%    rdms of each region in the result of mvpalab_rsa_roi.
+%    One field per region of interest with the RDMs of the fMRI subjects,
+%    the field rdms of each region in the result of mvpalab_rsa_roi: the
+%    RDM of each subject in rdm [conditions x conditions] and the names of
+%    the conditions in conditions.
 %
 %%  OUTPUT:
 %
@@ -53,7 +63,8 @@ function [res,cfg,stats,nullmaps] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %    distances.
 %
 %  - {struct} - cfg:
-%    Configuration structure.
+%    Configuration structure, with the pairs of conditions of each region
+%    in cfg.fusion.conditions.
 %
 %  - {struct} - stats:
 %    Result of the permutation test (see mvpalab_permtest), empty without
@@ -66,6 +77,8 @@ function [res,cfg,stats,nullmaps] = mvpalab_fusion(cfg,eeg_rdms,fmri_rdms)
 %% Initialization:
 cfg = mvpalab_updatecfg(cfg);
 mvpalab_validatefusion(cfg);
+mvpalab_validatefusionrdms(eeg_rdms,fmri_rdms);
+cfg = conditionpairs(cfg,eeg_rdms,fmri_rdms);
 mvpalab_savecfg(cfg);
 cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis);
 
@@ -76,7 +89,8 @@ for roi = 1 : numel(regions)
     region = regions{roi};
     fprintf(['\n<strong> > Computing fusion: </strong>- Region: ' region '\n']);
 
-    [veeg,vfmri] = mvpalab_fusionpairs(cfg,eeg_rdms,fmri_rdms.(region));
+    [veeg,vfmri] = mvpalab_fusionpairs(cfg,eeg_rdms.rdm,...
+        fmri_rdms.(region).rdm);
 
     for obs = 1 : numel(veeg)
         z = mvpalab_spearmanz(veeg{obs},vfmri{obs},1:numel(vfmri{obs}));
@@ -97,5 +111,22 @@ end
 
 % Save the configuration with the fields set by the analysis:
 mvpalab_savecfg(cfg);
+
+end
+
+function cfg = conditionpairs(cfg,eeg_rdms,fmri_rdms)
+%% Pairs of conditions of each region, shown in the console and kept in cfg.
+
+fprintf('\n<strong> > Pairs of conditions (M/EEG - fMRI): </strong>\n');
+cfg.fusion.conditions = struct();
+regions = fieldnames(fmri_rdms);
+for roi = 1 : numel(regions)
+    pairs = [eeg_rdms.conditions(:) fmri_rdms.(regions{roi}).conditions(:)];
+    cfg.fusion.conditions.(regions{roi}) = pairs;
+    fprintf('   - Region: %s\n',regions{roi});
+    for c = 1 : size(pairs,1)
+        fprintf('      %2d. %s - %s\n',c,pairs{c,1},pairs{c,2});
+    end
+end
 
 end

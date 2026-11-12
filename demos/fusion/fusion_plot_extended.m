@@ -1,3 +1,6 @@
+%% Fusion of the six regions of interest. Run it after fusion_demo, with
+%  its cfg in the workspace: the results are in results/<cfg.analysis>.
+
 %% Initialize and configure plots:
 
 graph = mvpalab_plotinit();
@@ -38,8 +41,8 @@ figure(1); hold on;
 
 % Load results:
 
-load ('results/fusion_cue/bin_rwVVC_bilateral/result.mat');
-load ('results/fusion_cue/bin_rwVVC_bilateral/stats.mat');
+load(fullfile('results',cfg.analysis,'bin_rwVVC_bilateral','result.mat'));
+load(fullfile('results',cfg.analysis,'bin_rwVVC_bilateral','stats.mat'));
 
 % Significant indicator:
 graph.sigh = -.2;
@@ -70,8 +73,8 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 %% ROI 2: M1
 
 % Load results:
-load ('results/fusion_cue/bin_rwM1_bilateral/result.mat');
-load ('results/fusion_cue/bin_rwM1_bilateral/stats.mat');
+load(fullfile('results',cfg.analysis,'bin_rwM1_bilateral','result.mat'));
+load(fullfile('results',cfg.analysis,'bin_rwM1_bilateral','stats.mat'));
 
 % Significant indicator:
 graph.sigh = -.25;
@@ -94,8 +97,8 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 %% ROI 3: A1
 
 % Load results:
-load ('results/fusion_cue/bin_rwA1_bilateral/result.mat');
-load ('results/fusion_cue/bin_rwA1_bilateral/stats.mat');
+load(fullfile('results',cfg.analysis,'bin_rwA1_bilateral','result.mat'));
+load(fullfile('results',cfg.analysis,'bin_rwA1_bilateral','stats.mat'));
 
 % Significant indicator:
 graph.sigh = -.26;
@@ -118,8 +121,8 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 %% ROI 4: PSL
 
 % Load results:
-load ('results/fusion_cue/bin_rwPSL_bilateral/result.mat');
-load ('results/fusion_cue/bin_rwPSL_bilateral/stats.mat');
+load(fullfile('results',cfg.analysis,'bin_rwPSL_bilateral','result.mat'));
+load(fullfile('results',cfg.analysis,'bin_rwPSL_bilateral','stats.mat'));
 
 % Significant indicator:
 graph.sigh = -.27;
@@ -142,8 +145,8 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 %% ROI 5: SFL
 
 % Load results:
-load ('results/fusion_cue/bin_rwSFL_bilateral/result.mat');
-load ('results/fusion_cue/bin_rwSFL_bilateral/stats.mat');
+load(fullfile('results',cfg.analysis,'bin_rwSFL_bilateral','result.mat'));
+load(fullfile('results',cfg.analysis,'bin_rwSFL_bilateral','stats.mat'));
 
 % Significant indicator:
 graph.sigh = -.28;
@@ -166,8 +169,8 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 %% ROI 2: RSC
 
 % Load results:
-load ('results/fusion_cue/bin_rwRSC_bilateral/result.mat');
-load ('results/fusion_cue/bin_rwRSC_bilateral/stats.mat');
+load(fullfile('results',cfg.analysis,'bin_rwRSC_bilateral','result.mat'));
+load(fullfile('results',cfg.analysis,'bin_rwRSC_bilateral','stats.mat'));
 
 % Significant indicator:
 graph.sigh = -.29;

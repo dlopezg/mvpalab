@@ -1,6 +1,9 @@
 %% Initialize and configure plots:
+%  run executes this script from the folder plots, so the results of the
+%  demo are in ../results, in the folders of its cfg.
 
-loaddir = '..\results\rsa-time-resolved\multiple_regress\pearson';
+loaddir = fullfile('..','results',cfg.analysis,cfg.rsa.modality,...
+    cfg.rsa.distance);
 
 graph = mvpalab_plotinit();
  
@@ -41,8 +44,8 @@ hold on
 
 
 % Load results model 1: 
-load ([loaddir '/block_model/bvalues/result.mat']);
-load ([loaddir '/block_model/bvalues/stats.mat']);
+load(fullfile(loaddir,'block_model','bvalues','result.mat'));
+load(fullfile(loaddir,'block_model','bvalues','stats.mat'));
 
 % Significant indicator:
 graph.sigh = -0.1;
@@ -53,8 +56,8 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 
 
 % Load results model 2: 
-load ([loaddir '/stimuli_model/bvalues/result.mat']);
-load ([loaddir '/stimuli_model/bvalues/stats.mat']);
+load(fullfile(loaddir,'stimuli_model','bvalues','result.mat'));
+load(fullfile(loaddir,'stimuli_model','bvalues','stats.mat'));
 
 graph.sigh = -0.15;
 graph.shadecolor = graph.colorSch{5};
@@ -67,8 +70,8 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 % end
 
 % Load results model 3:
-load ([loaddir '/validity_model/bvalues/result.mat']);
-load ([loaddir '/validity_model/bvalues/stats.mat']);
+load(fullfile(loaddir,'validity_model','bvalues','result.mat'));
+load(fullfile(loaddir,'validity_model','bvalues','stats.mat'));
 
 % Significant indicator:
 graph.sigh = -0.2;
@@ -80,30 +83,3 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 % for sub = 1 : size(result,3)
 %     plot(cfg.tm.times,result(:,:,sub),'-.','Color',[.8 .8 .8])
 % end
-
-
-
-
-%%
-
-% load results/nostnomatch/euclidean/theo/result.mat
-
-%%
-
-% figure(7);
-% graph.tmp = 1;
-% graph.caxis = [-.1 1];
-% graph.subject = 6;
-% 
-% subplot(1,3,1)
-% mvpalab_plotrdm(graph,cfg,result{graph.subject}(:,:,:,3));
-% 
-% graph.tmp = 1;
-% 
-% subplot(1,3,2)
-% mvpalab_plotrdm(graph,cfg,result{graph.subject}(:,:,1,1));
-% 
-% graph.tmp = 1;
-% 
-% subplot(1,3,3)
-% mvpalab_plotrdm(graph,cfg,result{graph.subject}(:,:,1,2));

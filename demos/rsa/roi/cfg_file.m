@@ -43,6 +43,10 @@ cfg.rsa.conditions = {
 cfg.rsa.roi = {
     'bin_rwVVC_bilateral.nii';
     'bin_rwM1_bilateral.nii';
+    'bin_rwA1_bilateral.nii';
+    'bin_rwPSL_bilateral.nii';
+    'bin_rwRSC_bilateral.nii';
+    'bin_rwSFL_bilateral.nii';
     };
 cfg.rsa.roi_folder = fullfile('anat','rois');
 

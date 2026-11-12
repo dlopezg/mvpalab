@@ -51,8 +51,10 @@ graph = mvpalab_plotinit();
 graph.stats.above = true;
 graph.stats.below = true;
 
-% Significant indicator:
-graph.sigh = .4;
+% Significant indicator, inside the y axis, and the reference of a
+% difference, 0:
+graph.sigh = -.25;
+graph.chanlvl = 0;
 
 % Axis limits:
 graph.xlim = [-200 1500];

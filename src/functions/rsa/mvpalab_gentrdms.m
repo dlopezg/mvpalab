@@ -35,9 +35,15 @@ fprintf('   - Computing theoretical RDMs:\n');
 %  If the analysis is computed condition-by-condition is not necessary to
 %  generate the theoretical models because they are already specified:
 
+%  The models are converted to double: trdms would otherwise take the class
+%  of the first model, and a logical first model would turn the following
+%  models into 0 and 1.
+
 if ~cfg.rsa.trialwise || nargin < 3
+    n = size(mdls{1}.mdl,1);
+    trdms = zeros(n,n,1,length(mdls));
     for i = 1 : length(mdls)
-        trdms(:,:,1,i) = mdls{i}.mdl;
+        trdms(:,:,1,i) = double(mdls{i}.mdl);
     end
     return
 end
@@ -46,6 +52,7 @@ end
 %  Index of the condition of each trial in unique(labels).
 
 cond = double(labels);
+trdms = zeros(numel(cond),numel(cond),1,length(mdls));
 
 %% Theoretical models loop
 %  Generate different RDMs for each theoretical model:
@@ -57,7 +64,7 @@ for i = 1 : length(mdls)
 
     fprintf(['      # Model: ' mdls{i}.id '... ']);
 
-    trdms(:,:,1,i) = mdls{i}.mdl(cond,cond);
+    trdms(:,:,1,i) = double(mdls{i}.mdl(cond,cond));
 
     fprintf('- Done.\n');
 end

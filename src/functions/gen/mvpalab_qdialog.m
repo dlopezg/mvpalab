@@ -1,4 +1,4 @@
-function res = mvpalab_qdialog(fig, msg, title, icon, opt)
+function res = mvpalab_qdialog(fig,msg,title,icon,opt)
 %% MVPALAB_QDIALOG
 %
 %  This function shows a question dialog with two options in the figure

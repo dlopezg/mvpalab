@@ -23,13 +23,14 @@ function mvpalab_validatesignflip(cfg,nobs)
 %  - {struct} - cfg:
 %    Configuration structure.
 %
-%  - {int} - nobs:
-%    Optional. Number of subjects, or of observations in fusion.
+%  - {int} - nobs (optional):
+%    Number of subjects, or of observations in fusion.
 
 if ~cfg.stats.signflip, return; end
 
 if ~strcmp(cfg.stats.clustcorr,'max')
-    error('The sign flip test needs cfg.stats.clustcorr = ''max''.');
+    error('mvpalab:validatesignflip',...
+        'The sign flip test needs cfg.stats.clustcorr = ''max''.');
 end
 
 if nargin < 2, return; end
@@ -40,7 +41,8 @@ if cfg.stats.tails == 2, level = level/2; end
 level = min(level,(100 - cfg.stats.pclust)/100);
 
 if 2^nobs*level <= 1
-    warning(['The sign flip test has %d combinations of signs with %d ' ...
+    warning('mvpalab:validatesignflip',...
+        ['The sign flip test has %d combinations of signs with %d ' ...
         'subjects, so no p-value can be below %.3g and nothing can be ' ...
         'significant with cfg.stats.pgroup = %g, cfg.stats.pclust = %g ' ...
         'and cfg.stats.tails = %d. It needs at least %d subjects.'],...

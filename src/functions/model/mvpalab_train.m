@@ -1,4 +1,4 @@
-function [ mdl , w ] = mvpalab_train(train_X,train_Y,cfg)
+function [mdl,w] = mvpalab_train(cfg,train_X,train_Y)
 %% MVPALAB_TRAIN
 %
 %  This function trains the classifier selected in cfg.classmodel.method
@@ -24,14 +24,14 @@ function [ mdl , w ] = mvpalab_train(train_X,train_Y,cfg)
 %
 %%  INPUT:
 %
+%  - {struct} - cfg:
+%    Configuration structure (cfg.classmodel).
+%
 %  - {matrix} - train_X:
 %    Training data [trials x features].
 %
 %  - {matrix} - train_Y:
 %    Categorical labels of the training trials [trials x 1].
-%
-%  - {struct} - cfg:
-%    Configuration structure (cfg.classmodel).
 %
 %%  OUTPUT:
 %
@@ -51,11 +51,15 @@ end
 if strcmp(cfg.classmodel.method,'svm')
     kernel = {'KernelFunction',cfg.classmodel.kernel};
     % The search covers the kernel scale with 'KernelScale', 'auto' or
-    % 'all', and maybe with optimizableVariable objects:
+    % 'all', given by name or as an optimizableVariable named KernelScale:
     params = cfg.classmodel.optimize.params;
-    names = ischar(params) || iscellstr(params);
-    searched = cfg.classmodel.optimize.flag && (~names || ...
-        any(ismember(cellstr(params),{'KernelScale','auto','all'})));
+    if isa(params,'optimizableVariable')
+        names = {params.Name};
+    else
+        names = cellstr(params);
+    end
+    searched = cfg.classmodel.optimize.flag && ...
+        any(ismember(names,{'KernelScale','auto','all'}));
     if ~searched && any(strcmp(cfg.classmodel.kernel,{'rbf','gaussian'}))
         % Same kernel scale as gamma = 'scale' in scikit-learn. It depends
         % on the number of features, unlike the default value of fitcsvm:
@@ -90,6 +94,7 @@ elseif strcmp(cfg.classmodel.method,'da')
     end
     
 else
-    error('Unknown classifier: cfg.classmodel.method must be ''svm'' or ''da''.');
+    error('mvpalab:train',...
+        'Unknown classifier: cfg.classmodel.method must be ''svm'' or ''da''.');
 end
 

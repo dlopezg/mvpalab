@@ -17,12 +17,12 @@ function masks = mvpalab_foldmasks(cfg,Y)
 %  - {struct} - cfg:
 %    Configuration structure (cfg.cv.method and cfg.cv.nfolds).
 %
-%  - {1D-array} - Y:
+%  - {matrix} - Y:
 %    Labels of the dataset.
 %
 %%  OUTPUT:
 %
-%  - {2D-array} - masks:
+%  - {matrix} - masks:
 %    Logical matrix [trials x folds].
 
 nfolds = cfg.cv.nfolds;

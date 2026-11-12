@@ -24,17 +24,11 @@ function data = mvpalab_powenvelope(cfg,data)
 %    Envelopes [channels x timepoints x trials].
 
 fprintf('       # Computing power envelopes... ');
-for trial = 1 : size(data,3)
-    for channel = 1 : size(data,1)
-        [env,env_] = envelope(data(channel,:,trial), ...
-            cfg.powenv.length, cfg.powenv.method);
-        if strcmp(cfg.powenv.uplow,'upper')
-            data(channel,:,trial) = env;
-        else
-            data(channel,:,trial) = env_;
-        end
-    end
-end
+[nchan,ntp,ntrials] = size(data);
+signals = reshape(permute(data,[2 1 3]),ntp,nchan*ntrials);
+[env,env_] = envelope(signals,cfg.powenv.length,cfg.powenv.method);
+if ~strcmp(cfg.powenv.uplow,'upper'), env = env_; end
+data = permute(reshape(env,ntp,nchan,ntrials),[2 1 3]);
 fprintf('Done.\n');
 
 end

@@ -23,11 +23,13 @@ if ~cfg.trialaver.flag, return; end
 
 ntrials = cfg.trialaver.ntrials;
 if ~isscalar(ntrials) || ntrials < 1 || ntrials ~= round(ntrials)
-    error('cfg.trialaver.ntrials must be a whole number of at least 1.');
+    error('mvpalab:validatesupertrials',...
+        'cfg.trialaver.ntrials must be a whole number of at least 1.');
 end
 
 if ~any(strcmp(cfg.trialaver.order,{'rand','seq'}))
-    error('cfg.trialaver.order must be ''rand'' or ''seq''.');
+    error('mvpalab:validatesupertrials',...
+        'cfg.trialaver.order must be ''rand'' or ''seq''.');
 end
 
 end

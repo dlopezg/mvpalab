@@ -22,14 +22,16 @@ mvcc = mvpalab_ismvcc(cfg);
 for dataset = 1 : 1 + mvcc
     for condition = 1 : size(files,2)
         if numel(files{dataset,condition}) ~= nsub
-            error(['cfg.study.dataFiles{%d,%d} has %d files and ' ...
+            error('mvpalab:validatestudy',...
+                ['cfg.study.dataFiles{%d,%d} has %d files and ' ...
                 'cfg.study.dataFiles{1,1} has %d: each class needs one ' ...
                 'file per subject.'],dataset,condition,numel(files{dataset,condition}),nsub);
         end
         [~,~,ext] = cellfun(@fileparts,files{dataset,condition},'UniformOutput',false);
         unknown = find(~ismember(lower(ext),{'.mat','.set'}),1);
         if ~isempty(unknown)
-            error('Only .mat and .set files are supported: %s.',...
+            error('mvpalab:validatestudy',...
+                'Only .mat and .set files are supported: %s.',...
                 files{dataset,condition}{unknown});
         end
     end
@@ -37,7 +39,8 @@ end
 
 %% Sliding filter:
 if cfg.sf.flag && isempty(cfg.sf.filesLocation)
-    error('cfg.sf.filesLocation must be the folder for the filtered data.');
+    error('mvpalab:validatestudy',...
+        'cfg.sf.filesLocation must be the folder for the filtered data.');
 end
 
 end

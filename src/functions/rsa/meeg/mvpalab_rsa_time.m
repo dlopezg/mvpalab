@@ -43,7 +43,8 @@ function [res,cfg,stats,nullmaps] = mvpalab_rsa_time(cfg,fv)
 %  - {struct} - res:
 %    Results in res.(cfg.rsa.modality).(cfg.rsa.distance):
 %    - One field per theoretical model (cfg.rsa.tmodels{i}.id): the
-%      correlation [1 x timepoints x subjects] in 'corr', or the fields
+%      Fisher z of the Spearman correlation [1 x timepoints x subjects] in
+%      'corr', or the fields
 %      bvalues and tvalues of the same size in 'regress' and
 %      'multiple_regress'.
 %    - rdms: Cell array with the RDM of each subject [conditions x
@@ -64,7 +65,6 @@ function [res,cfg,stats,nullmaps] = mvpalab_rsa_time(cfg,fv)
 %    Maps of the null distribution (see mvpalab_rsanullmaps), empty without
 %    cfg.stats.flag.
 
-% Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
 
 %% Initialize
@@ -119,7 +119,7 @@ cfg.rsa.bounds = cellfun(@mvpalab_findbound,labels,'UniformOutput',false);
 
 % Locations of the selected channels, once every subject has passed the
 % check of the selection (see mvpalab_chanselection):
-cfg = mvpalab_updatechanloc(cfg.channels.selected,cfg);
+cfg = mvpalab_updatechanloc(cfg,cfg.channels.selected);
 
 %% Save RSA data:
 %  Only the RDM matrices are saved (numeric [conditions x conditions x

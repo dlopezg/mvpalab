@@ -82,12 +82,12 @@ function [res,cfg,stats,nullmaps] = mvpalab_decoding(cfg,fv,mode)
 if nargin < 2, fv = []; end
 if nargin < 3, mode = 'observed'; end
 
-% Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
 
 % Check the settings of the analysis:
 if cfg.sf.flag
-    error('Use mvpalab_sfilter for a sliding filter analysis (cfg.sf.flag).');
+    error('mvpalab:decoding',...
+        'Use mvpalab_sfilter for a sliding filter analysis (cfg.sf.flag).');
 end
 mvpalab_validatedecoding(cfg,mode);
 mvpalab_savecfg(cfg);

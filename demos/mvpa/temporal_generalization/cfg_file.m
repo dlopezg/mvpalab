@@ -1,147 +1,37 @@
+%% MVPAlab - configuration of the MVPA temporal generalization demo.
+%  Only the settings of this demo: the rest keep the values of
+%  mvpalab_init, where every option is documented.
 
-%% Basic configuration file for MVPA analysis - Folder and data files:
+%% Data: one folder per class, with the same subjects in each one.
 
-cfg.analysis = '';  % Optional name of the results: results/<name>/...
-cfg.location = pwd;
-
-% Condition indentifiers:
 cfg.study.conditionIdentifier{1,1} = 'condition_a';
-cfg.study.conditionIdentifier{1,2} = 'condition_b';
-
-% Data paths:
-cfg.study.dataPaths{1,1} = '/Users/David/Desktop/data/condition_a/';
-cfg.study.dataPaths{1,2} = '/Users/David/Desktop/data/condition_b/';
-
-% Data files:
+cfg.study.dataPaths{1,1} = fullfile('data','condition_a');
 cfg.study.dataFiles{1,1} = {'1.mat','2.mat','3.mat'};
+cfg.study.conditionIdentifier{1,2} = 'condition_b';
+cfg.study.dataPaths{1,2} = fullfile('data','condition_b');
 cfg.study.dataFiles{1,2} = {'1.mat','2.mat','3.mat'};
 
-%% FEATURE EXTRACTION:
+%% Supertrials, balanced classes and normalization:
 
-cfg.feature = 'voltage';
-
-% cfg.feature = 'voltage'  - Raw voltage as feature.
-% cfg.feature = 'envelope' - Power evelope as feature.
-
-cfg.powenv.method = 'analytic';
-cfg.powenv.uplow  = 'upper';
-cfg.powenv.length = 5;
-
-% cfg.powenv.method = 'analytic' - Envelope using the analytic signal.
-% cfg.powenv.method = 'peak'     - Peak envelopes.
-
-% cfg.powenv.uplow = 'upper' - Select upper envelope.
-% cfg.powenv.uplow = 'lower' - Select lower envelope.
-
-%% TRIAL AVERAGE:
-
-cfg.trialaver.flag     = true;
-cfg.trialaver.ntrials  = 5;
-cfg.trialaver.order    = 'rand';
-
-% cfg.trialaver.order = 'rand' - Random order.
-% cfg.trialaver.order = 'seq'  - Secuential order.
-
-%% BALANCED DATASETS:
-
-cfg.classsize.match = true;
+cfg.trialaver.flag    = true;
+cfg.trialaver.ntrials = 5;
+cfg.classsize.match   = true;
 cfg.classsize.matchkfold = true;
+cfg.normdata          = 4;
 
-%% DIMENSION REDUCTION:
+%% Smoothing and timing:
 
-% cfg.dimred.method = 'none' - Diemnsion reduction disabled.
-% cfg.dimred.method = 'pca'  - Principal Component Analysis.
+cfg.smoothdata.method = 'moving';
+cfg.smoothdata.window = 5;
+cfg.tm.tpstart = -200;
+cfg.tm.tpend   = 1500;
+cfg.tm.tpsteps = 3;
 
-cfg.dimred.method = 'none';
-cfg.dimred.ncomp  = 0;
-
-%% DATA NORMALIZATION:
-
-% cfg.normdata = 0 - raw data
-% cfg.normdata = 1 - z-score (across features)
-% cfg.normdata = 2 - z-score (across time)
-% cfg.normdata = 3 - z-score (across trials)
-% cfg.normdata = 4 - std_nor (across trials)
-
-cfg.normdata = 4; 
-
-%% DATA SMOOTHING:
-
-% cfg.smoothdata.method = 'none'     - Data smooth disabled.
-% cfg.smoothdata.method = 'moving'   - Moving average method.
-% cfg.smoothdata.method = 'gaussian' - Gaussian kernel.
-
-cfg.smoothdata.method   = 'moving';
-cfg.smoothdata.window   = 5;
-
-%% ANALYSIS TIMING:
-
-% Train window:
-cfg.tm.tpstart   = -200;
-cfg.tm.tpend     = 1500;
-
-% Test window:
-cfg.tm.tpstart_  = -200;
-cfg.tm.tpend_    = 1500;
-
-% Step size (time points)
-cfg.tm.tpsteps   = 3;
-
-%% CLASSIFICATION ALGORITHM:
-
-% cfg.classmodel.method = 'svm' - Support Vector Machine.
-% cfg.classmodel.method = 'da'  - Linear Discriminant Analysis.
-
-% cfg.classmodel.kernel = 'linear'     - Support Vector Machine.
-% cfg.classmodel.kernel = 'gaussian'   - Support Vector Machine.
-% cfg.classmodel.kernel = 'rbf'        - Support Vector Machine.
-% cfg.classmodel.kernel = 'polynomial' - Support Vector Machine.
-
-% cfg.classmodel.kernel = 'linear' - Discriminant Analysis.
-% cfg.classmodel.kernel = 'quadratic' - Discriminant Analysis.
-
-cfg.classmodel.method = 'svm';
-cfg.classmodel.kernel = 'linear';
-
-%% PERFORMANCE METRICS:
-
-cfg.classmodel.roc       = false;
-cfg.classmodel.auc       = false;
-cfg.classmodel.confmat   = false;
-cfg.classmodel.precision = false;
-cfg.classmodel.recall    = false;
-cfg.classmodel.f1score   = false;
-cfg.classmodel.wvector   = false;
-
-%% EXTRA CONFIGURATION:
+%% Temporal generalization:
 
 cfg.classmodel.tempgen = true;
-cfg.classmodel.extdiag = false;
-cfg.classmodel.permlab = false;
 
-% Enable parallel computation by default if the Distrib_Computing_Toolbox 
-% is installed: 
-if license('test','Distrib_Computing_Toolbox')
-    cfg.classmodel.parcomp = true;
-else
-    cfg.classmodel.parcomp = false;
-end
+%% Permutation test, run inside the analysis:
 
-%% CROSS-VALIDATIONN PROCEDURE:
-
-% cfg.cv.method = 'kfold' - K-Fold cross-validation.
-% cfg.cv.method = 'loo'   - Leave-one-out cross-validation.
-
-cfg.cv.method  = 'kfold';
-cfg.cv.nfolds  = 5;
-cfg.cv.nreps   = 1;     % Repeated k-fold CV: set > 1 to average several random fold assignments and supertrials.
-
-%% PERMUTATION TEST
-
-cfg.stats.flag   = true;  % Permutation test of the demo (mvpalab_decodingnullmaps and mvpalab_permtest).
-cfg.stats.nper   = 100;
-cfg.stats.nperg  = 1e5;
-cfg.stats.pgroup = 95;
-cfg.stats.pclust = 95;
-cfg.stats.tails  = 2;
-cfg.stats.shownulldis = 0;
+cfg.stats.flag = true;
+% cfg.stats.signflip = true;  % Sign flip group test (see mvpalab_init).

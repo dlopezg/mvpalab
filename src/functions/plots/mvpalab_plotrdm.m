@@ -1,17 +1,17 @@
-function [] = mvpalab_plotrdm(graph,cfg,data)
+function mvpalab_plotrdm(graph,cfg,data)
 %% MVPALAB_PLOTRDM
 %
 %  This function plots a representational dissimilarity matrix (RDM) of
-%  one subject and timepoint in the current axes, with lines at the
-%  boundaries of the conditions and the names of the conditions
+%  one subject and timepoint in the current axes, with lines between the
+%  conditions and the names of the conditions
 %  (cfg.study.conditionIdentifier, with '_' replaced by '-') as labels.
 %
 %%  INPUT:
 %
 %  - {struct} - graph:
-%    Parameters of the plot (see mvpalab_plotinit). graph.sub is the
-%    index of the subject in cfg.rsa.bounds; mvpalab_plotinit does not
-%    set it.
+%    Parameters of the plot (see mvpalab_plotinit). graph.subject is the
+%    index of the subject of the RDM in cfg.rsa.bounds: it must be set,
+%    because 0 (all subjects) has no bounds.
 %
 %  - {struct} - cfg:
 %    Configuration structure (cfg.rsa.bounds, see mvpalab_rsa_time, and
@@ -19,6 +19,10 @@ function [] = mvpalab_plotrdm(graph,cfg,data)
 %
 %  - {matrix} - data:
 %    RDM [trials x trials].
+
+if ~graph.subject
+    error('mvpalab:plotrdm','Set graph.subject to the subject of the RDM.');
+end
 
 %% Plot the RDM.
 %  For a specific subject and timepoint:
@@ -33,8 +37,10 @@ end
 % caxis(graph.caxis)
 
 
-vline(cfg.rsa.bounds{graph.sub}.last,'-k')
-hline(cfg.rsa.bounds{graph.sub}.last,'-k')
+% Lines between the last trial of a condition and the first of the next:
+between = cfg.rsa.bounds{graph.subject}.last(1:end-1) + .5;
+vline(between,'-k')
+hline(between,'-k')
 
 
 %% Extract conditions identifiers 
@@ -49,8 +55,8 @@ end
 
 %% Add the condition names to the plot:
 %  
-xticks(cfg.rsa.bounds{graph.sub}.middle)
-yticks(cfg.rsa.bounds{graph.sub}.middle)
+xticks(cfg.rsa.bounds{graph.subject}.middle)
+yticks(cfg.rsa.bounds{graph.subject}.middle)
 xticklabels(labels)
 yticklabels(labels)
 

@@ -2,13 +2,18 @@
 
 cfg = mvpalab_init();
 run cfg_file
+% The permutation test is computed below on the difference, not inside
+% each analysis:
+cfg.stats.flag = false;
 cfg.stats.nper = 10;
 cfg.stats.nperg = 1000;
-% Here you shoud modify the configuration files to compute different 
-% decoding analyses.
 
+% Modify cfg_a and cfg_b to compute two different decoding analyses. Each
+% one saves its results in its own folder (cfg.analysis):
 cfg_a = cfg;
+cfg_a.analysis = 'decoding_a';
 cfg_b = cfg;
+cfg_b.analysis = 'decoding_b';
 
 %% Load data, generate conditions and feature extraction:
 
@@ -32,7 +37,11 @@ permaps.acc = permaps_a.acc - permaps_b.acc;
 
 
 %% Compute the statistical analysis:
-stats = mvpalab_permtest(cfg_a,result,permaps);
+%  The difference and its statistics are saved in their own folder:
+cfg_diff = cfg_a;
+cfg_diff.savefolder = fullfile(cfg.location,'results','decoding_diff','time_resolved');
+mvpalab_save(cfg_diff,result,'res');
+stats = mvpalab_permtest(cfg_diff,result,permaps);
 
 %% Plot the results:
 

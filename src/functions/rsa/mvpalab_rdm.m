@@ -28,11 +28,11 @@ function rdm = mvpalab_rdm(cfg,X,Y,folds)
 %  - {matrix} - X:
 %    Data of the subject [trials x channels x timepoints].
 %
-%  - {1D-categorical} - Y:
+%  - {categorical} - Y:
 %    Condition of each trial [trials x 1].
 %
-%  - {1D-array} - folds:
-%    Optional. Predefined fold of each trial for the cross-validation.
+%  - {matrix} - folds (optional):
+%    Predefined fold of each trial for the cross-validation.
 %
 %%  OUTPUT:
 %
@@ -124,7 +124,7 @@ for rep = 1 : nreps
         %% Construct RDMs using the specified distance measure:
 
         parfor (tp = 1 : ntp, nworkers)
-            rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),[],prec);
+            rdms(:,:,tp,k) = mvpalab_computerdm(cfg,train_x(:,:,tp),test_x(:,:,tp),prec);
         end
     end
 

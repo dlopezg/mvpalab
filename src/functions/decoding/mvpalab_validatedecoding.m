@@ -41,7 +41,8 @@ mvpalab_validateclasses(cfg);
 metrics = {'wvector','auc','roc'};
 enabled = cellfun(@(metric) logical(cfg.classmodel.(metric)),metrics);
 if size(cfg.study.dataFiles,2) > 2 && any(enabled)
-    error('cfg.classmodel.%s needs two classes.',metrics{find(enabled,1)});
+    error('mvpalab:validatedecoding',...
+        'cfg.classmodel.%s needs two classes.',metrics{find(enabled,1)});
 end
 
 mvpalab_validateclassifier(cfg);
@@ -50,12 +51,14 @@ mvpalab_validatestats(cfg);
 
 if strcmp(mode,'permuted')
     if cfg.stats.signflip
-        error('The sign flip test has no permuted maps. Use mvpalab_decodingnullmaps.');
+        error('mvpalab:validatedecoding',...
+            'The sign flip test has no permuted maps. Use mvpalab_decodingnullmaps.');
     end
 else
     mvpalab_validatesignflip(cfg);
     if cfg.stats.signflip && ~mvpalab_ismvcc(cfg) && strcmp(cfg.cv.method,'loo')
-        error('The sign flip test is not available with leave-one-out in MVPA.');
+        error('mvpalab:validatedecoding',...
+            'The sign flip test is not available with leave-one-out in MVPA.');
     end
     mvpalab_validateweights(cfg);
 end

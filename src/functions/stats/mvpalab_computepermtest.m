@@ -67,8 +67,8 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps,pairing)
 %    its reflection around chance (see mvpalab_decodingnullmaps). With
 %    pairing = 'shared', map k of every subject uses the same permutation.
 %
-%  - {string} - pairing:
-%    Optional. 'random' (default) or 'shared', see above.
+%  - {string} - pairing (optional):
+%    'random' (default) or 'shared', see above.
 %
 %%  OUTPUT:
 %
@@ -87,12 +87,10 @@ function stats = mvpalab_computepermtest(cfg,performance,nullmaps,pairing)
 %    - corrcsize, corrcsize_: Minimum size of the significant clusters
 %      (Inf if none or if the tail is not tested).
 
-% Check cfg structure:
-cfg = mvpalab_updatecfg(cfg);
-
 if nargin < 4, pairing = 'random'; end
 if ~any(strcmp(pairing,{'random','shared'}))
-    error('The pairing of the permuted maps must be ''random'' or ''shared''.');
+    error('mvpalab:computepermtest',...
+        'The pairing of the permuted maps must be ''random'' or ''shared''.');
 end
 
 mvpalab_validatestats(cfg);
@@ -110,7 +108,8 @@ below = cfg.stats.tails ~= 1;
 
 [n1,n2,nsub,nmaps] = size(nullmaps);
 if ~isequal(size(performance,1:3),[n1 n2 nsub])
-    error(['The null maps [%s] do not match the result [%s]: they come ' ...
+    error('mvpalab:computepermtest',...
+        ['The null maps [%s] do not match the result [%s]: they come ' ...
         'from another analysis.'],num2str([n1 n2 nsub]),num2str(size(performance,1:3)));
 end
 
@@ -236,7 +235,8 @@ stats.corrcsize_ = corrcsize_;
 %% Null distributions, if requested:
 if cfg.stats.shownulldis
     figure;
-    pvg = num2str((100 - cfg.stats.pgroup)/100);
+    % Level of each tail: split between the two tails with tails = 2.
+    pvg = num2str((100 - threshold)/100);
     subplot(2,2,[1 2]);
     plotnull(lastnull);
     if above, vline(double(pctval(end,end)),'r-',['Above chance threshold (p<' pvg ')']); end

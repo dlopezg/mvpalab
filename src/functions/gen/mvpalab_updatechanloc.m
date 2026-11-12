@@ -1,4 +1,4 @@
-function cfg = mvpalab_updatechanloc(sel,cfg)
+function cfg = mvpalab_updatechanloc(cfg,sel)
 %% MVPALAB_UPDATECHANLOC
 %
 %  This function sets the locations of the selected channels
@@ -9,11 +9,11 @@ function cfg = mvpalab_updatechanloc(sel,cfg)
 %
 %%  INPUT:
 %
-%  - {matrix} - sel:
-%    Indices of the selected channels.
-%
 %  - {struct} - cfg:
 %    Configuration structure (cfg.channels).
+%
+%  - {matrix} - sel:
+%    Indices of the selected channels.
 %
 %%  OUTPUT:
 %

@@ -1,4 +1,4 @@
-function X = mvpalab_chanselection(X,cfg)
+function X = mvpalab_chanselection(cfg,X)
 %% MVPALAB_CHANSELECTION
 %
 %  This function returns the channels of cfg.channels.selected of a data
@@ -8,11 +8,11 @@ function X = mvpalab_chanselection(X,cfg)
 %
 %%  INPUT:
 %
-%  - {matrix} - X:
-%    Data matrix [trials x channels x timepoints].
-%
 %  - {struct} - cfg:
 %    Configuration structure (cfg.channels.selected).
+%
+%  - {matrix} - X:
+%    Data matrix [trials x channels x timepoints].
 %
 %%  OUTPUT:
 %
@@ -24,7 +24,8 @@ selected = cfg.channels.selected;
 if isempty(selected), return; end
 
 if max(selected) > size(X,2)
-    error('Channel selection fails: the data has %d channels.',size(X,2));
+    error('mvpalab:chanselection',...
+        'Channel selection fails: the data has %d channels.',size(X,2));
 end
 
 X = X(:,selected,:);

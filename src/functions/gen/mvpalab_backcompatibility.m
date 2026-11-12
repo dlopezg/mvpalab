@@ -1,4 +1,4 @@
-function cfg = mvpalab_backCompatibility(cfg)
+function cfg = mvpalab_backcompatibility(cfg)
 %% MVPALAB_BACKCOMPATIBILITY
 %
 %  This function updates the renamed fields of a configuration structure of
@@ -31,7 +31,7 @@ function cfg = mvpalab_backCompatibility(cfg)
         cfg.channels.chanloc = cfg.chanloc;
         cfg.channels.selectedchanloc = cfg.chanloc;
         cfg = rmfield(cfg,'chanloc');
-        warning('CFG structure updated > Channels');
+        warning('mvpalab:backcompatibility','CFG structure updated > Channels');
     end
 
     %% Analysis type:
@@ -40,7 +40,8 @@ function cfg = mvpalab_backCompatibility(cfg)
             any(strcmp(cfg.analysis,{'MVPA','MVCC'}))
         cfg.gui.type = cfg.analysis;
         cfg.analysis = '';
-        warning('CFG structure updated > cfg.analysis moved to cfg.gui.type');
+        warning('mvpalab:backcompatibility',...
+            'CFG structure updated > cfg.analysis moved to cfg.gui.type');
     end
 end
 

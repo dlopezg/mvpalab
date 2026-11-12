@@ -10,25 +10,17 @@ function vrdm = mvpalab_vectorizerdm(rdm)
 %  all the vectorized RDMs share the same layout and length:
 %  n*(n-1)/2, where n is the number of conditions (or trials).
 %
-%  - Symmetry: without cross-validation the RDMs are symmetric. With
-%    cross-validation the dissimilarity between two conditions is computed
-%    between independent partitions (training and test) of the data.
-%    The cross-validated Pearson distance (mvpalab_cvpearson) is symmetric
-%    by construction, but other measures computed from training to test
-%    patterns, e.g. pdist2(train,test), are not: rdm(i,j) and rdm(j,i) are
-%    two estimates of the same dissimilarity obtained from different data.
-%    Both estimates are averaged, (rdm + rdm')/2, so each pair of
-%    conditions enters the analysis once. This has no effect on symmetric
-%    RDMs.
+%  - Symmetry and diagonal: every RDM computed by MVPAlab is symmetric with
+%    a zero diagonal, with or without cross-validation (the
+%    cross-validated Pearson distance, mvpalab_cvpearson, and the
+%    cross-validated Euclidean and crossnobis distances,
+%    mvpalab_cveuclidean, are symmetric by construction and their diagonal
+%    is exactly 0). The theoretical RDMs are defined by the user and could
+%    be asymmetric, so both directions of each pair are averaged,
+%    (rdm + rdm')/2, which has no effect on symmetric RDMs.
 %
-%  - Diagonal: without cross-validation the diagonal is zero by
-%    definition. With cross-validation it compares two independent
-%    estimates of the same condition, i.e. it measures the reliability of
-%    the pattern of each condition, which is a different quantity than
-%    the dissimilarity between conditions. It is removed from the
-%    vectorized RDMs (it is kept in the RDMs returned by mvpalab_rdm).
-%    Keeping it would add cells in which every theoretical model has its
-%    minimum value (zero) and would inflate the correlation with any model.
+%  - The diagonal is left out: it would add cells in which every RDM is
+%    zero and would inflate the correlation with any model.
 %
 %  Other toolboxes also return only the unique pairs of conditions for
 %  cross-validated RDMs, e.g. MNE-RSA (compute_rdm_cv, upper triangle

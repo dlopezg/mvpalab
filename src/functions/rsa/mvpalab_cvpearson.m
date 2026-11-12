@@ -1,4 +1,4 @@
-function r = mvpalab_cvpearson(train,test,cfg)
+function r = mvpalab_cvpearson(cfg,train,test)
 %% MVPALAB_CVPEARSON
 %
 %  This function computes the cross-validated Pearson correlation between
@@ -18,7 +18,7 @@ function r = mvpalab_cvpearson(train,test,cfg)
 %
 %  - Numerator: the cross-covariance is computed in both directions
 %    (training pattern of i with test pattern of j, and vice versa) and
-%    averaged. A single direction, as in mvpalab_pearson(train,test), is
+%    averaged. A single direction, as in mvpalab_pearson(cfg,train,test), is
 %    not symmetric: r(A_i,B_j) and r(A_j,B_i) use different data. The
 %    average makes the correlation matrix symmetric by construction.
 %
@@ -106,22 +106,22 @@ function r = mvpalab_cvpearson(train,test,cfg)
 %
 %%  INPUT:
 %
-%  - {2D-matrix} - train:
-%    Training patterns for each condition. [conditions x features]
-%
-%  - {2D-matrix} - test:
-%    Test patterns for each condition, in the same order as train.
-%    [conditions x features]
-%
 %  - {struct} - cfg:
 %    Configuration structure. If cfg.rsa.meancenter is true each pattern
 %    is centered across features (Pearson correlation). Otherwise the
 %    patterns are not centered (cosine similarity, as the 'cosine' metric
 %    of MNE-RSA).
 %
+%  - {matrix} - train:
+%    Training patterns for each condition. [conditions x features]
+%
+%  - {matrix} - test:
+%    Test patterns for each condition, in the same order as train.
+%    [conditions x features]
+%
 %%  OUTPUT:
 %
-%  - {2D-matrix} - r:
+%  - {matrix} - r:
 %    Symmetric cross-validated correlation matrix.
 %    [conditions x conditions]
 

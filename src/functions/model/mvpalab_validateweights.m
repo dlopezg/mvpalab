@@ -12,7 +12,8 @@ function mvpalab_validateweights(cfg)
 %    Configuration structure (cfg.classmodel).
 
 if cfg.classmodel.wvector && ~strcmp(cfg.classmodel.kernel,'linear')
-    warning(['Feature weights are only available for linear models. ' ...
+    warning('mvpalab:validateweights',...
+        ['Feature weights are only available for linear models. ' ...
         'With the ''%s'' kernel they will be NaN.'],cfg.classmodel.kernel);
 end
 

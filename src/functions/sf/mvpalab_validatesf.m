@@ -28,29 +28,32 @@ function mvpalab_validatesf(cfg)
 %    Configuration structure (cfg.sf).
 
 if ~any(strcmp(cfg.sf.ftype,{'bandstop','bandpass'}))
-    error('cfg.sf.ftype must be ''bandstop'' or ''bandpass''.');
+    error('mvpalab:validatesf',...
+        'cfg.sf.ftype must be ''bandstop'' or ''bandpass''.');
 end
 
 wtypes = {'rectangular','hann','hamming','blackman','kaiser'};
 if ~any(strcmp(cfg.sf.wtype,wtypes))
-    error('cfg.sf.wtype must be %s.',strjoin(strcat('''',wtypes,''''),', '));
+    error('mvpalab:validatesf',...
+        'cfg.sf.wtype must be %s.',strjoin(strcat('''',wtypes,''''),', '));
 end
 
 order = cfg.sf.order;
 if ~isscalar(order) || order <= 0 || mod(order,2) ~= 0
-    error('cfg.sf.order must be a positive even integer.');
+    error('mvpalab:validatesf','cfg.sf.order must be a positive even integer.');
 end
 
 if ~(cfg.sf.lfreq >= 0 && cfg.sf.lfreq < cfg.sf.hfreq)
-    error('The limits of the bands must be 0 <= cfg.sf.lfreq < cfg.sf.hfreq.');
+    error('mvpalab:validatesf',...
+        'The limits of the bands must be 0 <= cfg.sf.lfreq < cfg.sf.hfreq.');
 end
 
 if ~any(strcmp(cfg.sf.fspac,{'lin','log'}))
-    error('cfg.sf.fspac must be ''lin'' or ''log''.');
+    error('mvpalab:validatesf','cfg.sf.fspac must be ''lin'' or ''log''.');
 end
 
 if ~any(strcmp(cfg.sf.metric,{'acc','auc'}))
-    error('cfg.sf.metric must be ''acc'' or ''auc''.');
+    error('mvpalab:validatesf','cfg.sf.metric must be ''acc'' or ''auc''.');
 end
 
 end

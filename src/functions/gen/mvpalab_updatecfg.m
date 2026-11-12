@@ -6,7 +6,7 @@ function cfg = mvpalab_updatecfg(cfg)
 %  example, mvpalab_validatedecoding).
 %
 %  The renamed fields of older versions are updated first (see
-%  mvpalab_backCompatibility). Then the structure is completed with the
+%  mvpalab_backcompatibility). Then the structure is completed with the
 %  fields of the current version (see mvpalab_init): each field that is
 %  missing gets its default value, with a warning that names it, and the
 %  structures that exist are completed in the same way. A field of the
@@ -26,7 +26,7 @@ function cfg = mvpalab_updatecfg(cfg)
 %  - {struct} - cfg:
 %    Updated configuration structure.
 
-cfg = mvpalab_backCompatibility(cfg);
+cfg = mvpalab_backcompatibility(cfg);
 cfg = complete(cfg,mvpalab_init(false,false),'cfg');
 cfg.version = mvpalab_getversion();
 
@@ -38,7 +38,8 @@ function cfg = complete(cfg,defaults,path)
 for field = fieldnames(defaults)'
     name = field{1};
     if ~isfield(cfg,name)
-        warning('CFG structure updated > New field created: %s.%s',path,name);
+        warning('mvpalab:updatecfg',...
+            'CFG structure updated > New field created: %s.%s',path,name);
         cfg.(name) = defaults.(name);
     elseif isstruct(cfg.(name)) && isstruct(defaults.(name))
         cfg.(name) = complete(cfg.(name),defaults.(name),[path '.' name]);

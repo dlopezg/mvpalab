@@ -58,13 +58,15 @@ elseif isfield(input,'format') && strcmp(input.format, 'mvpalab')
         EEG.times = input.times;
     else
         EEG.times = 1:EEG.pnts;
-        warning('No time vector found. A default time vector will be created. Please define your time vector for a better temporal precision.')
+        warning('mvpalab:dataformat',...
+            'No time vector found. A default time vector will be created. Please define your time vector for a better temporal precision.')
     end
 
     EEG.chanlocs = [];
 
 else
-    error('Unrecognized data format. Please check your input dataset.')
+    error('mvpalab:dataformat',...
+        'Unrecognized data format. Please check your input dataset.')
 end
 
 end

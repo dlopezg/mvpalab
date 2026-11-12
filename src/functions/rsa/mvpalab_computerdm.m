@@ -1,4 +1,4 @@
-function rdm = mvpalab_computerdm(cfg, train, test, dims, prec)
+function rdm = mvpalab_computerdm(cfg,train,test,prec)
 %% MVPALAB_COMPUTERDM
 %
 %  This function computes the Representational Dissimilarity Matrix
@@ -63,24 +63,21 @@ function rdm = mvpalab_computerdm(cfg, train, test, dims, prec)
 %  - {struct} - cfg:
 %    Configuration structure.
 %
-%  - {2D-matrix} - train:
+%  - {matrix} - train:
 %    Training patterns. [conditions x channels] or [trials x channels]
 %
-%  - {2D-matrix} - test:
+%  - {matrix} - test:
 %    Test patterns, in the same order as train. Same data as train
 %    without cross-validation.
 %
-%  - {1D-array} - dims:
-%    Not used. Kept for compatibility with previous versions.
-%
-%  - {2D-matrix} - prec:
+%  - {matrix} - prec:
 %    Noise precision matrix [channels x channels], estimated from the
 %    training trials by mvpalab_rdm. Only used by 'mahalanobis' and
 %    'crossnobis'.
 %
 %%  OUTPUT:
 %
-%  - {2D-matrix} - rdm:
+%  - {matrix} - rdm:
 %    Representational Dissimilarity Matrix:
 %    [trials x trials] or [n_conditions x n_conditions]
 %
@@ -97,15 +94,16 @@ function rdm = mvpalab_computerdm(cfg, train, test, dims, prec)
 
 if strcmp(cfg.rsa.distance, 'pearson')
     if size(train,2) < 2
-        error(['The Pearson (or cosine) distance is computed across ' ...
+        error('mvpalab:computerdm',...
+            ['The Pearson (or cosine) distance is computed across ' ...
             'features and needs at least 2 features (channels or ' ...
             'voxels), but the data has %d. Use the Euclidean distance ' ...
             'or select more channels or voxels.'],size(train,2));
     end
     if cfg.rsa.nfolds > 1
-        rdm = mvpalab_cvpearson(train,test,cfg);
+        rdm = mvpalab_cvpearson(cfg,train,test);
     else
-        rdm = mvpalab_pearson(train',test',cfg);
+        rdm = mvpalab_pearson(cfg,train',test');
     end
     rdm = 1 - rdm;
 %% Euclidean distance:
@@ -132,7 +130,7 @@ elseif strcmp(cfg.rsa.distance, 'mahalanobis') || ...
         strcmp(cfg.rsa.distance, 'crossnobis')
     rdm = mvpalab_cveuclidean(train,test,prec);
 else
-    error('Distance measure not recognized.');
+    error('mvpalab:computerdm','Distance measure not recognized.');
 end
 
 end

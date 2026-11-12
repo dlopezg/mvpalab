@@ -41,7 +41,8 @@ fold.pca = [];
 if strcmp(cfg.dimred.method,'pca')
     [coeff,scores,~,~,~,mu] = pca(X);
     if cfg.dimred.ncomp > size(scores,2)
-        error('cfg.dimred.ncomp must be between 1 and %d.',size(scores,2));
+        error('mvpalab:preparetrain',...
+            'cfg.dimred.ncomp must be between 1 and %d.',size(scores,2));
     end
     fold.pca = struct('mu',mu,'coeff',coeff,'ncomp',cfg.dimred.ncomp);
     X = scores(:,1:cfg.dimred.ncomp);

@@ -46,8 +46,8 @@ matchkfold = cfg.classsize.matchkfold && nfolds > 1;
 if ~cfg.classsize.match && ~matchkfold, return; end
 
 sets = fieldnames(data);
-for s = 1 : numel(sets)
-    [fv,classes] = mvpalab_splitclasses(data.(sets{s}));
+for dataset = 1 : numel(sets)
+    [fv,classes] = mvpalab_splitclasses(data.(sets{dataset}));
     nobs = cellfun(@(x) size(x,1),fv);
 
     if cfg.classsize.match
@@ -56,7 +56,8 @@ for s = 1 : numel(sets)
 
     if matchkfold
         if any(nobs < nfolds)
-            error(['Class %s has fewer observations than the %d folds of ' ...
+            error('mvpalab:trimclasses',...
+                ['Class %s has fewer observations than the %d folds of ' ...
                 'cfg.classsize.matchkfold.'],classes{find(nobs < nfolds,1)},nfolds);
         end
         nobs = floor(nobs/nfolds)*nfolds;
@@ -65,7 +66,7 @@ for s = 1 : numel(sets)
     for condition = 1 : numel(fv)
         fv{condition} = fv{condition}(1:nobs(condition),:,:);
     end
-    data.(sets{s}) = mvpalab_joinclasses(fv,classes);
+    data.(sets{dataset}) = mvpalab_joinclasses(fv,classes);
 end
 
 end

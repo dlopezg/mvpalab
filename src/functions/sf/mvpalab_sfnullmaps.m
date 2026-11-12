@@ -36,7 +36,7 @@ function [nullmaps,cfg] = mvpalab_sfnullmaps(cfg,diffMap)
 %
 %  - {struct} - nullmaps:
 %    Field cfg.sf.metric with the null diffMaps
-%    [bands x ntp x subjects x maps]. In MVCC, fields ab and ba.
+%    [bands x ntp x subjects x maps]. In MVCC, fields ab, ba and mean.
 %
 %  - {struct} - cfg:
 %    Configuration structure.

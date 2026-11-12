@@ -26,7 +26,7 @@ function [diffMap,cfg,stats,nullmaps] = mvpalab_sfilter(cfg)
 %  computing the maps, and these files in cfg.savefolder,
 %  cfg.location/results/cfg.analysis/diffMaps:
 %  - The diffMaps of cfg.sf.metric with mvpalab_save, for example
-%    acc/result.mat (acc/ab/result.mat and acc/ba/result.mat in MVCC).
+%    acc/result.mat (acc/ab, acc/ba and acc/mean in MVCC).
 %  - other/performance_maps.mat and other/performance.mat: Maps of the
 %    bands and of the baseline, with cfg.
 %
@@ -39,7 +39,7 @@ function [diffMap,cfg,stats,nullmaps] = mvpalab_sfilter(cfg)
 %
 %  - {struct} - diffMap:
 %    Field cfg.sf.metric with the diffMaps [bands x ntp x subjects]. In
-%    MVCC, fields ab and ba.
+%    MVCC, fields ab, ba and mean (the mean of both directions).
 %
 %  - {struct} - cfg:
 %    Updated configuration structure.
@@ -52,7 +52,6 @@ function [diffMap,cfg,stats,nullmaps] = mvpalab_sfilter(cfg)
 %    Maps of the null distribution (see mvpalab_sfnullmaps), empty without
 %    cfg.stats.flag.
 
-% Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
 
 % Check the settings of the analysis:
@@ -68,7 +67,8 @@ mvpalab_mkdir(fullfile(cfg.savefolder,'other'));
 % The bands and the unfiltered baseline share their draws (see mvpalab_sfrng):
 cfg.sf.rng = cell(length(cfg.study.dataFiles{1,1}),2);
 if cfg.classmodel.optimize.flag
-    warning('The hyperparameter search does not share its draws across bands.');
+    warning('mvpalab:sfilter',...
+        'The hyperparameter search does not share its draws across bands.');
 end
 
 %% Maps of each frequency band:

@@ -7,10 +7,12 @@ function [permaps,cfg] = mvpalab_cpermaps(cfg,fv)
 
 if nargin < 2, fv = []; end
 
-warning('mvpalab:deprecated','mvpalab_cpermaps is deprecated. Use mvpalab_decoding.');
+warning('mvpalab:deprecated',...
+    'mvpalab_cpermaps is deprecated. Use mvpalab_decoding.');
 
 if ~mvpalab_ismvcc(cfg)
-    error('mvpalab_cpermaps needs the files of dataset B (see mvpalab_ismvcc).');
+    error('mvpalab:cpermaps',...
+        'mvpalab_cpermaps needs the files of dataset B (see mvpalab_ismvcc).');
 end
 [permaps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
 

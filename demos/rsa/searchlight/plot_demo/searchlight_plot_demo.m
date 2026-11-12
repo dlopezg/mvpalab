@@ -1,4 +1,4 @@
-clear all
+clear
 clc
 %% Initialization:
 graph = mvpalab_plotinit();

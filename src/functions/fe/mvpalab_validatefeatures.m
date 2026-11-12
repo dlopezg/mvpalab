@@ -40,7 +40,8 @@ function oneof(value,values,name)
 
 if ~any(strcmp(value,values))
     quoted = strcat('''',values,'''');
-    error('%s must be %s or %s.',name,strjoin(quoted(1:end-1),', '),quoted{end});
+    error('mvpalab:validatefeatures',...
+        '%s must be %s or %s.',name,strjoin(quoted(1:end-1),', '),quoted{end});
 end
 
 end
@@ -49,7 +50,8 @@ function whole(value,name)
 %% Error if value is not a whole number of at least 1.
 
 if ~isscalar(value) || value < 1 || value ~= round(value)
-    error('%s must be a whole number of at least 1.',name);
+    error('mvpalab:validatefeatures',...
+        '%s must be a whole number of at least 1.',name);
 end
 
 end

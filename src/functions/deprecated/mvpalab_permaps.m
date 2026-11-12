@@ -6,10 +6,12 @@ function [permaps,cfg] = mvpalab_permaps(cfg,fv)
 
 if nargin < 2, fv = []; end
 
-warning('mvpalab:deprecated','mvpalab_permaps is deprecated. Use mvpalab_decoding.');
+warning('mvpalab:deprecated',...
+    'mvpalab_permaps is deprecated. Use mvpalab_decoding.');
 
 if mvpalab_ismvcc(cfg)
-    error('mvpalab_permaps needs a study without dataset B (see mvpalab_ismvcc).');
+    error('mvpalab:permaps',...
+        'mvpalab_permaps needs a study without dataset B (see mvpalab_ismvcc).');
 end
 [permaps,cfg] = mvpalab_decoding(cfg,fv,'permuted');
 

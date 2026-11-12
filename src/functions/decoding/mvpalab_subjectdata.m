@@ -38,7 +38,8 @@ if cfg.sf.flag
     imported = '';
     if isfield(band.cfg.sf,'importid'), imported = band.cfg.sf.importid; end
     if ~strcmp(imported,cfg.sf.importid)
-        error(['%s comes from another import than this cfg. Use the cfg ' ...
+        error('mvpalab:subjectdata',...
+            ['%s comes from another import than this cfg. Use the cfg ' ...
             'of that import, or import the data again.'],file);
     end
     fv = band.fv;

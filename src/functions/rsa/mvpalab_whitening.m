@@ -35,12 +35,12 @@ function W = mvpalab_whitening(sigma)
 %
 %%  INPUT:
 %
-%  - {2D-matrix} - sigma:
+%  - {matrix} - sigma:
 %    Noise covariance matrix (see mvpalab_noiseprec). [channels x channels]
 %
 %%  OUTPUT:
 %
-%  - {2D-matrix} - W:
+%  - {matrix} - W:
 %    Symmetric whitening matrix sigma^(-1/2). [channels x channels]
 
 %% Symmetric inverse square root:

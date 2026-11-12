@@ -41,8 +41,8 @@ switch cfg.normdata
 end
 
 sets = fieldnames(data);
-for s = 1 : numel(sets)
-    data.(sets{s}).X = zscore(data.(sets{s}).X,[],dim);
+for dataset = 1 : numel(sets)
+    data.(sets{dataset}).X = zscore(data.(sets{dataset}).X,[],dim);
 end
 
 end

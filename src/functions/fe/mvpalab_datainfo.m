@@ -32,7 +32,8 @@ cfg.fs = first.srate;
 cfg.channels.chanloc = first.chanlocs;
 
 if numel(first.times) > 1 && median(diff(first.times))*cfg.fs < sqrt(1000)
-    warning(['The times of the data seem to be in seconds. MVPAlab ' ...
+    warning('mvpalab:datainfo',...
+        ['The times of the data seem to be in seconds. MVPAlab ' ...
         'needs them in milliseconds.']);
 end
 cfg = mvpalab_timing(cfg,first.times);

@@ -73,15 +73,3 @@ result = rdms;
 stats = [];
 
 end
-
-function sphere = mvpalab_checkboundaries(sphere,mask_dim)
-idxs_x = find(sphere(:,1)<1|sphere(:,1)>mask_dim(1))';
-idxs_y = find(sphere(:,2)<1|sphere(:,2)>mask_dim(2))';
-idxs_z = find(sphere(:,3)<1|sphere(:,3)>mask_dim(3))';
-
-idxs = horzcat(idxs_x,idxs_y,idxs_z);
-sphere(idxs,:,:) = [];
-end
-
-
-

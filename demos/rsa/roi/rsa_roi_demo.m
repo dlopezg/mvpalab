@@ -4,7 +4,7 @@
 % Contact: dlopez@ugr.es (David Lopez-Garcia)
 % -------------------------------------------------------------------------
 
-clear all
+clear
 clc
 
 %% Initialize project and run configuration file:

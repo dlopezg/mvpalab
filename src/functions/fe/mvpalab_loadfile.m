@@ -25,18 +25,19 @@ function EEG = mvpalab_loadfile(cfg,dataset,condition,sub)
 %  - {struct} - EEG:
 %    Data of the file (see mvpalab_dataformat).
 
-path = cfg.study.dataPaths{dataset,condition};
+folder = cfg.study.dataPaths{dataset,condition};
 file = cfg.study.dataFiles{dataset,condition}{sub};
 [~,~,ext] = fileparts(file);
 
 try
     if strcmpi(ext,'.set')
-        input.data = pop_loadset(file,path);
+        input.data = pop_loadset(file,folder);
     else
-        input = load([path file]);
+        input = load(fullfile(folder,file));
     end
 catch loaderror
-    error('Unable to load %s: %s',[path file],loaderror.message);
+    error('mvpalab:loadfile',...
+        'Unable to load %s: %s',fullfile(folder,file),loaderror.message);
 end
 
 EEG = mvpalab_dataformat(input);

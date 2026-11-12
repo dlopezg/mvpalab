@@ -1,50 +1,30 @@
-%% Advacned configuration file for MVPA analysis - Folder and data files:
+%% MVPAlab - configuration of the M/EEG-fMRI fusion demo.
+%  Only the settings of this demo: the rest keep the values of
+%  mvpalab_init, where every option is documented.
 
 cfg.analysis = 'fusion_cue';
-cfg.location = pwd;
 
-%% FUSION:
+%% Fusion:
 
 cfg.fusion.mode = 'mean-fmri';
 
-%% Import RDMs FMRI:
+%% RDMs of the fMRI regions (also bin_rwA1_bilateral, bin_rwPSL_bilateral,
+%  bin_rwRSC_bilateral and bin_rwSFL_bilateral) and of the M/EEG:
 
-temp = load('/Users/David/Desktop/att-exp-fusion/fmri/cue/rdms/pearson/bin_rwM1_bilateral/result.mat','result');
-fmri_rdms.bin_rwM1_bilateral = temp.result;
+folder = fullfile('data','rdms');
+regions = {'bin_rwM1_bilateral','bin_rwVVC_bilateral'};
+for r = 1 : numel(regions)
+    temp = load(fullfile(folder,'fmri',regions{r},'result.mat'),'result');
+    fmri_rdms.(regions{r}) = temp.result;
+end
 
-temp = load('/Users/David/Desktop/att-exp-fusion/fmri/cue/rdms/pearson/bin_rwVVC_bilateral/result.mat','result');
-fmri_rdms.bin_rwVVC_bilateral = temp.result;
-
-% temp = load('/Users/David/Desktop/att-exp-fusion/fmri/cue/rdms/pearson/bin_rwA1_bilateral/result.mat','result');
-% fmri_rdms.bin_rwA1_bilateral = temp.result;
-% 
-% temp = load('/Users/David/Desktop/att-exp-fusion/fmri/cue/rdms/pearson/bin_rwPSL_bilateral/result.mat','result');
-% fmri_rdms.bin_rwPSL_bilateral = temp.result;
-% 
-% temp = load('/Users/David/Desktop/att-exp-fusion/fmri/cue/rdms/pearson/bin_rwRSC_bilateral/result.mat','result');
-% fmri_rdms.bin_rwRSC_bilateral = temp.result;
-% 
-% temp = load('/Users/David/Desktop/att-exp-fusion/fmri/cue/rdms/pearson/bin_rwSFL_bilateral/result.mat','result');
-% fmri_rdms.bin_rwSFL_bilateral = temp.result;
-
-%% Import RDMs EEG:
-
-temp = load('/Users/David/Desktop/att-exp-fusion/eeg/cue/rdms/pearson/result.mat');
+temp = load(fullfile(folder,'eeg','result.mat'));
 meeg_rdms = temp.result;
-
-%% Update time vector:
-
 cfg.tm.times = temp.cfg.tm.times;
 
-%% EXTRA CONFIGURATION:
+clear folder regions r temp
 
-cfg.classmodel.parcomp = true;
+%% Shared permutation test, run inside the fusion:
 
-%% PERMUTATION TEST
-
-cfg.stats.flag   = 1;
-cfg.stats.nper   = 5000;  % Shared permutations, one null map each.
-cfg.stats.pgroup = 99.9;
-cfg.stats.pclust = 99.9;
-cfg.stats.tails  = 2;
-cfg.stats.shownulldis = 0;
+cfg.stats.flag = true;
+cfg.stats.nper = 5000;  % Shared permutations, one null map each.

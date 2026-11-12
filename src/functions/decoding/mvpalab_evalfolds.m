@@ -55,7 +55,7 @@ for k = 1 : nfolds
     %% Train the model with the transformation of the fold:
     train_X = train.X(part.train(:,k),:,cfg.tm.tpoints(tp));
     [train_X,fold] = mvpalab_preparetrain(cfg,train_X);
-    [mdl,weights] = mvpalab_train(train_X,train.Y(part.train(:,k)),cfg);
+    [mdl,weights] = mvpalab_train(cfg,train_X,train.Y(part.train(:,k)));
 
     % Feature weights in the channel space:
     if job.wvector

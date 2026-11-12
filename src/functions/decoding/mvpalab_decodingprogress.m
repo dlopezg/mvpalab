@@ -1,4 +1,4 @@
-function mvpalab_decodingprogress(stage,cfg,job)
+function mvpalab_decodingprogress(cfg,stage,job)
 %% MVPALAB_DECODINGPROGRESS
 %
 %  This function shows the progress of a decoding analysis in the console.
@@ -8,12 +8,12 @@ function mvpalab_decodingprogress(stage,cfg,job)
 %
 %%  INPUT:
 %
+%  - {struct} - cfg:
+%    Configuration structure.
+%
 %  - {string} - stage:
 %    Point of the analysis: 'start', 'subject', 'band', 'repetitions',
 %    'repetition', 'map', 'bandend', 'subjectend' or 'end'.
-%
-%  - {struct} - cfg:
-%    Configuration structure.
 %
 %  - {struct} - job:
 %    Description of the analysis (see mvpalab_decodingjob).
@@ -71,6 +71,7 @@ end
 end
 
 function printsubject(job)
+%% Subject being computed, out of the total.
 
 fprintf(['   - Subject: ' int2str(job.sub) '/' int2str(job.nsub) ' >> ']);
 

@@ -48,7 +48,8 @@ function job = mvpalab_decodingjob(cfg,mode)
 %    - sub, freq, per, rep: Current subject, band, map and repetition.
 
 if ~any(strcmp(mode,{'observed','permuted'}))
-    error('The mode of mvpalab_decoding must be ''observed'' or ''permuted''.');
+    error('mvpalab:decodingjob',...
+        'The mode of mvpalab_decoding must be ''observed'' or ''permuted''.');
 end
 
 job.mvcc = mvpalab_ismvcc(cfg);

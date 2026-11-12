@@ -23,9 +23,9 @@ function pidx = mvpalab_permidx(nvec,nperm)
 %%  OUTPUT:
 %
 %  - {matrix} - pidx:
-%    Indexes into the vectorized RDM [permutations x nvec]. Row i is the
-%    vectorized RDM permuted with the i-th permutation of the conditions:
-%    vrdm(pidx(i,:)).
+%    Indexes into the vectorized RDM [permutations x nvec], as uint32 to
+%    halve the memory of trial-wise RDMs. Row i is the vectorized RDM
+%    permuted with the i-th permutation of the conditions: vrdm(pidx(i,:)).
 
 %% Index matrix:
 %  lin is a [conditions x conditions] matrix containing the position of
@@ -40,13 +40,14 @@ lin = squareform(1:nvec);
 %  several times.
 
 if factorial(nconds) < nperm
-    warning(['Only %d different permutations of %d conditions. ' ...
+    warning('mvpalab:permidx',...
+        ['Only %d different permutations of %d conditions. ' ...
         'Some permuted maps will be repeated.'],factorial(nconds),nconds);
 end
 
 %% Permutation loop:
 
-pidx = zeros(nperm,nvec);
+pidx = zeros(nperm,nvec,'uint32');
 
 for perm = 1 : nperm
     p = randperm(nconds);

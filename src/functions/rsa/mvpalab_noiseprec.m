@@ -85,18 +85,18 @@ function [prec,sigma] = mvpalab_noiseprec(X,Y)
 %
 %%  INPUT:
 %
-%  - {3D-matrix} - X:
+%  - {matrix} - X:
 %    Data matrix including all the trials. [trials x channels x timepoints]
 %
-%  - {1D-categorical} - Y:
+%  - {categorical} - Y:
 %    Condition label of each trial.
 %
 %%  OUTPUT:
 %
-%  - {2D-matrix} - prec:
+%  - {matrix} - prec:
 %    Noise precision matrix (inverse of sigma). [channels x channels]
 %
-%  - {2D-matrix} - sigma:
+%  - {matrix} - sigma:
 %    Shrinkage estimate of the noise covariance matrix, averaged across
 %    timepoints. [channels x channels]
 
@@ -108,7 +108,8 @@ dof = ntrials - numel(conds);
 %  With a single observation per condition all the residuals are zero.
 
 if dof < 1
-    error(['The noise covariance (Mahalanobis and crossnobis distances, ' ...
+    error('mvpalab:noiseprec',...
+        ['The noise covariance (Mahalanobis and crossnobis distances, ' ...
         'cfg.rsa.mnn) needs more observations than conditions: %d ' ...
         'observations of %d conditions were found. In fMRI analyses ' ...
         'this requires at least 2 runs, and at least 3 runs with ' ...
@@ -129,20 +130,23 @@ end
 %  NaN values at any timepoint make the covariance undefined. A channel
 %  whose residual variance is zero at all the timepoints (e.g. a reference
 %  channel or a constant voxel) makes it singular. Zero variance at some
-%  timepoints only (e.g. a zeroed artifact window) is allowed: these
-%  timepoints add nothing to the variance of the channel and the average
-%  across timepoints is still positive definite.
+%  timepoints only (e.g. a zeroed artifact window) is allowed: at these
+%  timepoints the channel adds no variance or covariance, the shrinkage of
+%  the other channels is computed without it (see shrinkdiag), and the
+%  average across timepoints is still positive definite.
 
 ss = reshape(sum(res.^2,1),nchannels,ntp);
 nanch = find(any(isnan(ss),2));
 if ~isempty(nanch)
-    error(['The noise covariance (Mahalanobis and crossnobis distances, ' ...
+    error('mvpalab:noiseprec',...
+        ['The noise covariance (Mahalanobis and crossnobis distances, ' ...
         'cfg.rsa.mnn) cannot be estimated from data with NaN values. ' ...
         '%d channel(s) with NaN values: %s.'],numel(nanch),mat2str(nanch'));
 end
 novar = find(all(ss == 0,2));
 if ~isempty(novar)
-    error(['The noise covariance (Mahalanobis and crossnobis distances, ' ...
+    error('mvpalab:noiseprec',...
+        ['The noise covariance (Mahalanobis and crossnobis distances, ' ...
         'cfg.rsa.mnn) needs a residual variance greater than zero in ' ...
         'every channel. %d channel(s) with zero variance at all the ' ...
         'timepoints: %s. Remove these channels or voxels from the ' ...
@@ -162,7 +166,8 @@ sigma = sigma / ntp;
 %  optimal shrinkage intensity can be zero and the covariance singular.
 
 if ~(rcond(sigma) > eps)
-    error(['The noise covariance (Mahalanobis and crossnobis distances, ' ...
+    error('mvpalab:noiseprec',...
+        ['The noise covariance (Mahalanobis and crossnobis distances, ' ...
         'cfg.rsa.mnn) is singular: there are too few observations (%d ' ...
         'observations of %d conditions, %d channels) to estimate it. ' ...
         'Use more trials (or fewer folds) or the Pearson or Euclidean ' ...
@@ -183,7 +188,11 @@ function s_shrink = shrinkdiag(res,dof)
 %  s_mean - sample correlation matrix (normalized by n-1)
 %  s2_mean- mean of the squared standardized products
 %  var_hat- estimated variance of the sample correlations
-%  lamb   - optimal shrinkage intensity for the off-diagonal elements
+%  lamb   - optimal shrinkage intensity for the off-diagonal elements,
+%           computed with the channels that have variance at this
+%           timepoint: a channel without variance has undefined
+%           correlations, which would otherwise give lamb = 1 and remove
+%           the covariances of all the channels. Its covariances are 0.
 
 n = size(res,1);
 s_sum  = res' * res;
@@ -195,7 +204,8 @@ s_mean  = s_sum  ./ (sd * sd') / (n - 1);
 s2_mean = s2_sum ./ (v * v')   / (n - 1);
 var_hat = n / dof^2 * (s2_mean - s_mean.^2);
 mask = ~eye(size(s));
-lamb = sum(var_hat(mask)) / sum(s_mean(mask).^2);
+valid = mask & (v > 0) & (v > 0)';
+lamb = sum(var_hat(valid)) / sum(s_mean(valid).^2);
 lamb = max(min(lamb,1),0);
 s_shrink = s .* (eye(size(s)) + (1 - lamb) * mask);
 

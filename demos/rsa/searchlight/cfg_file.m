@@ -1,7 +1,14 @@
-%% Advacned configuration file for MVPA analysis - Folder and data files:
+%% MVPAlab - configuration of the fMRI RSA searchlight demo.
+%  Only the settings of this demo: the rest keep the values of
+%  mvpalab_init, where every option is documented.
 
 cfg.analysis = 'RSA';
-cfg.location = pwd;
+
+%% Betas, mask and conditions of the subject:
+
+folder = fullfile('data','derivatives','sub-004','GLM_models_decoding');
+cfg.study.SPMFolder = folder;
+cfg.study.maskFile = fullfile(folder,'mask.nii');
 
 cfg.rsa.conditions = {
     'cue_Att_CueFace1';
@@ -14,56 +21,16 @@ cfg.rsa.conditions = {
     'cue_Exp_CueName2';
     };
 
-cfg.study.SPMFolder = '/Volumes/DATA/att-exp-fmri/derivatives/sub-004/GLM_models_decoding';
-cfg.study.maskFile = '/Volumes/DATA/att-exp-fmri/derivatives/sub-004/GLM_models_decoding/mask.nii';
-%% REPRESENTATIONAL SIMILARITY ANALYSIS:
+%% Smoothing and timing:
 
-cfg.rsa.distance = 'pearson';
-cfg.rsa.analysis = 'corr';
-cfg.rsa.trialwise = true;
+cfg.smoothdata.method = 'moving';
+cfg.smoothdata.window = 5;
+cfg.tm.tpstart = -100;
+cfg.tm.tpend   = 1500;
 
-%% SEARCHLIGHT CONFIGURATION:
-cfg.sl.radius = 4;
+%% Permutation test, run inside the analysis:
 
-%% BALANCED DATASETS:
-
-cfg.classsize.match = false;
-
-%% DATA NORMALIZATION:
-
-% cfg.normdata = 0 - raw data
-% cfg.normdata = 1 - z-score (across features)
-% cfg.normdata = 2 - z-score (across time)
-% cfg.normdata = 3 - z-score (across trials)
-% cfg.normdata = 4 - std_nor (across trials)
-
-cfg.normdata = 0; 
-
-%% DATA SMOOTHING:
-
-% cfg.smoothdata.method = 'none'   - Data smooth disabled.
-% cfg.smoothdata.method = 'moving' - Moving average method.
-
-cfg.smoothdata.method   = 'moving';
-cfg.smoothdata.window   = 5;
-
-%% ANALYSIS TIMING:
-
-cfg.tm.tpstart   = -100;
-cfg.tm.tpend     = 1500;
-cfg.tm.tpsteps   = 1;
-
-%% EXTRA CONFIGURATION:
-
-cfg.classmodel.tempgen = false;
-cfg.classmodel.parcomp = true;
-
-%% PERMUTATION TEST
-
-cfg.stats.flag   = 1;
-cfg.stats.nper   = 10;
-cfg.stats.nperg  = 1e4;
-cfg.stats.pgroup = 99.9;
-cfg.stats.pclust = 99.9;
-cfg.stats.tails  = 2;
-cfg.stats.shownulldis = 1;
+cfg.stats.flag = true;
+cfg.stats.nper = 10;  % Few permutations so the demo runs fast; use at least 100.
+cfg.stats.shownulldis = true;
+% cfg.stats.signflip = true;  % Sign flip group test (see mvpalab_init).

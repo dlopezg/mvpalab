@@ -32,12 +32,14 @@ for i = 1 : numel(raw)
 
     if EEG.srate ~= cfg.fs || numel(EEG.times) ~= numel(times) || ...
             max(abs(EEG.times(:)' - times)) >= tolerance
-        error(['%s has a different sampling frequency or time vector ' ...
+        error('mvpalab:validatefiles',...
+            ['%s has a different sampling frequency or time vector ' ...
             'than the first file of the study.'],file);
     end
 
     if size(EEG.data,1) ~= size(raw{1,1}.data,1)
-        error('%s has a different number of channels than the other files of the subject.',file);
+        error('mvpalab:validatefiles',...
+            '%s has a different number of channels than the other files of the subject.',file);
     end
 end
 

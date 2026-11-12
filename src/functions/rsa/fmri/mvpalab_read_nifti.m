@@ -40,7 +40,7 @@ elseif exist('spm_vol','file')
     volume.data = spm_read_vols(header);
     
 else
-    error('Error: No software found to read .nii files.')
+    error('mvpalab:read_nifti','Error: No software found to read .nii files.')
 end
 
 end

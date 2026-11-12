@@ -1,4 +1,4 @@
-function r = mvpalab_pearson(train,test,cfg)
+function r = mvpalab_pearson(cfg,train,test)
 %% MVPALAB_PEARSON
 %
 %  This function computes the Pearson correlation (cfg.rsa.meancenter =
@@ -14,18 +14,18 @@ function r = mvpalab_pearson(train,test,cfg)
 %
 %%  INPUT:
 %
-%  - {2D-matrix} - train:
-%    Patterns in columns. [features x patterns]
-%
-%  - {2D-matrix} - test:
-%    Patterns in columns. [features x patterns]
-%
 %  - {struct} - cfg:
 %    Configuration structure.
 %
+%  - {matrix} - train:
+%    Patterns in columns. [features x patterns]
+%
+%  - {matrix} - test:
+%    Patterns in columns. [features x patterns]
+%
 %%  OUTPUT:
 %
-%  - {2D-matrix} - r:
+%  - {matrix} - r:
 %    Correlation between each pattern of train (rows) and each pattern of
 %    test (columns). [patterns x patterns]
 

@@ -1,4 +1,4 @@
-function [cfg, data, fv] = mvpalab_readdata(cfg)
+function [cfg,data,fv] = mvpalab_readdata(cfg)
 %% MVPALAB_READDATA
 %
 %  This function reads the data of each subject (see mvpalab_readsubject)

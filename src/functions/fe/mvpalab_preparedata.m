@@ -42,8 +42,8 @@ data = mvpalab_normtrials(cfg,data);
 
 %% Selected channels:
 sets = fieldnames(data);
-for s = 1 : numel(sets)
-    data.(sets{s}).X = mvpalab_chanselection(data.(sets{s}).X,cfg);
+for dataset = 1 : numel(sets)
+    data.(sets{dataset}).X = mvpalab_chanselection(cfg,data.(sets{dataset}).X);
 end
 
 end

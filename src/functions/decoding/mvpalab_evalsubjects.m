@@ -31,19 +31,19 @@ function [res,cfg,job] = mvpalab_evalsubjects(cfg,fv,mode)
 %    Description of the analysis (see mvpalab_decodingjob).
 
 job = mvpalab_decodingjob(cfg,mode);
-mvpalab_decodingprogress('start',cfg,job);
+mvpalab_decodingprogress(cfg,'start',job);
 
 res = struct();
 
 %% Subjects loop:
 for sub = 1 : job.nsub
     job.sub = sub;
-    mvpalab_decodingprogress('subject',cfg,job);
+    mvpalab_decodingprogress(cfg,'subject',job);
 
     %% Frequencies loop:
     for freq = 1 : job.nfreq
         job.freq = freq;
-        mvpalab_decodingprogress('band',cfg,job);
+        mvpalab_decodingprogress(cfg,'band',job);
 
         data = mvpalab_subjectdata(cfg,fv,job);
 
@@ -65,19 +65,19 @@ for sub = 1 : job.nsub
             end
 
             map = mvpalab_evalmap(cfg,mapdata,job);
-            res = mvpalab_storemap(res,map,cfg,job);
+            res = mvpalab_storemap(cfg,res,map,job);
 
-            mvpalab_decodingprogress('map',cfg,job);
+            mvpalab_decodingprogress(cfg,'map',job);
         end
-        mvpalab_decodingprogress('bandend',cfg,job);
+        mvpalab_decodingprogress(cfg,'bandend',job);
     end
-    mvpalab_decodingprogress('subjectend',cfg,job);
+    mvpalab_decodingprogress(cfg,'subjectend',job);
 end
-mvpalab_decodingprogress('end',cfg,job);
+mvpalab_decodingprogress(cfg,'end',job);
 
 % Locations of the selected channels, once every subject has passed the
 % check of the selection (see mvpalab_chanselection):
-cfg = mvpalab_updatechanloc(cfg.channels.selected,cfg);
+cfg = mvpalab_updatechanloc(cfg,cfg.channels.selected);
 
 %% MVPA has one direction, so its results do not keep that level:
 if ~job.mvcc, res = withoutdirection(res); end

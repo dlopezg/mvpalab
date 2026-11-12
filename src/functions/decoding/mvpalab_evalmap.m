@@ -30,7 +30,7 @@ function map = mvpalab_evalmap(cfg,data,job)
 %  - {struct} - map:
 %    Performance of each direction (see mvpalab_averagereps).
 
-mvpalab_decodingprogress('repetitions',cfg,job);
+mvpalab_decodingprogress(cfg,'repetitions',job);
 
 perf = cell(cfg.tm.ntp,job.nreps);
 
@@ -55,7 +55,7 @@ for rep = 1 : job.nreps
         end
     end
 
-    mvpalab_decodingprogress('repetition',cfg,job);
+    mvpalab_decodingprogress(cfg,'repetition',job);
 end
 
 %% Average metrics across repetitions:

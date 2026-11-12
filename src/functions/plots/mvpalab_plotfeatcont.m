@@ -9,7 +9,7 @@ function mvpalab_plotfeatcont(graph,cfg,weights,result)
 %  mvpalab_validateeeglab.
 %
 %  The weights are averaged across subjects, or one subject is selected
-%  (graph.weights.sub), between graph.weights.start and
+%  (graph.subject), between graph.weights.start and
 %  graph.weights.end. In a sliding filter analysis the first band is
 %  used. With graph.weights.anim, one topography per timepoint of the
 %  window is shown as an animation (graph.weights.speed), which starts
@@ -34,18 +34,18 @@ function mvpalab_plotfeatcont(graph,cfg,weights,result)
 %    generalization, [ntp x ntp_ x subjects], where the diagonal is
 %    used. If it is empty, the performance is not plotted.
 
-% Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
 
 if isempty(cfg.channels.selectedchanloc)
-    warning('The feature weights need the channel locations (cfg.channels.selectedchanloc) to be plotted.');
+    warning('mvpalab:plotfeatcont',...
+        'The feature weights need the channel locations (cfg.channels.selectedchanloc) to be plotted.');
     return
 end
 
 % Check if EEGlab is installed:
 mvpalab_validateeeglab();
 
-if ~isfield(graph,'xlim'), graph.xlim = cfg.tm.times([1 end]); end
+if isempty(graph.xlim), graph.xlim = cfg.tm.times([1 end]); end
 
 %% Temporal window, weights and performance:
 [~,startidx] = min(abs(cfg.tm.times - graph.weights.start));
@@ -88,8 +88,8 @@ function w = selectweights(graph,weights,window)
 %  [channels x timepoints]. The first band of a sliding filter analysis.
 
 w = cat(3,weights{:,1});
-if graph.weights.sub
-    w = w(:,:,graph.weights.sub);
+if graph.subject
+    w = w(:,:,graph.subject);
 else
     w = mean(w,3);
 end
@@ -113,8 +113,8 @@ else
     perf = result;
 end
 
-if graph.weights.sub
-    perf = perf(:,:,graph.weights.sub);
+if graph.subject
+    perf = perf(:,:,graph.subject);
 else
     perf = mean(perf,3);
 end

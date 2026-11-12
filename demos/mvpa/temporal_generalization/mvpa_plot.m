@@ -35,7 +35,7 @@ mvpalab_plottempogen(graph,cfg,result);
 %  Only if the permutation test was computed (cfg.stats.flag):
 
 if cfg.stats.flag
-    % Load results and and statistics if needed:
+    % Load results and statistics if needed:
     load results/temporal_generalization/acc/result.mat
     load results/temporal_generalization/acc/stats.mat
 

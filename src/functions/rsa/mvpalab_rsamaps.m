@@ -28,7 +28,8 @@ function maps = mvpalab_rsamaps(cfg,vrdm,vtheo,pidx)
 %%  OUTPUT:
 %
 %  - {struct} - maps:
-%    One field per model (cfg.rsa.tmodels{i}.id): the correlations
+%    One field per model (cfg.rsa.tmodels{i}.id): the Fisher z of the
+%    Spearman correlations
 %    [timepoints x maps] in 'corr', or the fields bvalues and tvalues of
 %    the same size.
 

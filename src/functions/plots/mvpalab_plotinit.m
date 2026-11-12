@@ -9,7 +9,8 @@ function graph = mvpalab_plotinit(cfg)
 %  With cfg, graph.xlim is set to [cfg.tm.tpstart cfg.tm.tpend] and
 %  graph.chanlvl to the chance level of the classifiers, 1/number of
 %  classes; the plots of RSA and fusion set their own (0). Without cfg,
-%  graph.xlim is not set and graph.chanlvl stays at 0.5.
+%  graph.xlim is empty, so the plots keep the limits of the data, and
+%  graph.chanlvl stays at 0.5.
 %
 %%  INPUT:
 %
@@ -32,7 +33,7 @@ graph.colorSch = sch.mvpalab;       % Default color scheme.
 %% General:
 graph.fontsize = 14;
 graph.add = false;     % True to plot in the current figure (see mvpalab_plotresult).
-graph.subject = 0;
+graph.subject = 0;     % Subject of every plot, 0 for the mean of all subjects.
 graph.chanlvl = .5;
 
 %% Axes configuration:
@@ -47,6 +48,7 @@ graph.shadealpha = .7;
 
 % Limits:
 graph.ylim = [0 1];
+graph.xlim = [];
 
 if nargin > 0
     graph.xlim = [cfg.tm.tpstart cfg.tm.tpend];
@@ -75,7 +77,8 @@ graph.stats.above = false;
 graph.stats.below = false;
 
 graph.sigh = 0.5;
-graph.sigc = graph.colors.mvpalab{1};
+graph.sigc = graph.colors.mvpalab{1};   % Above chance.
+graph.sigc_ = [1 0 0];                  % Below chance.
 
 %% Weights:
 graph.weights.anim = 0;
@@ -83,7 +86,6 @@ graph.weights.type = 'raw';
 graph.weights.start = 0;
 graph.weights.end = 0;
 graph.weights.speed = 0.1;
-graph.weights.sub = 0;
 
 
 

@@ -1,25 +1,18 @@
 %% Initialize and configure plots:
 
 graph = mvpalab_plotinit();
-
-%% Mean accuracy plot (no statistical significance)
-%  The diffMaps of each direction are saved in their own folder.
-
 graph.xlim = [-100 1000];
 graph.ylim = [0 20];
 
-folder = fullfile('results','diffMaps',cfg.sf.metric);
+%  The result of sfmvcc_demo has both directions and their mean (fields
+%  ab, ba and mean, also saved in cfg.savefolder), drawn in one panel each
+%  (see mvpalab_plotresult).
 
-% Plot results:
-figure;
-subplot(2,2,1)
-hold on
-load(fullfile(folder,'ab','result.mat'));
-mvpalab_plotfreqcont(graph,cfg,result);
-subplot(2,2,2)
-hold on
-load(fullfile(folder,'ba','result.mat'));
-mvpalab_plotfreqcont(graph,cfg,result);
+metric = cfg.sf.metric;
+
+%% Mean accuracy plot (no statistical significance)
+
+mvpalab_plotresult(graph,cfg,diffMap.(metric));
 
 %% Mean accuracy plot (statistical significance)
 %  Only if the permutation test was computed (cfg.stats.flag):
@@ -29,15 +22,5 @@ if cfg.stats.flag
     graph.stats.above = true;
     graph.stats.below = true;
 
-    % Plot results:
-    subplot(2,2,3)
-    hold on
-    load(fullfile(folder,'ab','result.mat'));
-    load(fullfile(folder,'ab','stats.mat'));
-    mvpalab_plotfreqcont(graph,cfg,result,stats);
-    subplot(2,2,4)
-    hold on
-    load(fullfile(folder,'ba','result.mat'));
-    load(fullfile(folder,'ba','stats.mat'));
-    mvpalab_plotfreqcont(graph,cfg,result,stats);
+    mvpalab_plotresult(graph,cfg,diffMap.(metric),stats.(metric));
 end

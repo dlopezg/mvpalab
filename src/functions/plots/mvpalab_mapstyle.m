@@ -4,7 +4,7 @@ function mvpalab_mapstyle(graph,map)
 %  This function applies the appearance of a map plot to the current axes:
 %  title, labels, limits, colorbar, colormap and axes style. The color
 %  limits are graph.caxis, or the minimum and maximum of the map if
-%  graph.caxis is zero.
+%  graph.caxis is zero. An empty graph.xlim keeps the limits of the data.
 %
 %%  INPUT:
 %
@@ -17,7 +17,7 @@ function mvpalab_mapstyle(graph,map)
 title(graph.title);
 xlabel(graph.xlabel);
 ylabel(graph.ylabel);
-xlim(graph.xlim);
+if ~isempty(graph.xlim), xlim(graph.xlim); end
 ylim(graph.ylim);
 colorbar('Eastoutside');
 colormap(graph.colorMap);

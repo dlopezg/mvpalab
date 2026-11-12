@@ -1,4 +1,4 @@
-function [] = mvpalab_savesfdata(cfg,data,fv,sub,freq)
+function mvpalab_savesfdata(cfg,data,fv,sub,freq)
 %% MVPALAB_SAVESFDATA
 %
 %  This function saves the feature vectors of one subject in one frequency

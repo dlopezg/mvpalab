@@ -1,4 +1,4 @@
-function mvpalab_dialog(fig, msg, title, icon)
+function mvpalab_dialog(fig,msg,title,icon)
 %% MVPALAB_DIALOG
 %
 %  This function shows a message dialog in the figure fig (uialert). The

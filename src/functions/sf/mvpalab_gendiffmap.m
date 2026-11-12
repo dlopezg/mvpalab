@@ -15,11 +15,11 @@ function diffMap = mvpalab_gendiffmap(cfg,baseline,bands,mode)
 %
 %  - {matrix} - baseline:
 %    Unfiltered baseline [1 x ntp x subjects] or, permuted,
-%    [1 x ntp x subjects x maps]. In MVCC, fields ab and ba.
+%    [1 x ntp x subjects x maps]. In MVCC, fields ab, ba and mean.
 %
 %  - {matrix} - bands:
 %    Maps of each band [1 x ntp x subjects x bands] or, permuted,
-%    [1 x ntp x subjects x maps x bands]. In MVCC, fields ab and ba.
+%    [1 x ntp x subjects x maps x bands]. In MVCC, fields ab, ba and mean.
 %
 %  - {string} - mode:
 %    'observed' or 'permuted'.
@@ -28,7 +28,9 @@ function diffMap = mvpalab_gendiffmap(cfg,baseline,bands,mode)
 %
 %  - {struct} - diffMap:
 %    Field cfg.sf.metric with the diffMaps [bands x ntp x subjects] or,
-%    permuted, [bands x ntp x subjects x maps]. In MVCC, fields ab and ba.
+%    permuted, [bands x ntp x subjects x maps]. In MVCC, fields ab, ba and
+%    mean, the mean of both directions, as in the decoding (see
+%    mvpalab_storemap).
 
 fprintf('<strong> > Generating diffmaps... </strong>');
 
@@ -40,6 +42,7 @@ metric = cfg.sf.metric;
 if mvpalab_ismvcc(cfg)
     diffMap.(metric).ab = difference(baseline.ab,bands.ab);
     diffMap.(metric).ba = difference(baseline.ba,bands.ba);
+    diffMap.(metric).mean = difference(baseline.mean,bands.mean);
 else
     diffMap.(metric) = difference(baseline,bands);
 end

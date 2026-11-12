@@ -151,7 +151,7 @@ for roi = 1 : length(cfg.rsa.roi)
             %  Without cross-validation the training and test patterns are
             %  the same betas.
 
-            rdm{sub} = mvpalab_computerdm(cfg,masked{sub},masked{sub},[],prec);
+            rdm{sub} = mvpalab_computerdm(cfg,masked{sub},masked{sub},prec);
 
             %% Merge conditions:
             %  Average the run blocks of each pair of conditions.

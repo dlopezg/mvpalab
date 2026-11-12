@@ -17,10 +17,10 @@ function folds = mvpalab_rdmfolds(cfg,Y,folds)
 %  - {struct} - cfg:
 %    Configuration structure (cfg.rsa).
 %
-%  - {1D-array} - Y:
+%  - {matrix} - Y:
 %    Condition of each trial.
 %
-%  - {1D-array} - folds:
+%  - {matrix} - folds:
 %    Predefined fold of each trial, or empty.
 %
 %%  OUTPUT:

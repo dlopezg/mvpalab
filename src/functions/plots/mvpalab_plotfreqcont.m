@@ -31,11 +31,11 @@ function mvpalab_plotfreqcont(graph,cfg,data,stats)
 
 if nargin < 4, stats = []; end
 
-% Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
 
 if length(cfg.sf.freqvec) < 2
-    error('The frequency contribution map needs at least two frequency bands.');
+    error('mvpalab:plotfreqcont',...
+        'The frequency contribution map needs at least two frequency bands.');
 end
 
 %% Select subject:
@@ -53,7 +53,8 @@ mvpalab_plotclusters(graph,x,y,stats);
 
 %% Configure plot appearance:
 mvpalab_mapstyle(graph,map);
-set(gca,'XTick',graph.xlim(1):100:graph.xlim(2));
+limits = xlim;
+set(gca,'XTick',limits(1):100:limits(2));
 set(gca,'YTick',round(y,2));
 
 end

@@ -24,10 +24,10 @@ function part = mvpalab_dirpartition(cfg,Y,Yt,same)
 %  - {struct} - cfg:
 %    Configuration structure (cfg.cv.method and cfg.cv.nfolds).
 %
-%  - {1D-array} - Y:
+%  - {matrix} - Y:
 %    Labels of the training dataset.
 %
-%  - {1D-array} - Yt:
+%  - {matrix} - Yt:
 %    Labels of the test dataset.
 %
 %  - {logical} - same:

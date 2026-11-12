@@ -1,4 +1,4 @@
-function res = mvpalab_storemap(res,map,cfg,job)
+function res = mvpalab_storemap(cfg,res,map,job)
 %% MVPALAB_STOREMAP
 %
 %  This function stores the metrics of one performance map in the result
@@ -10,14 +10,14 @@ function res = mvpalab_storemap(res,map,cfg,job)
 %
 %%  INPUT:
 %
+%  - {struct} - cfg:
+%    Configuration structure.
+%
 %  - {struct} - res:
 %    Result structure.
 %
 %  - {struct} - map:
 %    Metrics of each direction (see mvpalab_averagereps).
-%
-%  - {struct} - cfg:
-%    Configuration structure.
 %
 %  - {struct} - job:
 %    Description of the analysis (see mvpalab_decodingjob).
@@ -50,21 +50,21 @@ for d = 1 : numel(job.dirs)
 
     for m = 1 : numel(job.numeric)
         metric = job.numeric{m};
-        res.(metric).(way)(idx{:}) = orient(map.(way).(metric),cfg);
+        res.(metric).(way)(idx{:}) = orient(cfg,map.(way).(metric));
     end
 
     for m = 1 : numel(job.lastrep)
         metric = job.lastrep{m};
-        res.roc.(metric).(way)(idx{:}) = orient(map.(way).(metric),cfg);
+        res.roc.(metric).(way)(idx{:}) = orient(cfg,map.(way).(metric));
     end
 
     if job.confmat
-        res.confmat.(way)(idx{:}) = orient(map.(way).confmat,cfg);
+        res.confmat.(way)(idx{:}) = orient(cfg,map.(way).confmat);
     end
 
     for m = 1 : numel(job.perclass)
         metric = job.perclass{m};
-        maps = classmaps(map.(way).(metric),cfg);
+        maps = classmaps(cfg,map.(way).(metric));
         names = job.classes.(way);
         for condition = 1 : numel(names)
             res.(metric).(way).(names{condition})(idx{:}) = maps(:,:,condition);
@@ -82,13 +82,13 @@ if ~job.mvcc, return; end
 
 for m = 1 : numel(job.numeric)
     metric = job.numeric{m};
-    res.(metric).mean(idx{:}) = orient((map.ab.(metric) + map.ba.(metric))/2,cfg);
+    res.(metric).mean(idx{:}) = orient(cfg,(map.ab.(metric) + map.ba.(metric))/2);
 end
 
 % The names of dataset A, as in the direction B - A:
 for m = 1 : numel(job.perclass)
     metric = job.perclass{m};
-    maps = (classmaps(map.ab.(metric),cfg) + classmaps(map.ba.(metric),cfg))/2;
+    maps = (classmaps(cfg,map.ab.(metric)) + classmaps(cfg,map.ba.(metric)))/2;
     names = job.classes.ba;
     for condition = 1 : numel(names)
         res.(metric).mean.(names{condition})(idx{:}) = maps(:,:,condition);
@@ -97,15 +97,15 @@ end
 
 end
 
-function maps = classmaps(values,cfg)
+function maps = classmaps(cfg,values)
 %% Maps of each class, with the mean of the classes in the last page.
 
-maps = orient(values,cfg);
+maps = orient(cfg,values);
 maps = cat(3,maps,mean(maps,3));
 
 end
 
-function values = orient(values,cfg)
+function values = orient(cfg,values)
 %% Time-resolved results have one row and one column per timepoint.
 
 if ~cfg.classmodel.tempgen, values = permute(values,[2 1 3]); end

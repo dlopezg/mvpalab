@@ -18,12 +18,12 @@ function adjusted = mvpalab_bhfdr(pvals)
 %
 %%  INPUT:
 %
-%  - {vector} - pvals:
+%  - {matrix} - pvals:
 %    P-values.
 %
 %%  OUTPUT:
 %
-%  - {vector} - adjusted:
+%  - {matrix} - adjusted:
 %    FDR-adjusted p-values, with the size of pvals.
 
 m = numel(pvals);

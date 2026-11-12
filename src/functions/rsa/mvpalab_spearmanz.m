@@ -36,7 +36,8 @@ for map = 1 : size(pidx,1)
     % EPS corrects for rounding errors in r:
     extreme = (abs(r) + eps) >= 1;
     if any(extreme)
-        warning('Correlations of +1 or -1 found. Correcting to +/-0.99999');
+        warning('mvpalab:spearmanz',...
+            'Correlations of +1 or -1 found. Correcting to +/-0.99999');
         r(extreme) = 0.99999*r(extreme);
     end
 

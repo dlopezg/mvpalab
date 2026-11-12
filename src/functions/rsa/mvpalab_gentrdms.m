@@ -18,8 +18,8 @@ function trdms = mvpalab_gentrdms(cfg,mdls,labels)
 %    - id:  Identifier of the model.
 %    - mdl: RDM of the model [conditions x conditions].
 %
-%  - {1D-categorical} - labels:
-%    Optional, only for trial-wise RDMs. Condition of each trial, in the
+%  - {categorical} - labels (optional):
+%    Only for trial-wise RDMs. Condition of each trial, in the
 %    order of the rows of the neural RDM [trials x 1].
 %
 %%  OUTPUT:

@@ -26,7 +26,8 @@ function part = mvpalab_cvpartitions(cfg,data,job)
 %    (train) and test (test) trials of each fold.
 
 if job.mvcc && strcmp(cfg.cv.method,'loo') && length(data.a.Y) ~= length(data.b.Y)
-    error('MVCC with leave-one-out needs datasets of the same size.');
+    error('mvpalab:cvpartitions',...
+        'MVCC with leave-one-out needs datasets of the same size.');
 end
 
 for d = 1 : numel(job.dirs)

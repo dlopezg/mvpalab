@@ -34,7 +34,7 @@ graph.stats.below = true;
 figure(1); hold on;
 
 
-%% ROI 1: VCC
+%% ROI 1: VVC
 
 % Load results:
 
@@ -59,7 +59,7 @@ mask_brain = mvpalab_load_volumes('templates/mask.nii');
 subplot(2,5,3)
 title('Ventral Visual Cortex (VVC)')
 hold on
-mvpalab_plotvolume(mask_m1,5,graph.shadecolor);
+mvpalab_plotvolume(mask_vvc,5,graph.shadecolor);
 mvpalab_plotvolume(mask_brain,.5,'#BBBBBB');
 
 % Plot results:

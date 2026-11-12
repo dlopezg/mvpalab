@@ -93,17 +93,17 @@ mvpalab_plotdecoding(graph,cfg,result,stats);
 % figure(7);
 % graph.tmp = 1;
 % graph.caxis = [-.1 1];
-% graph.sub = 6;
+% graph.subject = 6;
 % 
 % subplot(1,3,1)
-% mvpalab_plotrdm(graph,cfg,result{graph.sub}(:,:,:,3));
+% mvpalab_plotrdm(graph,cfg,result{graph.subject}(:,:,:,3));
 % 
 % graph.tmp = 1;
 % 
 % subplot(1,3,2)
-% mvpalab_plotrdm(graph,cfg,result{graph.sub}(:,:,1,1));
+% mvpalab_plotrdm(graph,cfg,result{graph.subject}(:,:,1,1));
 % 
 % graph.tmp = 1;
 % 
 % subplot(1,3,3)
-% mvpalab_plotrdm(graph,cfg,result{graph.sub}(:,:,1,2));
+% mvpalab_plotrdm(graph,cfg,result{graph.subject}(:,:,1,2));

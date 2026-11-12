@@ -20,13 +20,13 @@ function [data] = mvpalab_datasplit(cfg,X,Y,folds,k)
 %  - {struct} - cfg:
 %    Configuration structure.
 %
-%  - {3D-matrix} - X:
+%  - {matrix} - X:
 %    Data matrix for an individual subject. [trials x channels x timepoints]
 %
-%  - {1D-categorical} - Y:
+%  - {categorical} - Y:
 %    Categorical vector including data labels.
 %
-%  - {1D-array} - folds:
+%  - {matrix} - folds:
 %    Fold of each trial (not used without cross-validation). The folds are
 %    a stratified random partition (EEG/MEG) or predefined groups of trials
 %    such as the runs of an fMRI experiment (see mvpalab_rdm).

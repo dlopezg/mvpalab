@@ -30,7 +30,7 @@ for sub = 1 : nsub
 
         filtered = raw;
         for i = 1 : numel(raw)
-            filtered{i}.data = mvpalab_filterdata(raw{i},freq,cfg);
+            filtered{i}.data = mvpalab_filterdata(cfg,raw{i},freq);
         end
 
         data = mvpalab_classdata(cfg,filtered);

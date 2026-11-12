@@ -7,7 +7,9 @@ function cfg = mvpalab_genfreqvec(cfg)
 %  cfg.sf.lfreq + cfg.sf.hbw to cfg.sf.hfreq - cfg.sf.hbw, with a
 %  logarithmic spacing if cfg.sf.fspac is 'log' and a linear spacing
 %  otherwise. The cutoff frequencies of each band are its center frequency
-%  minus and plus cfg.sf.hbw, and the low cutoffs are at least 1e-6 Hz.
+%  minus and plus cfg.sf.hbw. A low cutoff below 1e-6 Hz is set to 0: the
+%  band starts at 0 Hz and is filtered with one cutoff (see
+%  mvpalab_sfband).
 %
 %%  INPUT:
 %
@@ -23,7 +25,6 @@ function cfg = mvpalab_genfreqvec(cfg)
 %    - cfg.sf.freqvec: Center frequency of each band [1 x bands].
 %    - cfg.sf.fcutoff: Cutoff frequencies of each band, one cell per band
 %      with [low high].
-%    - cfg.sf.nfreq: Number of bands, with the linear spacing.
 
 cfg.sf.hbw = cfg.sf.bw/2;
 
@@ -34,10 +35,10 @@ if strcmp(cfg.sf.fspac,'log')
     cfg.sf.freqvec = logspace(log10(lfreq),log10(hfreq),cfg.sf.nfreq);
 else
     cfg.sf.freqvec = linspace(lfreq,hfreq,cfg.sf.nfreq);
-    cfg.sf.nfreq = length(cfg.sf.freqvec);
 end
 
-lcutoff = max(cfg.sf.freqvec - cfg.sf.hbw,1e-6);
+lcutoff = cfg.sf.freqvec - cfg.sf.hbw;
+lcutoff(lcutoff < 1e-6) = 0;
 hcutoff = cfg.sf.freqvec + cfg.sf.hbw;
 cfg.sf.fcutoff = num2cell([lcutoff' hcutoff'],2)';
 

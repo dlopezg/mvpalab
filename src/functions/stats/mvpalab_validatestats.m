@@ -25,17 +25,20 @@ function mvpalab_validatestats(cfg)
 s = cfg.stats;
 
 if ~isscalar(s.tails) || ~ismember(s.tails,[-1 1 2])
-    error('cfg.stats.tails must be 1 (above chance), -1 (below chance) or 2.');
+    error('mvpalab:validatestats',...
+        'cfg.stats.tails must be 1 (above chance), -1 (below chance) or 2.');
 end
 
 if ~any(strcmp(s.clustcorr,{'fdr','max'}))
-    error('cfg.stats.clustcorr must be ''fdr'' or ''max''.');
+    error('mvpalab:validatestats',...
+        'cfg.stats.clustcorr must be ''fdr'' or ''max''.');
 end
 
 for field = {'pgroup','pclust'}
     level = s.(field{1});
     if ~isscalar(level) || ~(level > 50 && level < 100)
-        error(['cfg.stats.%s must be a percentage above 50 and below 100, ' ...
+        error('mvpalab:validatestats',...
+            ['cfg.stats.%s must be a percentage above 50 and below 100, ' ...
             'for example 95 for p < 0.05.'],field{1});
     end
 end
@@ -43,7 +46,8 @@ end
 for field = {'nper','nperg'}
     n = s.(field{1});
     if ~isscalar(n) || n < 1 || n ~= round(n)
-        error('cfg.stats.%s must be a whole number of at least 1.',field{1});
+        error('mvpalab:validatestats',...
+            'cfg.stats.%s must be a whole number of at least 1.',field{1});
     end
 end
 

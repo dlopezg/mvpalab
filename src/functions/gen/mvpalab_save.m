@@ -35,12 +35,14 @@ modes.res = struct('message','results','variable','result');
 modes.permaps = struct('message','permuted maps','variable','permaps');
 modes.stats = struct('message','stats','variable','stats');
 if ~isfield(modes,mode)
-    error('The mode of mvpalab_save must be ''res'', ''permaps'' or ''stats''.');
+    error('mvpalab:save',...
+        'The mode of mvpalab_save must be ''res'', ''permaps'' or ''stats''.');
 end
 kind = modes.(mode);
 
 if isempty(cfg.savefolder)
-    error(['cfg.savefolder is set by the analysis. Use the cfg returned by ' ...
+    error('mvpalab:save',...
+        ['cfg.savefolder is set by the analysis. Use the cfg returned by ' ...
         'the analysis that computed the results.']);
 end
 

@@ -21,7 +21,7 @@ mvpalab_plotfreqcont(graph,cfg,result);
 %  Only if the permutation test was computed (cfg.stats.flag):
 
 if cfg.stats.flag
-    % Load results and and statistics if needed:
+    % Load results and statistics if needed:
     load(fullfile('results','diffMaps',cfg.sf.metric,'stats.mat'));
 
     % Plot below and above chance clusters:

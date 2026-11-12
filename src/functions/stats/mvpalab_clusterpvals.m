@@ -1,4 +1,4 @@
-function [clusters, corrcsize] = mvpalab_clusterpvals(cfg,clusters,sizedist,maxdist)
+function [clusters,corrcsize] = mvpalab_clusterpvals(cfg,clusters,sizedist,maxdist)
 %% MVPALAB_CLUSTERPVALS
 %
 %  This function computes the cluster-level p-values of the clusters found
@@ -41,10 +41,10 @@ function [clusters, corrcsize] = mvpalab_clusterpvals(cfg,clusters,sizedist,maxd
 %  - {struct} - clusters:
 %    Clusters found in the real data (output of bwconncomp).
 %
-%  - {vector} - sizedist:
+%  - {matrix} - sizedist:
 %    Sizes of all the clusters found in all the permuted maps.
 %
-%  - {vector} - maxdist:
+%  - {matrix} - maxdist:
 %    Size of the largest cluster of each permuted map (0 if the permuted
 %    map has no clusters). [1 x cfg.stats.nperg]
 %

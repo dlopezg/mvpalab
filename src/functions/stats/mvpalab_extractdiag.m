@@ -26,8 +26,8 @@ function [per,nulldiag,stats] = mvpalab_extractdiag(cfg,performance,nullmaps)
 %    [ntp x ntp x subjects x bands] in each metric (precision, recall and
 %    f1score with one field per class, see mvpalab_storemap).
 %
-%  - {struct} - nullmaps:
-%    Optional. Maps of the null distribution of a temporal generalization
+%  - {struct} - nullmaps (optional):
+%    Maps of the null distribution of a temporal generalization
 %    analysis (see mvpalab_decodingnullmaps), with maps
 %    [ntp x ntp x subjects x maps x bands] in each metric.
 %
@@ -44,12 +44,12 @@ function [per,nulldiag,stats] = mvpalab_extractdiag(cfg,performance,nullmaps)
 %    Statistics of the permutation test (see mvpalab_permtest). Only with
 %    nullmaps.
 
-% Check cfg structure:
 cfg = mvpalab_updatecfg(cfg);
 
 % The diagonal needs the same training and test timepoints:
 if ~isequal(cfg.tm.tpoints,cfg.tm.tpoints_)
-    error('The diagonal needs the same training and test time windows.');
+    error('mvpalab:extractdiag',...
+        'The diagonal needs the same training and test time windows.');
 end
 
 fprintf('<strong> > Extracting time resolved diagonal: </strong>');

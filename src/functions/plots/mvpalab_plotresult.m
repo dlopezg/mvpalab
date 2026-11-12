@@ -7,9 +7,9 @@ function mvpalab_plotresult(graph,cfg,result,stats)
 %  mvpalab_plottempogen) or the time-resolved result (see
 %  mvpalab_plotdecoding). It opens a new figure unless graph.add is set.
 %
-%  The sliding filter analysis of an MVCC saves both directions in one
-%  result (fields ab and ba, see mvpalab_sfilter), so they are drawn in two
-%  panels of the figure, each one with its statistics.
+%  The sliding filter analysis of an MVCC saves both directions and their
+%  mean in one result (fields ab, ba and mean, see mvpalab_sfilter), so
+%  each one is drawn in a panel of the figure, with its statistics.
 %
 %%  INPUT:
 %
@@ -20,8 +20,8 @@ function mvpalab_plotresult(graph,cfg,result,stats)
 %    Configuration structure of the analysis.
 %
 %  - {matrix} - result:
-%    Result of one metric, or a structure with the fields ab and ba in the
-%    sliding filter analysis of an MVCC.
+%    Result of one metric, or a structure with the fields ab, ba and mean in
+%    the sliding filter analysis of an MVCC.
 %
 %  - {struct} - stats (optional):
 %    Statistics of the result, or empty.
@@ -32,9 +32,11 @@ if ~graph.add, figure; end
 hold on;
 
 if cfg.sf.flag && isstruct(result)
-    directions = {'ab','Train A, test B';'ba','Train B, test A'};
-    for d = 1 : 2
-        subplot(1,2,d);
+    directions = {'ab','Train A, test B';'ba','Train B, test A';...
+        'mean','Mean of both directions'};
+    directions = directions(isfield(result,directions(:,1)),:);
+    for d = 1 : size(directions,1)
+        subplot(1,size(directions,1),d);
         hold on;
         dirstats = [];
         if ~isempty(stats), dirstats = stats.(directions{d,1}); end

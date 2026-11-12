@@ -41,12 +41,12 @@ function Yp = mvpalab_permlabels(Y)
 %
 %%  INPUT:
 %
-%  - {1D-array} - Y:
+%  - {matrix} - Y:
 %    Labels of the dataset.
 %
 %%  OUTPUT:
 %
-%  - {1D-array} - Yp:
+%  - {matrix} - Yp:
 %    The same labels in a random order.
 
 Yp = Y(randperm(numel(Y)));

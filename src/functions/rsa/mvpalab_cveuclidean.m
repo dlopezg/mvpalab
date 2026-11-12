@@ -115,20 +115,20 @@ function d = mvpalab_cveuclidean(train,test,prec)
 %
 %%  INPUT:
 %
-%  - {2D-matrix} - train:
+%  - {matrix} - train:
 %    Training patterns for each condition. [conditions x features]
 %
-%  - {2D-matrix} - test:
+%  - {matrix} - test:
 %    Test patterns for each condition, in the same order as train.
 %    [conditions x features]
 %
-%  - {2D-matrix} - prec (optional):
+%  - {matrix} - prec (optional):
 %    Noise precision matrix for the crossnobis distance.
 %    [features x features]. Identity if not provided.
 %
 %%  OUTPUT:
 %
-%  - {2D-matrix} - d:
+%  - {matrix} - d:
 %    Symmetric cross-validated squared Euclidean (or crossnobis)
 %    distances with zero diagonal. [conditions x conditions]
 

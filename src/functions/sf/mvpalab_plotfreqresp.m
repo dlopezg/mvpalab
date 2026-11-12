@@ -1,12 +1,11 @@
-function cfg = mvpalab_plotfreqresp(cfg)
+function mvpalab_plotfreqresp(cfg)
 %% MVPALAB_PLOTFREQRESP
 %
 %  This function plots, in a new figure, the magnitude response of the
 %  filter of each frequency band, computed with firws and windows of
 %  EEGLAB from cfg.sf.wtype (with the beta of mvpalab_kaiserbeta for the
-%  Kaiser window, as the filter) and cfg.sf.order. The filter is
-%  band-stop if cfg.sf.ftype is 'bandstop' and band-pass if it is
-%  'bandpass', the two types accepted (see mvpalab_validatesf). The x axis
+%  Kaiser window, as the filter) and cfg.sf.order, with the cutoffs and
+%  the type of each band of the filter (see mvpalab_sfband). The x axis
 %  goes up to cfg.sf.hfreq. It needs EEGLAB and the bands in
 %  cfg.sf.fcutoff (see mvpalab_genfreqvec). The first subplot shows the
 %  bands of cfg.sf.fspac, and the second one the bands generated again
@@ -18,14 +17,8 @@ function cfg = mvpalab_plotfreqresp(cfg)
 %%  INPUT:
 %
 %  - {struct} - cfg:
-%    Configuration structure.
-%
-%%  OUTPUT:
-%
-%  - {struct} - cfg:
-%    Updated configuration structure: cfg.sf.fs, cfg.sf.win and
-%    cfg.sf.coeff, and cfg.sf.fspac, cfg.sf.freqvec and cfg.sf.fcutoff
-%    changed to the other spacing.
+%    Configuration structure. It is not changed: the bands of the other
+%    spacing are only computed for the plot.
 
     % Check if EEGlab is installed.
     mvpalab_validateeeglab();
@@ -37,12 +30,9 @@ function cfg = mvpalab_plotfreqresp(cfg)
         cfg.sf.fs = 250;
     end
 
-    % Type:
-    if strcmp(cfg.sf.ftype,'bandstop')
-        type = 'stop';
-    else
-        type = 'bandpass';
-    end
+    % Filter types of firws for the types of pop_firws (see mvpalab_sfband):
+    firwstype = struct('bandstop','stop','bandpass','',...
+        'highpass','high','lowpass','');
     
     load mvpalab_colorschemes.mat
     color = 1;
@@ -57,8 +47,9 @@ function cfg = mvpalab_plotfreqresp(cfg)
             mvpalab_kaiserbeta(cfg));
 
         % Calculate the filter coefficients
-        f = cfg.sf.fcutoff{i}/(cfg.sf.fs/2);
-        cfg.sf.coeff = firws(cfg.sf.order,f,type,cfg.sf.win);
+        [cutoff,ftype] = mvpalab_sfband(cfg,i);
+        cfg.sf.coeff = firws(cfg.sf.order,cutoff/(cfg.sf.fs/2),...
+            firwstype.(ftype),cfg.sf.win);
 
         % Plot frequency response:
         nfft = cfg.sf.fs * 10;
@@ -106,8 +97,9 @@ function cfg = mvpalab_plotfreqresp(cfg)
             mvpalab_kaiserbeta(cfg));
 
         % Calculate the filter coefficients
-        f = cfg.sf.fcutoff{i}/(cfg.sf.fs/2);
-        cfg.sf.coeff = firws(cfg.sf.order,f,type,cfg.sf.win);
+        [cutoff,ftype] = mvpalab_sfband(cfg,i);
+        cfg.sf.coeff = firws(cfg.sf.order,cutoff/(cfg.sf.fs/2),...
+            firwstype.(ftype),cfg.sf.win);
 
         % Plot frequency response:
         nfft = cfg.sf.fs * 10;

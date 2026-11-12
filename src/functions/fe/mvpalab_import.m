@@ -1,4 +1,4 @@
-function [cfg, data, fv] = mvpalab_import(cfg)
+function [cfg,data,fv] = mvpalab_import(cfg)
 %% MVPALAB_IMPORT
 %
 %  This function starts an analysis: it checks the configuration structure

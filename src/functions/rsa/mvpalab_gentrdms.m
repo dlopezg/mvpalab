@@ -5,8 +5,9 @@ function trdms = mvpalab_gentrdms(cfg,mdls,labels)
 %  constructed model. For condition-wise RDMs the models are already
 %  specified. For trial-wise RDMs each model is expanded from conditions
 %  to trials using the condition of each trial, so the trials can be in
-%  any order. Row i of a model is the i-th condition of unique(labels), the
-%  same order as the condition-wise RDMs (see mvpalab_averagetrials).
+%  any order. Row i of a model is the i-th category of labels, the i-th
+%  class of the study, the same order as the condition-wise RDMs (see
+%  mvpalab_averagetrials).
 %
 %%  INPUT:
 %
@@ -44,7 +45,7 @@ end
 %% Condition of each trial:
 %  Index of the condition of each trial in unique(labels).
 
-[~,~,cond] = unique(labels);
+cond = double(labels);
 
 %% Theoretical models loop
 %  Generate different RDMs for each theoretical model:

@@ -78,7 +78,7 @@ crossval = cfg.rsa.nfolds > 1;
 %  they are used (see mvpalab_validatersa):
 cfgcv = cfg;
 cfgcv.rsa.trialwise = false;
-mvpalab_validatersa(cfgcv);
+mvpalab_validatersa(cfgcv,numel(cfg.rsa.conditions));
 
 %% Generate and vectorize the theoretical RD matrices:
 %  Based on the previously designed models.

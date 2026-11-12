@@ -74,7 +74,7 @@ dist = cfg.rsa.distance;
 res.(mode).(dist) = struct();
 
 %% Check the configuration:
-mvpalab_validatersa(cfg);
+mvpalab_validatersa(cfg,size(cfg.study.dataFiles,2));
 mvpalab_savecfg(cfg);
 cfg.savefolder = fullfile(cfg.location,'results',cfg.analysis);
 

@@ -119,7 +119,10 @@ cfg.classsize.matchkfold = false;
 %% DIMENSION REDUCTION:
 
 % cfg.dimred.method = 'none' - Dimension reduction disabled.
-% cfg.dimred.method = 'pca'  - Principal Component Analysis.
+% cfg.dimred.method = 'pca'  - Principal Component Analysis, fitted on
+%                              the training set of each fold. Only for
+%                              the classifiers (MVPA and MVCC): RSA uses
+%                              all the channels or voxels.
 
 cfg.dimred.method = 'none';
 cfg.dimred.ncomp  = 0;
